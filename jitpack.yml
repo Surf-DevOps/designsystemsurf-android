@@ -1,0 +1,8 @@
+jdk:
+  - openjdk17
+
+before_install:
+  - sed -i.bak "s/^VERSION_NAME=.*/VERSION_NAME=${VERSION#v}/" gradle.properties
+
+install:
+  - ./gradlew publishToMavenLocal

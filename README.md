@@ -26,9 +26,9 @@ No `app/build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.Surf-DevOps.SurfHubDS-Android:surfhubds-core:0.1.0")
+    implementation("com.github.Surf-DevOps.designsystemsurf-android:surfhubds-core:0.1.0")
     // Adicionar apenas o módulo da brand do app:
-    implementation("com.github.Surf-DevOps.SurfHubDS-Android:surfhubds-brand-uber:0.1.0")
+    implementation("com.github.Surf-DevOps.designsystemsurf-android:surfhubds-brand-uber:0.1.0")
 }
 ```
 
@@ -62,7 +62,7 @@ No `AndroidManifest.xml` da brand específica:
 ## Estrutura
 
 ```
-SurfHubDS-Android/
+designsystemsurf-android/
 ├── settings.gradle.kts
 ├── build.gradle.kts
 ├── gradle.properties              # GROUP, VERSION_NAME (lido pelo JitPack)
@@ -145,4 +145,4 @@ install:
   - ./gradlew publishToMavenLocal
 ```
 
-A cada tag (`vX.Y.Z`), JitPack injeta a versão e publica todos os 14 módulos. Apps puxam pelo `com.github.Surf-DevOps.SurfHubDS-Android:<modulo>:<versão>`.
+A cada tag (`vX.Y.Z`), JitPack injeta a versão e publica todos os 14 módulos. Apps puxam pelo `com.github.Surf-DevOps.designsystemsurf-android:<modulo>:<versão>`.

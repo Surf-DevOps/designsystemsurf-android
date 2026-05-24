@@ -1,0 +1,284 @@
+{
+  "hasCategories": true,
+  "categories": [
+    {
+      "title": "Recarga",
+      "items": [
+        {
+          "question": "Onde recarregar o meu chip?",
+          "answer": "Você pode realizar a recarga do seu Fla Chip pelos seguintes canais:\nSite do Fla Chip:\n- Acesse https://fla-chip.com.br e faça sua recarga online\nApp Fla Chip:\n- Baixe o aplicativo na Google Play ou App Store\nOutros aplicativos:\n- Caixa Econômica\n- Bradesco\n- Mercado Pago\n- Recarga Pay\n- C6 Bank\n- PicPay\nNestes aplicativos realize a recarga como Operadora Surf Telecom."
+        },
+        {
+          "question": "Quais os valores de recarga?",
+          "answer": "FLA 30 – POR R$30,00\n- Até 15GB de internet\n- Ligações ilimitadas\n- WhatsApp grátis\n- Validade 30 dias\nFLA 40 – POR R$40,00\n- Até 30GB de internet\n- Ligações ilimitadas\n- WhatsApp grátis\n- Validade 30 dias\nFLA 50 – POR R$50,00\n- Até 40GB de internet\n- Ligações ilimitadas\n- WhatsApp grátis\n- Waze grátis\n- Validade 30 dias\nFLA 75 – POR R$75,00\n- Até 55GB de internet\n- Ligações ilimitadas\n- WhatsApp grátis\n- Waze grátis\n- Validade 30 dias"
+        },
+        {
+          "question": "O que é recarga programada?",
+          "answer": "A recarga programada é um serviço que permite configurar recargas automáticas mensais no seu Fla Chip, garantindo que você nunca fique sem créditos."
+        },
+        {
+          "question": "Como fazer renovação automática?",
+          "answer": "A recarga programada pode ser solicitada através do site https://fla-chip.com.br ou aplicativo Fla Chip no momento que for feita uma recarga com cartão de crédito."
+        },
+        {
+          "question": "E se eu não recarregar meu chip?",
+          "answer": "Se não houver recarga ou renovação após a expiração da recarga, o titular passa por 3 estágios até a desativação da linha:\n1º estágio (após expiração da recarga): o cliente recebe chamadas e SMS, porém não terá os benefícios de voz e dados.\n2º estágio (45 dias após o 1º estágio): o cliente poderá apenas originar chamadas, enviar mensagens de textos aos serviços públicos de emergência definidos na regulamentação da Anatel, contatar o Call Center através do *288 e realizar recarga. Ficará por 30 dias neste estágio até a desativação total do serviço.\n3º estágio (até 75 dias após o 1º estágio): Após o período de 75 dias do segundo estágio sem plano ativo a linha é expirada no 76º dia."
+        },
+        {
+          "question": "Quais são as formas de pagamento?",
+          "answer": "As formas de pagamento aceitas para recargas no Fla Chip são cartão de crédito, cartão de débito e PIX."
+        },
+        {
+          "question": "É possível realizar uma recarga Fla Chip fora do site e/ou aplicativo?",
+          "answer": "Sim, é possível fazer recarga em casas lotéricas, bancos, supermercados, farmácias e outros estabelecimentos autorizados em todo o Brasil."
+        },
+        {
+          "question": "Quais os valores disponíveis para recarga nas autorizadas?",
+          "answer": "Os valores disponíveis para recarga nos pontos autorizados são:\n- R$10,00\n- R$15,00\n- R$20,00\n- R$25,00\n- R$30,00\n- R$40,00\n- R$50,00\n- R$75,00"
+        }
+      ]
+    },
+    {
+      "title": "Chip Virtual",
+      "items": [
+        {
+          "question": "O que é um chip virtual?",
+          "answer": "É um eSIM que substitui o chip físico no seu dispositivo."
+        },
+        {
+          "question": "Como funciona?",
+          "answer": "O eSIM funciona como um chip tradicional, mas está embutido diretamente nos aparelhos. Em vez de inserir um cartão físico, você baixa eletronicamente as informações da operadora para o eSIM. Isso permite ativar, trocar e gerenciar planos de maneira ágil, sem a necessidade de trocar de chip manualmente."
+        },
+        {
+          "question": "Principais vantagens",
+          "answer": "Diferenciais eSIM Fla Chip\nAlgumas operadoras podem cobrar pela ativação do seu ESIM e levam dias para ativar. Com o ESIM Fla Chip você tem sua linha ativa em menos de 24h e só paga o valor da sua recarga.\nFacilidade de Ativação\nNão é necessário um cartão SIM físico. A ativação é feita eletronicamente em até 24h através de um QR Code, permitindo uma configuração rápida e sem a necessidade de inserir um chip.\nFlexibilidade\nÉ possível alterar entre operadoras e planos sem precisar trocar fisicamente o chip, mesmo para aparelhos com apenas uma bandeja de cartão SIM.\nConveniência\nNão há risco de perder ou danificar um cartão SIM físico. As configurações do ESIM estão armazenadas eletronicamente no dispositivo e podem ser restauradas facilmente."
+        },
+        {
+          "question": "Como adquirir um eSIM?",
+          "answer": "Você pode adquirir o seu ESIM pelo site https://fla-chip.com.br/shop/. Basta apenas verificar se o seu aparelho é compatível com o modelo de chip eSIM, sendo compatível, basta escolher uma das opções de planos."
+        },
+        {
+          "question": "Qual o prazo pare receber o meu eSIM?",
+          "answer": "Você recebe o eSIM em seu e-mail em até 24 horas."
+        },
+        {
+          "question": "O QR Code pode ser lido mais de uma vez?",
+          "answer": "Sim, o eSIM pode ser lido novamente, desde que o cliente ainda possua QR Code adquirido e que remova do aparelho anterior, antes de fazer uma nova leitura.\nNo entanto, se der algum problema ao fazer esse processo, entre em contato pelo telefone, discando *288 do seu celular ou 10543 de qualquer operadora. Fique tranquilo! Estamos 24h por dia, 7 dias por semana disponíveis para ajudar você no que precisar."
+        },
+        {
+          "question": "Aparelhos compatíveis",
+          "answer": "Atualmente a compatibilidade com o eSIM ainda não abrange todos os modelos de celulares populares. No entanto, a tecnologia está avançando rapidamente neste sentido. Muitos dos novos lançamentos já incluem suporte para eSIM, oferecendo aos usuários toda comodidade e benefícios de um chip virtual. Embora muitos aparelhos ainda não sejam compatíveis com o ESIM, a tendencia é que ele se torne cada vez mais comum."
+        },
+        {
+          "question": "Como ativar o chip virtual?",
+          "answer": "Se você comprou um e-SIM, veja abaixo como ativar:\nSe o seu aparelho é da marca SAMSUNG\nAcesse \"CONFIGURAÇÕES\";\nToque em \"CONEXÕES\";\nSelecione \"Gerenciamento de cartão \"SIM\";\nToque em \"Adicionar plano móvel\";\nClique em Ler QR CODE ou selecione copie e cole para copiar o código manualmente.\nSelecione \"ADICIONAR\" e pronto!\nPRONTO! Seu Chip Virtual está ativo.\nSe o seu aparelho é da marca APPLE:\nVá em \"Ajustes\";\nClique em \"CELULAR\";\nEm seguida , vá em \"ADICIONAR e-SIM\";\nClique em \"USAR CÓDIGO QR\";\nAponte a câmera para o código QR CODE e faça a leitura ou\nclique em \"INSERIR DETALHES MANUALMENTE\" e cole o código no campo \"Endereço SM-DP+\".\nPRONTO! Seu Chip Virtual está ativo.\nSe o seu aparelho é da marca MOTOROLA:\nAcesse \"CONFIGURAÇÕES\";\nClique em \"REDE E INTERNET\";\nDepois, vá em \"REDE MÓVEL\";\nEm seguida acesse \"OPERADORA\";\nDepois, clique em \"ADICIONAR OPERADORA\";\nAparecera a tela para leitura de QR CODE, aponte a câmera ou clique em copiar e colar para colar o código manualmente.\nClique concluído.\nPRONTO! Seu Chip está ativo."
+        },
+        {
+          "question": "Posso ativar o mesmo Chip virtual em mais de um aparelho?",
+          "answer": "Não, o eSIM funciona da mesma forma que um chip físico, sendo assim só pode funcionar em um único aparelho, ou seja, se for conectado em um aparelho e depois ser conectado em outro, o primeiro aparelho que foi inserido o chip virtual será desconectado e conectado no novo aparelho."
+        },
+        {
+          "question": "Como transferir o meu Chip Virtual para outro celular?",
+          "answer": "IPHONE\nNo novo iPhone, acesse \"Ajustes > Celular > Adicionar Plano Celular\";\nEscolha o plano (operadora) celular para transferir de outro iPhone. Se você não vir uma lista de números, toque em \"Transferir de outro iPhone\". Para esse processo, os dois dispositivos devem ter o iOS 16 ou posterior;\nVerifique as instruções no iPhone anterior para confirmar a transferência. Para confirmar, toque em Transferir ou insira o código de verificação exibido no novo iPhone, caso solicitado;\nAguarde a ativação do plano celular no novo iPhone. O cartão SIM anterior será desativado quando o plano celular for ativado no novo iPhone;\nSe um banner for exibido no novo iPhone com a mensagem \"Termine a Configuração do Plano Celular Fla Chip\", toque nele. Você será redirecionado para o site da Fla Chip para transferir o ESIM;\nSe precisar de ajuda entre em contato pelo telefone, discando *288 do seu celular ou 10543 de qualquer operadora. Fique tranquilo! Estamos 24h por dia, 7 dias por semana disponíveis para ajudar você no que precisar.\nANDROID\nNo novo aparelho, acesse \"Configurações > Conexões > Gerenciamento de cartão SIM > adicionar plano móvel\";\nEscolha a forma que vai ativar o seu plano:\nOPÇÃO 1: Lendo o código QR da operadora;\nOPÇÃO2: Traga o plano do aparelho antigo.\nAguarde a ativação do plano celular no novo aparelho. O cartão SIM anterior será desativado quando o plano celular for ativado no novo iPhone."
+        },
+        {
+          "question": "A tecnologia eSIM é segura?",
+          "answer": "Sim, a tecnologia eSIM contém diversos benefícios e segurança é o maior deles.\nCaso o aparelho seja roubado, o eSIM não pode ser retirado, impedindo o criminoso de revender ou utilizar o seu telefone. Além disso, não há interrupção da conexão de dados, facilitando a localização em caso de perda ou mesmo de furto.\nO chip eSIM não quebra ou se desgasta, como pode acontecer nas versões físicas, sem contar que você pode adquirir um eSIM muito mais rápido que um Chip Físico, não sendo necessário a ida até uma loja física ou aguardando a entrega do chip, mas sim, ativando seu ESIM por um simples QR Code."
+        },
+        {
+          "question": "E se eu mudar meu aparelho para um que não suporta eSIM?",
+          "answer": "É importante se atentar aos aparelhos compatíveis antes de realizar a compra do seu chip!\nCaso já possua o eSIM ativado e troque de aparelho é necessário que seja realizado uma nova compra de chip e entre em contato conosco discando *288 do seu celular ou 10543 para apenas realizar a sua troca de chip.\nCaso tenha comprador o ESIM por engano, pois o aparelho não é compatível, entre em contato na central para enviar o chip físico ao invés do ESIM."
+        },
+        {
+          "question": "O eSIM funciona apenas em telefonia móvel?",
+          "answer": "Sim, tanto o ESIM como o chip físico é somente compatível com aparelhos móveis."
+        },
+        {
+          "question": "O eSIM é compatível com o sinal 5G?",
+          "answer": "O ESIM é compatível com o sinal 5G, precisando apenas ser verificado se o seu aparelho é compatível com a rede."
+        },
+        {
+          "question": "Posso usar um eSIM e um chip físico ao mesmo tempo?",
+          "answer": "IOS\nTodos os modelos de iPhone compatíveis com eSIM podem ter vários eSIM e usar o Dual SIM com dois SIM ativos ao mesmo tempo. Você pode usar o Dual SIM sendo um SIM físico e um ESIM. Nos modelos de iPhone 13 e posteriores, também é possível usar dois eSIM ativos.\nANDROID\nNo Android ainda não podemos ter dois eSIM em um único aparelho, somente um eSIM e, dependendo do aparelho, dois chips físicos."
+        },
+        {
+          "question": "Se eu perder o QR Code do meu eSIM como posso recuperar?",
+          "answer": "Em caso de perca do QR Code primeiramente verifique na caixa de lixo do e-mail, e caso não encontre entre em contato na central discando *288 do seu celular ou 10543 de qualquer operadora junto com o comprovante da venda do eSIM"
+        }
+      ]
+    },
+    {
+      "title": "Ativação",
+      "items": [
+        {
+          "question": "Como ativar o chip Fla Chip?",
+          "answer": "1. Desligue o seu celular e coloque o chip Fla Chip\n2. Ligue o aparelho e aguarde aparecer \"Fla Chip\" na parte superior da tela\n3. Faça a primeira chamada e siga as orientações"
+        }
+      ]
+    },
+    {
+      "title": "Portabilidade",
+      "items": [
+        {
+          "question": "O que é portabilidade?",
+          "answer": "É um eSIM que substitui o chip físico no seu dispositivo."
+        },
+        {
+          "question": "Como pedir portabilidade?",
+          "answer": "Basta escanear o QR Code enviado pela operadora."
+        },
+        {
+          "question": "Não recebi SMS para confirmar a portabilidade.",
+          "answer": "O SMS pode levar até 15 minutos para chegar, caso não receba o SMS é necessário entrar em contato com a sua outra operadora e verificar se consta bloqueio ou algum outro problema na linha. Importante o SMS é enviado para o número que deseja portar."
+        },
+        {
+          "question": "Qual é o prazo da portabilidade?",
+          "answer": "O prazo para efetivar a portabilidade é de até 72 horas úteis e tanto o seu chip antigo quanto o Fla Chip funcionarão normalmente nesse período. Você poderá ficar com a sua linha indisponível no dia da portabilidade por, no máximo, 2 horas."
+        },
+        {
+          "question": "Posso portar o número de um DDD diferente?",
+          "answer": "Não. A portabilidade numérica somente é possível dentro da mesma área de registro (mesmo DDD) – para os clientes de telefonia móvel – e dentro da mesma localidade (mesmo município ou localidade com continuidade urbana)."
+        },
+        {
+          "question": "Posso portar o número de um plano pós-pago?",
+          "answer": "Sim. Na telefonia móvel, a portabilidade numérica será possível mesmo em distintas modalidades de serviços, desde que realizada dentro de uma mesma área de registro (mesmo DDD)."
+        },
+        {
+          "question": "A portabilidade tem custo adicional?",
+          "answer": "Atualmente a portabilidade para o Fla Chip não tem custo, contudo, conforme prevê o regulamento da Anatel, é possível a cobrança de taxas ao receber um novo cliente."
+        },
+        {
+          "question": "O pedido de portabilidade pode ser negado?",
+          "answer": "Sim. Embora seja um direito do usuário e um dever das operadoras, o pedido de portabilidade pode ser recusado nas seguintes situações:\nQuando os dados enviados pelo usuário estiverem incorretos ou incompletos;\nSe houver em andamento outra solicitação de portabilidade para o mesmo número;\nSe o número do telefone for inexistente, não pertencer a nenhum cliente, for temporário ou for designado a um Telefone de Uso Público (orelhão);\nSe o número do telefone for de uma operadora fixa e a portabilidade for para uma operadora móvel e vice-versa;\nPor razões técnicas, por exemplo, se a operadora de destino (receptora) não tiver serviço na área solicitada ou se tratar de Serviço Móvel Especializado (SME)."
+        },
+        {
+          "question": "Como funciona a bonificação para portabilidade?",
+          "answer": "O cliente que trouxer o seu número para a operadora Fla Chip terá o benefício de receber GB adicionais ao seu plano todos os meses a cada nova recarga. Nas informações do seu plano consulte gigas de portabilidade. A atribuição dos bônus de portabilidade ocorre até 3 dias úteis após a finalização da portabilidade."
+        }
+      ]
+    },
+    {
+      "title": "Internet",
+      "items": [
+        {
+          "question": "Onde recarregar o meu chip?",
+          "answer": "Você pode recarregar online, via app ou em estabelecimentos parceiros."
+        },
+        {
+          "question": "O que é recarga programada?",
+          "answer": "É um serviço que permite configurar recargas automáticas."
+        },
+        {
+          "question": "Quais são os valores de recarga?",
+          "answer": "Os valores variam de R$10 a R$100, dependendo da operadora."
+        }
+      ]
+    },
+    {
+      "title": "Palpite Premiado",
+      "items": [
+        {
+          "question": "O que é o Palpite Premiado?",
+          "answer": "É uma promoção exclusiva do Fla Chip onde você pode ganhar prêmios palpitando nos jogos do Flamengo."
+        },
+        {
+          "question": "Como participar?",
+          "answer": "Para participar, basta ter um chip Fla Chip ativo e acessar a área de Palpite Premiado no aplicativo ou site."
+        },
+        {
+          "question": "Quais são os prêmios?",
+          "answer": "Os prêmios variam a cada rodada e podem incluir recargas grátis, ingressos para jogos, produtos oficiais do Flamengo e muito mais."
+        },
+        {
+          "question": "Quando posso fazer meu palpite?",
+          "answer": "Os palpites ficam disponíveis até 1 hora antes do início de cada jogo do Flamengo."
+        },
+        {
+          "question": "Como sei se ganhei?",
+          "answer": "Os vencedores são notificados por SMS e também podem consultar o resultado no aplicativo ou site."
+        }
+      ]
+    },
+    {
+      "title": "Outros",
+      "items": [
+        {
+          "question": "O saldo de internet acabou antes do vencimento, e agora?",
+          "answer": "O novo saldo de internet será renovado na data da nova recarga realizada."
+        },
+        {
+          "question": "Como fazer para consultar o meu saldo?",
+          "answer": "Você pode consultar seu saldo:\nLigando para *225# e visualizar seu saldo na tela do seu celular.\nAcessando o site https://fla-chip.com.br/ através da área logada de recarga.\nSe preferir, consulte pelo telefone discando *288 do seu Fla Chip ou ligando 10543 de qualquer operadora."
+        },
+        {
+          "question": "Onde consultar o meu saldo?",
+          "answer": "Disque *225# e veja o saldo na tela do seu celular.\nSite: https://www.pagtel.com.br/flamengorecarga/recarga\nAplicativo Fla Chip\nSe preferir, consulte pelo WhatsApp (21) 92000-1981 ou pelo telefone discando *288 do seu Fla Chip ou ligando 10543 de qualquer operadora."
+        },
+        {
+          "question": "Em que aparelhos celular pode ser utilizado o Fla Chip?",
+          "answer": "O correto funcionamento e desempenho do Fla Chip somente será possível por meio do uso de equipamentos homologados pela ANATEL e compatíveis com as frequências autorizadas e em uso pelo prestador parceiro Flamengo cujo IMEI não esteja bloqueado por autoridades competentes."
+        },
+        {
+          "question": "O roaming nacional tem custos?",
+          "answer": "O Roaming é gratuito para o cliente. Não haverá cobrança adicional para o encaminhamento das chamadas de longa distância em todo o território nacional. Não haverá cobrança de taxa de deslocamento para as chamadas recebidas fora de sua localidade."
+        },
+        {
+          "question": "É possível fazer ligações internacionais (DDI)?",
+          "answer": "Não, o Fla Chip no momento não faz chamadas internacionais."
+        },
+        {
+          "question": "Perdeu ou danificou o seu Fla Chip, veja como pedir a 2ª via.",
+          "answer": "Solicite a 2ª via do seu chip pelo WhatsApp 11 93300-3030 ou pelo telefone discando *288 de um outro telefone Fla Chip ou 10543 de qualquer operadora. O seu novo chip será enviado para o endereço de sua preferência."
+        },
+        {
+          "question": "Tenho que pagar pela 2ª via do chip?",
+          "answer": "Não é cobrado pela 2ª via do chip."
+        },
+        {
+          "question": "Alguma outra dúvida sobre o Fla Chip?",
+          "answer": "Entre em contato conosco. Para obter ajuda sobre os detalhes do seu plano Fla Chip entre em contato pelo telefone, discando *288 do seu celular ou 10543 de qualquer operadora. Fique tranquilo! Estamos 24h por dia, 7 dias por semana disponíveis para ajudar você no que precisar."
+        },
+        {
+          "question": "Quem é elegível a oferta CONTROLE?",
+          "answer": "Novos clientes que ativarem os planos controle semestral e anual de 10/03/25 até 31/03/25."
+        },
+        {
+          "question": "Quanto vou pagar?",
+          "answer": "Controle semestral R$180 à vista ou 6x R$30 no cartão de crédito e terá direito a 6 meses de plano\nControle anual R$360 à vista ou 12x R$30 no cartão de crédito e terá direito a 12 meses de plano"
+        },
+        {
+          "question": "Por quanto tempo tenho acesso ao meu plano?",
+          "answer": "Plano semestral- 6 meses\nPlano anual- 12 meses"
+        },
+        {
+          "question": "Quais os benefícios do plano controle?",
+          "answer": "CONTROLE SEMESTRAL\n6 meses por R$180 ou 6x R$30\nAté 45GB- 15GB de base + 10GB portabilidade + 10GB Sócio torcedor\n+ bônus de Natal 20GB nos 3 primeiros meses\nLigações ilimitadas\nWhatsApp ilimitado\nWaze grátis\nAplicativo Skeelo\nCONTROLE ANUAL\n12 meses por R$360 ou 12x R$30\nAté 45GB- 15GB de base + 10GB portabilidade + 10GB Sócio torcedor\n+ bônus de Natal 20GB nos 3 primeiros meses\nLigações ilimitadas\nWhatsApp ilimitado\nWaze grátis\nAplicativo Skeelo"
+        },
+        {
+          "question": "Como os planos controle funcionam?",
+          "answer": "Funcionam da seguinte forma:\nMensal-> todo mês será cobrado R$45 no seu cartão de crédito previamente cadastrado e seus benefícios serão liberados seguindo a vigência do plano\nTrimestral-> durante 3 meses seus benefícios são renovados mensalmente\nSemestral-> durante 6 meses seus benefícios são renovados mensalmente\nAnual-> durante 12 meses seus benefícios são renovados mensalmente"
+        },
+        {
+          "question": "O que é uma recarga trimestral, semestral e anual?",
+          "answer": "A recarga trimestral é um ciclo de pagamento que ocorre a cada três meses, renovando o plano escolhido pelo cliente a cada mês de forma automática.\nA recarga semestral é um ciclo de pagamento que ocorre a cada seis meses, renovando o plano escolhido pelo cliente a cada mês de forma automática.\nA recarga anual é um ciclo de pagamento que ocorre a cada 12 meses, renovando o plano escolhido pelo cliente a cada mês de forma automática."
+        },
+        {
+          "question": "Quem é elegível a oferta bônus MÃES?",
+          "answer": "Novos clientes que ativarem ou fizerem recarga nos planos pré-pago ou controle de 05/05/25 até 31/05/25."
+        },
+        {
+          "question": "Como funciona a oferta do 2º chip?",
+          "answer": "Ao adquirir um chip nos planos pré-pago ou controle mensal o custo do 2º chip é R$5 com a mesma oferta adquirida no primeiro chip no momento da compra."
+        },
+        {
+          "question": "Como funciona o bônus de Mães?",
+          "answer": "Quem contratar ou recarregar os planos pré-pago ou controle ganha bônus de +10GB nos três primeiros meses, para garantir o bônus o número precisa estar ativo, caso não fique o bônus não será renovado nos próximos meses."
+        },
+        {
+          "question": "Se meu plano ficar inativo por 1 dia ainda recebo meu bônus de mães?",
+          "answer": "Não, seu plano precisa estar ativo para garantir a bonificação nos próximos 2 meses. Caso o cliente fique inativo e depois faça uma nova recarga não ganha a bonificação."
+        }
+      ]
+    }
+  ]
+}

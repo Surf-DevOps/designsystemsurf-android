@@ -65,6 +65,7 @@ class DSSCarouselView @JvmOverloads constructor(
         this.textTypeface = textTypeface
         pageControl.setPageCount(items.size)
         pager.adapter?.notifyDataSetChanged()
+        pageControl.post { pageControl.setCurrentPage(pager.currentItem) }
     }
 
     fun goToNextItem(animated: Boolean = true) {
@@ -95,7 +96,7 @@ class DSSCarouselView @JvmOverloads constructor(
     private class CarouselCellView(context: Context) : FrameLayout(context) {
         private val imageView = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
         private val label = TextView(context).apply {
-            textSize = 12f
+            textSize = 14f
             maxLines = 0
             gravity = Gravity.CENTER
         }
@@ -134,20 +135,34 @@ class DSSCarouselView @JvmOverloads constructor(
         private val dotSize = 8.dp(context)
         private val dotSpacing = 6.dp(context)
 
-        init { orientation = HORIZONTAL }
+        init {
+            orientation = HORIZONTAL
+            minimumHeight = dotSize
+        }
 
-        fun setPageCount(count: Int) { this.count = count; rebuild() }
-        fun setCurrentPage(page: Int) { currentPage = page; rebuild() }
+        fun setPageCount(count: Int) {
+            if (this.count == count) {
+                refreshColors()
+                return
+            }
+            this.count = count
+            if (currentPage >= count) currentPage = 0
+            rebuild()
+        }
+
+        fun setCurrentPage(page: Int) {
+            if (currentPage == page && childCount == count) {
+                refreshColors()
+                return
+            }
+            currentPage = page
+            if (childCount != count) rebuild() else refreshColors()
+        }
 
         private fun rebuild() {
             removeAllViews()
             repeat(count) { i ->
-                val dot = View(context).apply {
-                    background = GradientDrawable().apply {
-                        shape = GradientDrawable.OVAL
-                        setColor(if (i == currentPage) DSSColors.primary() else Color.LTGRAY)
-                    }
-                }
+                val dot = View(context).apply { background = makeDot(i == currentPage) }
                 addView(
                     dot,
                     LayoutParams(dotSize, dotSize).apply {
@@ -155,6 +170,19 @@ class DSSCarouselView @JvmOverloads constructor(
                     },
                 )
             }
+            requestLayout()
+            invalidate()
+        }
+
+        private fun refreshColors() {
+            for (i in 0 until childCount) {
+                getChildAt(i).background = makeDot(i == currentPage)
+            }
+        }
+
+        private fun makeDot(active: Boolean): GradientDrawable = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(if (active) DSSColors.primary() else Color.LTGRAY)
         }
     }
 

@@ -169,8 +169,8 @@ data class BrandInfo(
             )
             Brand.CORREIOSCELULAR -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas \ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e \nescolher entre os melhores planos pré do \nmercado!",
                 termsAdesaoURL = "https://www.correioscelular.com.br/termos-de-adesao1/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://www.correioscelular.com.br/politica-de-privacidade/",

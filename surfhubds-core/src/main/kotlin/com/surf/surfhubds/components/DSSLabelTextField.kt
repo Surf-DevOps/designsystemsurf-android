@@ -23,14 +23,9 @@ import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
-/**
- * Port do `DSSLabelTextField` do iOS — campo com label opcional, ícones laterais com ação,
- * formatação de CPF/CNPJ/telefone e validação de obrigatoriedade.
- *
- * Os tipos válidos vivem em [Type].
- */
 class DSSLabelTextField @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -173,7 +168,10 @@ class DSSLabelTextField @JvmOverloads constructor(
             leftButton.visibility = View.VISIBLE
             editText.setPadding(56f.dpToPx(context), 0, editText.paddingRight, 0)
         }
-        rightIcon?.let {
+        val effectiveRightIcon = rightIcon ?: if (type is Type.Password) {
+            ImageLoader.image(context, "eye_open")
+        } else null
+        effectiveRightIcon?.let {
             rightButton.setImageDrawable(it)
             rightButton.visibility = View.VISIBLE
             editText.setPadding(editText.paddingLeft, 0, 56f.dpToPx(context), 0)
@@ -190,6 +188,9 @@ class DSSLabelTextField @JvmOverloads constructor(
                 InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             } else InputType.TYPE_CLASS_NUMBER
             editText.setSelection(editText.text?.length ?: 0)
+            val iconName = if (isPasswordHidden) "eye_open" else "eye_closed"
+            ImageLoader.image(context, iconName)?.let { rightButton.setImageDrawable(it) }
+            refreshTheme()
         } else rightButtonAction?.invoke()
     }
 
@@ -200,7 +201,6 @@ class DSSLabelTextField @JvmOverloads constructor(
         refreshTheme(error = message != null)
     }
 
-    /** Retorna true se o campo está preenchido. Seta mensagem padrão senão. */
     fun validateRequired(fieldName: String? = null): Boolean {
         val v = editText.text?.toString().orEmpty().trim()
         return if (v.isEmpty()) {
@@ -243,9 +243,6 @@ class DSSLabelTextField @JvmOverloads constructor(
     }
 }
 
-/**
- * TextWatcher que reaplica formatação de CPF/CNPJ/Phone sem disparar loop infinito.
- */
 internal class MaskTextWatcher(
     private val editText: AppCompatEditText,
     private val type: DSSLabelTextField.Type,

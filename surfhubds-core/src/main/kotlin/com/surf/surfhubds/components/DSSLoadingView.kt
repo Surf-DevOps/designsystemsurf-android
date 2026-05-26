@@ -1,5 +1,6 @@
 package com.surf.surfhubds.components
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.view.Gravity
@@ -18,6 +19,7 @@ import com.surf.surfhubds.theme.DSSColors
  * No iOS, cada brand tem um `gif_*.gif`. Aqui, brand pode passar uma View custom via
  * [setLoadingViewFactory]. Sem factory, mostra um `ProgressBar` tintado com a primary da brand.
  */
+@SuppressLint("StaticFieldLeak")
 object DSSLoadingView {
 
     private var overlay: View? = null

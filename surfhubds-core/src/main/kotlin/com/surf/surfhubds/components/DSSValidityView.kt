@@ -1,7 +1,12 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ClipDrawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -15,7 +20,9 @@ import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSValidityView` do iOS — bloco "Vence em / X dias / progress / válido até".
- * Pertence ao [DSSCardPlanRechargeView].
+ * Pertence ao [DSSCardPlanRechargeView]. Espelha 1:1 o componente Swift:
+ *  - `progressDaysView` com track `.white`, `cornerRadius = 4`, borda `systemGray4`,
+ *    `clipsToBounds = true` e altura 8.
  */
 class DSSValidityView @JvmOverloads constructor(
     context: Context,
@@ -35,7 +42,9 @@ class DSSValidityView @JvmOverloads constructor(
     }
     val progressDaysView = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal).apply {
         max = 100
-        progress = 10
+        progress = 0
+        progressDrawable = buildRoundedProgressDrawable(context)
+        clipToOutline = true
     }
     val validUntilLabel = TextView(context).apply {
         textSize = 14f
@@ -74,5 +83,33 @@ class DSSValidityView @JvmOverloads constructor(
         expiresOnLabel.setTextColor(txt)
         daysLabel.setTextColor(txt)
         validUntilLabel.setTextColor(txt)
+    }
+
+    companion object {
+        /**
+         * Drawable composto espelhando o `UIProgressView` do iOS:
+         *  - track branca com `cornerRadius=4` e borda 1dp `systemGray4`
+         *  - barra de progresso (sem cor — tinge via `progressTintList` no caller)
+         */
+        internal fun buildRoundedProgressDrawable(context: Context): LayerDrawable {
+            val radius = 4f.dpToPx(context).toFloat()
+            val border = 1f.dpToPx(context)
+            val track = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = radius
+                setColor(Color.WHITE)
+                setStroke(border, Color.parseColor("#D1D1D6")) // systemGray4 light
+            }
+            val progressShape = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = radius
+                setColor(DSSColors.primary())
+            }
+            val progressClip = ClipDrawable(progressShape, Gravity.START, ClipDrawable.HORIZONTAL)
+            val layer = LayerDrawable(arrayOf(track, progressClip))
+            layer.setId(0, android.R.id.background)
+            layer.setId(1, android.R.id.progress)
+            return layer
+        }
     }
 }

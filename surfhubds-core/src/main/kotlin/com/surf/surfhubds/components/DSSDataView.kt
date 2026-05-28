@@ -15,7 +15,8 @@ import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSDataView` do iOS — bloco "Internet / 10GB / progress / disponível XGB".
- * Pertence ao [DSSCardPlanRechargeView].
+ * Pertence ao [DSSCardPlanRechargeView]. Reusa o drawable arredondado de
+ * [DSSValidityView] para o track branco com borda `systemGray4`.
  */
 class DSSDataView @JvmOverloads constructor(
     context: Context,
@@ -35,7 +36,9 @@ class DSSDataView @JvmOverloads constructor(
     }
     val progressDataView = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal).apply {
         max = 100
-        progress = 10
+        progress = 0
+        progressDrawable = DSSValidityView.buildRoundedProgressDrawable(context)
+        clipToOutline = true
     }
     val availableLabel = TextView(context).apply {
         textSize = 14f

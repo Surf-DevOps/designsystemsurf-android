@@ -46,6 +46,11 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
 
     init {
         clipToOutline = true
+        // Espelha o `intrinsicContentSize` do iOS (validity 90 + gap 10 + content ~24
+        // + gap 10 + renew 44 + top 20 + bottom 10 ≈ 208dp). Sem esse minHeight, o
+        // FrameLayout com `gravity=BOTTOM` no slider colapsa em cima da validity quando
+        // o pai é `wrap_content`.
+        minimumHeight = 210f.dpToPx(context)
         setupTree()
         contentCardView.delegate = object : DSSContentCardView.Delegate {
             override fun didToggleEditingMode(isEditing: Boolean) {

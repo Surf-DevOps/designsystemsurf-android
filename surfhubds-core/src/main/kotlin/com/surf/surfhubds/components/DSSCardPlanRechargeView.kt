@@ -110,7 +110,10 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
 
         addView(
             renewButtonSlider,
-            LayoutParams(LayoutParams.MATCH_PARENT, 52f.dpToPx(context)).apply {
+            // 44dp espelha o `renewHeightConstraint(equalToConstant: 44)` do iOS.
+            // Não aumentar — quem deve crescer é só a bolinha (via iconMargin/areaMargin
+            // pequenos em DSSSwipeView).
+            LayoutParams(LayoutParams.MATCH_PARENT, 44f.dpToPx(context)).apply {
                 topMargin = gap16
                 gravity = Gravity.BOTTOM
             },

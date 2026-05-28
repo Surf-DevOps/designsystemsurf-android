@@ -66,9 +66,11 @@ class DSSSwipeView @JvmOverloads constructor(
         slide.text = labelText
         // Em 0.11.0 a lib só lê area_margin/icon_margin do XML. Como construímos
         // a view programaticamente, ajustamos via reflection pra deixar a bolinha
-        // grande com margem mínima.
+        // grande com margem mínima. Valores espelham o iOS: thumb com ~37dp
+        // dentro de um slider de 44dp (areaMargin baixo) e ícone ocupando bem o
+        // miolo do thumb (iconMargin pequeno).
         setPrivateDimen("mAreaMargin", 2f.dpToPx(context))
-        setPrivateDimen("mIconMargin", 12f.dpToPx(context))
+        setPrivateDimen("mIconMargin", 6f.dpToPx(context))
         slide.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener {
             override fun onSlideComplete(view: SlideToActView) {
                 onCompleted?.invoke()

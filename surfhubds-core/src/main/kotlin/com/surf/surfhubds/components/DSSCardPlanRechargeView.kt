@@ -110,10 +110,11 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
 
         addView(
             renewButtonSlider,
-            // 52dp espelha o design do flachip-android (mais alto que iOS 44dp porque a
-            // lib `slidetoact` precisa de altura maior pra renderizar o thumb branco
-            // grande com a seta visível por dentro).
-            LayoutParams(LayoutParams.MATCH_PARENT, 52f.dpToPx(context)).apply {
+            // 44dp espelha exatamente o XML do flachip-android:
+            //   <SlideToActView android:layout_height="44dp"
+            //                   app:area_margin="4dp" app:icon_margin="8dp" />
+            // Os margins são configurados em DSSSwipeView.
+            LayoutParams(LayoutParams.MATCH_PARENT, 44f.dpToPx(context)).apply {
                 topMargin = gap16
                 gravity = Gravity.BOTTOM
             },

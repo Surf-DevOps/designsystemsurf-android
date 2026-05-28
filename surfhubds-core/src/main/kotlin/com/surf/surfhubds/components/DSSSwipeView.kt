@@ -64,14 +64,18 @@ class DSSSwipeView @JvmOverloads constructor(
         slide.iconColor = iconColor
         slide.textColor = labelTextColor
         slide.text = labelText
-        // Em 0.11.0 a lib só lê area_margin/icon_margin do XML. Como construímos
-        // a view programaticamente, ajustamos via reflection pra deixar a bolinha
-        // ocupando quase a altura toda do slider (areaMargin minúsculo) e a seta
-        // bem visível dentro (iconMargin moderado). Cálculo com slider de 52dp:
-        //   thumb = 52 - 2*2 = 48dp
-        //   seta  = 48 - 2*14 = 20dp  (≈42% do thumb — espelha o flachip-android)
-        setPrivateDimen("mAreaMargin", 2f.dpToPx(context))
-        setPrivateDimen("mIconMargin", 14f.dpToPx(context))
+        // Valores exatos do XML do flachip-android:
+        //   app:area_margin="4dp"  app:icon_margin="8dp"
+        // Em slidetoact 0.11.0 os campos privados são:
+        //   `mActualAreaMargin` (mutável) ← usar este pra area_margin
+        //   `mOriginAreaMargin` (final, lido só na inflate via attrs)
+        //   `mIconMargin` (final Kotlin val) ← precisa override via reflection
+        // O `mAreaMargin` que eu usava antes não existe (a reflection falhava
+        // silenciosamente, deixando os defaults da lib).
+        // Com slider 44dp: thumb = 44 - 2*4 = 36dp, seta = 36 - 2*8 = 20dp.
+        setPrivateDimen("mActualAreaMargin", 4f.dpToPx(context))
+        setPrivateDimen("mOriginAreaMargin", 4f.dpToPx(context))
+        setPrivateDimen("mIconMargin", 8f.dpToPx(context))
         slide.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener {
             override fun onSlideComplete(view: SlideToActView) {
                 onCompleted?.invoke()
@@ -82,12 +86,18 @@ class DSSSwipeView @JvmOverloads constructor(
     }
 
     private fun setPrivateDimen(fieldName: String, value: Int) {
-        runCatching {
+        val ok = runCatching {
             val field = SlideToActView::class.java.getDeclaredField(fieldName)
             field.isAccessible = true
             field.setInt(slide, value)
             slide.requestLayout()
             slide.invalidate()
+        }
+        if (ok.isFailure) {
+            android.util.Log.w(
+                "DSSSwipeView",
+                "Falha ao setar $fieldName via reflection: ${ok.exceptionOrNull()?.message}",
+            )
         }
     }
 

@@ -1,9 +1,11 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.PorterDuff
+import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
+import android.widget.ProgressBar
 import android.view.Gravity
 import android.widget.FrameLayout
 import com.surf.surfhubds.theme.DSSColors
@@ -169,8 +171,7 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
             val totalDays = data.validityDays.coerceAtLeast(1)
             val used = (totalDays - days.coerceAtLeast(0)).coerceAtLeast(0)
             validityView.progressDaysView.progress = ((used.toFloat() / totalDays) * 100).toInt()
-            validityView.progressDaysView.progressDrawable
-                ?.setColorFilter(progressColorForDays(days), PorterDuff.Mode.SRC_IN)
+            applyProgressTint(validityView.progressDaysView, progressColorForDays(days))
         } else {
             validityView.daysLabel.text = "${data.validityDays} dias"
             validityView.validUntilLabel.text = "válido até ${data.planDate}"
@@ -184,9 +185,21 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
             val used = (data.totalValue - data.availableValue).toFloat()
             val usedRatio = (used / data.totalValue.toFloat()).coerceIn(0f, 1f)
             dataView.progressDataView.progress = (usedRatio * 100).toInt()
-            dataView.progressDataView.progressDrawable
-                ?.setColorFilter(progressColorForUsage(usedRatio), PorterDuff.Mode.SRC_IN)
+            applyProgressTint(dataView.progressDataView, progressColorForUsage(usedRatio))
         }
+    }
+
+    /**
+     * Tinge apenas a camada `android.R.id.progress` (espelha `progressTintColor` do
+     * iOS). O `setColorFilter` no drawable inteiro tinge também a track, sumindo o
+     * contraste.
+     */
+    private fun applyProgressTint(progressBar: ProgressBar, color: Int) {
+        progressBar.progressTintList = ColorStateList.valueOf(color)
+        // Fallback explícito para devices/temas que ignoram o tintList.
+        (progressBar.progressDrawable as? LayerDrawable)
+            ?.findDrawableByLayerId(android.R.id.progress)
+            ?.setTint(color)
     }
 
     private fun configurePayment(data: CardData) {

@@ -10,6 +10,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSSwipeView` do iOS — "slide to confirm". Internamente embrulha
@@ -63,6 +64,11 @@ class DSSSwipeView @JvmOverloads constructor(
         slide.iconColor = iconColor
         slide.textColor = labelTextColor
         slide.text = labelText
+        // Em 0.11.0 a lib só lê area_margin/icon_margin do XML. Como construímos
+        // a view programaticamente, ajustamos via reflection pra deixar a bolinha
+        // grande com margem mínima.
+        setPrivateDimen("mAreaMargin", 2f.dpToPx(context))
+        setPrivateDimen("mIconMargin", 12f.dpToPx(context))
         slide.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener {
             override fun onSlideComplete(view: SlideToActView) {
                 onCompleted?.invoke()
@@ -70,6 +76,16 @@ class DSSSwipeView @JvmOverloads constructor(
             }
         }
         setupThemeObserver()
+    }
+
+    private fun setPrivateDimen(fieldName: String, value: Int) {
+        runCatching {
+            val field = SlideToActView::class.java.getDeclaredField(fieldName)
+            field.isAccessible = true
+            field.setInt(slide, value)
+            slide.requestLayout()
+            slide.invalidate()
+        }
     }
 
     override fun applyTheme(theme: Theme) {

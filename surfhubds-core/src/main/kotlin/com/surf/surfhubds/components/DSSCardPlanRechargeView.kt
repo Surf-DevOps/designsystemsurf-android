@@ -92,7 +92,7 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     private fun setupTree() {
         val width122 = 122f.dpToPx(context)
         val height90 = 90f.dpToPx(context)
-        val gap10 = 10f.dpToPx(context)
+        val gap16 = 16f.dpToPx(context)
 
         // Linha superior: validity (esq) | spacer flexível | data (dir)
         val topRow = LinearLayout(context).apply { orientation = HORIZONTAL }
@@ -104,14 +104,14 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
         addView(
             contentCardView,
             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                topMargin = gap10
+                topMargin = gap16
             },
         )
 
         addView(
             renewButtonSlider,
-            LayoutParams(LayoutParams.MATCH_PARENT, 44f.dpToPx(context)).apply {
-                topMargin = gap10
+            LayoutParams(LayoutParams.MATCH_PARENT, 52f.dpToPx(context)).apply {
+                topMargin = gap16
                 gravity = Gravity.BOTTOM
             },
         )

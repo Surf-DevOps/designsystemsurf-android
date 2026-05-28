@@ -81,10 +81,18 @@ class DSSBannerCollectionView @JvmOverloads constructor(
         override fun getItemCount(): Int = items.size
 
         override fun onBindViewHolder(holder: BannerViewHolder, position: Int) {
-            val lp = holder.itemView.layoutParams as RecyclerView.LayoutParams
+            // `BannerCellView` é criado sem parent em `onCreateViewHolder`, então
+            // `layoutParams` vem `null` no primeiro bind. Garante um LP padrão antes
+            // de aplicar width/height/margin pra evitar NPE no cast.
+            val lp = (holder.itemView.layoutParams as? RecyclerView.LayoutParams)
+                ?: RecyclerView.LayoutParams(
+                    RecyclerView.LayoutParams.WRAP_CONTENT,
+                    RecyclerView.LayoutParams.WRAP_CONTENT,
+                )
             lp.width = bannerWidthDp.dpToPx(context)
             lp.height = bannerHeightDp.dpToPx(context)
-            if (position < items.size - 1) lp.rightMargin = spacingDp.dpToPx(context)
+            lp.rightMargin =
+                if (position < items.size - 1) spacingDp.dpToPx(context) else 0
             holder.itemView.layoutParams = lp
 
             holder.cell.load(items[position].url)

@@ -86,11 +86,11 @@ class DSSCardNoInternetView @JvmOverloads constructor(
     }
 
     private val anticipateSwipeView = DSSSwipeView(context).apply {
-        textColor = Color.WHITE
-        sliderCornerRadiusDp = 22f
-        thumbnailTintColor = Color.WHITE
-        sliderBackgroundColor = Color.rgb(204, 0, 0)
-        textLabel.text = "  Antecipar recarga   R$ 50,00"
+        labelTextColor = Color.WHITE
+        iconColor = Color.BLACK
+        innerColor = Color.WHITE
+        outerColor = Color.rgb(204, 0, 0)
+        labelText = "Antecipar recarga   R$ 50,00"
     }
 
     init {
@@ -332,7 +332,7 @@ class DSSCardNoInternetView @JvmOverloads constructor(
         currentPaymentType = paymentType
         updatePaymentOptionsUI()
         val formatted = String.format("R$ %.2f", anticipateAmount).replace('.', ',')
-        anticipateSwipeView.textLabel.text = "  Antecipar recarga   $formatted"
+        anticipateSwipeView.labelText = "Antecipar recarga   $formatted"
     }
 
     fun resetSlider() {

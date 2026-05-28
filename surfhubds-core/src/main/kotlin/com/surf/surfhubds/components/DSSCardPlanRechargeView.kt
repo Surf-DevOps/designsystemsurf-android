@@ -2,19 +2,21 @@ package com.surf.surfhubds.components
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.util.AttributeSet
-import android.view.ViewGroup
+import android.view.Gravity
 import android.widget.FrameLayout
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.DateHelpers
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSCardPlanRechargeView` do iOS — cartão principal de plano + recarga,
- * com validade (esquerda), data/GB (direita), método de pagamento e swipe-to-renew.
+ * com validade (esquerda), data/GB (direita), método de pagamento e slide-to-renew.
  */
 class DSSCardPlanRechargeView @JvmOverloads constructor(
     context: Context,
@@ -32,10 +34,7 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
 
     val validityView = DSSValidityView(context)
     val dataView = DSSDataView(context)
-    val renewButtonSlider = DSSSwipeView(context).apply {
-        sliderCornerRadiusDp = 22f
-        thumbnailColor = Color.WHITE
-    }
+    val renewButtonSlider = DSSSwipeView(context)
     val contentCardView = DSSContentCardView(context).apply {
         renewButtonSlider = this@DSSCardPlanRechargeView.renewButtonSlider
     }
@@ -67,11 +66,13 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     private fun refresh() {
         background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.surface(),
+            backgroundColor = DSSColors.backgroundSecondary(),
             cornerRadiusDp = 16f,
-            strokeColor = DSSColors.borderDefault(),
-            strokeWidthDp = 1f,
         )
+        renewButtonSlider.outerColor = DSSColors.primary()
+        renewButtonSlider.innerColor = Color.WHITE
+        renewButtonSlider.iconColor = Color.BLACK
+        renewButtonSlider.labelTextColor = Color.WHITE
     }
 
     private fun setupTree() {
@@ -80,39 +81,35 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
         val width122 = 122f.dpToPx(context)
         val height90 = 90f.dpToPx(context)
 
-        // validity em cima-esquerda
         addView(
             validityView,
             LayoutParams(width122, height90).apply {
-                gravity = android.view.Gravity.TOP or android.view.Gravity.START
+                gravity = Gravity.TOP or Gravity.START
                 leftMargin = pad24
                 topMargin = pad20
             },
         )
-        // data em cima-direita
         addView(
             dataView,
             LayoutParams(width122, height90).apply {
-                gravity = android.view.Gravity.TOP or android.view.Gravity.END
+                gravity = Gravity.TOP or Gravity.END
                 rightMargin = pad24
                 topMargin = pad20
             },
         )
-        // content card abaixo
         addView(
             contentCardView,
             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                gravity = android.view.Gravity.TOP
+                gravity = Gravity.TOP
                 leftMargin = pad24
                 rightMargin = pad24
                 topMargin = pad20 + height90 + 10f.dpToPx(context)
             },
         )
-        // renew slider no rodapé
         addView(
             renewButtonSlider,
             LayoutParams(LayoutParams.MATCH_PARENT, 44f.dpToPx(context)).apply {
-                gravity = android.view.Gravity.BOTTOM
+                gravity = Gravity.BOTTOM
                 leftMargin = pad24
                 rightMargin = pad24
                 bottomMargin = 10f.dpToPx(context)
@@ -148,26 +145,77 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
         this.cardData = data
         this.currentPaymentType = data.payment
 
-        validityView.daysLabel.text = "${data.validityDays} dias"
-        validityView.validUntilLabel.text = "válido até ${data.planDate}"
+        configureValidity(data)
+        configureDataUsage(data)
+        configurePayment(data)
+        configureRenewButton(data)
 
+        requestLayout()
+    }
+
+    private fun configureValidity(data: CardData) {
+        val start = DateHelpers.parseGatewayDate(data.planDate)
+        val end = start?.let { DateHelpers.addDays(it, data.validityDays) }
+
+        if (end != null) {
+            val days = DateHelpers.daysRemaining(end)
+            validityView.daysLabel.text = "$days dias"
+            validityView.validUntilLabel.text = when {
+                days <= 2 -> "Recarregue agora!"
+                days <= 5 -> "vence em $days dias"
+                else -> "válido até ${DateHelpers.formatDDMM(end)}"
+            }
+            // Progress mostra a fração já decorrida (usada), igual ao iOS.
+            val totalDays = data.validityDays.coerceAtLeast(1)
+            val used = (totalDays - days.coerceAtLeast(0)).coerceAtLeast(0)
+            validityView.progressDaysView.progress = ((used.toFloat() / totalDays) * 100).toInt()
+            validityView.progressDaysView.progressDrawable
+                ?.setColorFilter(progressColorForDays(days), PorterDuff.Mode.SRC_IN)
+        } else {
+            validityView.daysLabel.text = "${data.validityDays} dias"
+            validityView.validUntilLabel.text = "válido até ${data.planDate}"
+        }
+    }
+
+    private fun configureDataUsage(data: CardData) {
         dataView.gigasLabel.text = "${data.available}GB"
         dataView.availableLabel.text = "disponível ${data.totalValue}GB"
         if (data.totalValue > 0) {
-            val used = data.totalValue - data.availableValue
-            dataView.progressDataView.progress = ((used.toFloat() / data.totalValue) * 100).toInt()
+            val used = (data.totalValue - data.availableValue).toFloat()
+            val usedRatio = (used / data.totalValue.toFloat()).coerceIn(0f, 1f)
+            dataView.progressDataView.progress = (usedRatio * 100).toInt()
+            dataView.progressDataView.progressDrawable
+                ?.setColorFilter(progressColorForUsage(usedRatio), PorterDuff.Mode.SRC_IN)
         }
+    }
 
+    private fun configurePayment(data: CardData) {
         contentCardView.selectedPaymentType = data.payment
-        contentCardView.typeCardLabel.text = if (data.payment == PaymentType.PIX) "Pix" else "Cartão de crédito"
+        contentCardView.typeCardLabel.text =
+            if (data.payment == PaymentType.PIX) "Pix" else "Cartão de crédito"
+        contentCardView.updatePaymentOptionsUI()
+    }
 
+    private fun configureRenewButton(data: CardData) {
         val priceLabel = if (data.mvno == "iFood") {
-            "  Repetir recarga  R$ 25,00"
+            "Repetir recarga  R$ 25,00"
         } else {
             val intPrice = data.price.toIntOrNull() ?: 0
-            "  Repetir recarga  R$ %d,00".format(intPrice)
+            "Repetir recarga  R$ %d,00".format(intPrice)
         }
-        renewButtonSlider.textLabel.text = priceLabel
+        renewButtonSlider.labelText = priceLabel
+    }
+
+    private fun progressColorForDays(days: Int): Int = when {
+        days >= 21 -> Color.parseColor("#34C759") // systemGreen
+        days in 11..20 -> Color.parseColor("#FFCC00") // systemYellow
+        else -> Color.parseColor("#FF3B30") // systemRed
+    }
+
+    private fun progressColorForUsage(ratio: Float): Int = when {
+        ratio < 0.5f -> Color.parseColor("#34C759")
+        ratio < 0.7f -> Color.parseColor("#FFCC00")
+        else -> Color.parseColor("#FF3B30")
     }
 
     fun resetSlider() {

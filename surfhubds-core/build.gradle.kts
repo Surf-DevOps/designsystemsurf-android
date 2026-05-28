@@ -42,6 +42,7 @@ dependencies {
     api(libs.androidx.fragment.ktx)
     api(libs.glide)
     api(libs.zxing.android.embedded)
+    api(libs.slidetoact)
 }
 
 afterEvaluate {

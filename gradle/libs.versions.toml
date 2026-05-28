@@ -12,6 +12,7 @@ fragment = "1.8.3"
 glide = "4.16.0"
 zxing = "3.5.3"
 zxingAndroid = "4.3.0"
+slidetoact = "0.11.0"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -25,6 +26,7 @@ androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 zxing-core = { module = "com.google.zxing:core", version.ref = "zxing" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroid" }
+slidetoact = { module = "com.ncorti:slidetoact", version.ref = "slidetoact" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }

@@ -24,8 +24,12 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.dpToPx
 
-/** Espelha `DSSCarouselItem` do iOS (`image: UIImage`, `text: String`). */
-data class DSSCarouselItem(val image: Drawable, val text: CharSequence)
+/**
+ * Espelha `DSSCarouselItem` do iOS (`image: UIImage`, `text: String`).
+ * `image` é nullable no Android pois a resolução por nome (ImageLoader/getIdentifier)
+ * pode não encontrar o recurso; a célula trata `null` sem quebrar.
+ */
+data class DSSCarouselItem(val image: Drawable?, val text: CharSequence)
 
 class DSSCarouselView @JvmOverloads constructor(
     context: Context,

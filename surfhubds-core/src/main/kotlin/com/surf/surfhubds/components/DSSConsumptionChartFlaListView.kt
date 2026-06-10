@@ -80,7 +80,8 @@ class DSSConsumptionChartFlaListView @JvmOverloads constructor(
 
         override fun onBindViewHolder(holder: DSSConsumptionChartFlaCell, position: Int) {
             val item = items[position]
-            val lp = holder.itemView.layoutParams as RecyclerView.LayoutParams
+            val lp = (holder.itemView.layoutParams as? RecyclerView.LayoutParams)
+                ?: RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT, RecyclerView.LayoutParams.WRAP_CONTENT)
             if (position < items.size - 1) lp.rightMargin = 50f.dpToPx(context)
             holder.itemView.layoutParams = lp
             holder.configure(

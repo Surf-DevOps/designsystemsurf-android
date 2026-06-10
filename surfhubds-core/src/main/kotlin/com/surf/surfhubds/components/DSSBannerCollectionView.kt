@@ -81,7 +81,8 @@ class DSSBannerCollectionView @JvmOverloads constructor(
         override fun getItemCount(): Int = items.size
 
         override fun onBindViewHolder(holder: BannerViewHolder, position: Int) {
-            val lp = holder.itemView.layoutParams as RecyclerView.LayoutParams
+            val lp = (holder.itemView.layoutParams as? RecyclerView.LayoutParams)
+                ?: RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT, RecyclerView.LayoutParams.WRAP_CONTENT)
             lp.width = bannerWidthDp.dpToPx(context)
             lp.height = bannerHeightDp.dpToPx(context)
             if (position < items.size - 1) lp.rightMargin = spacingDp.dpToPx(context)

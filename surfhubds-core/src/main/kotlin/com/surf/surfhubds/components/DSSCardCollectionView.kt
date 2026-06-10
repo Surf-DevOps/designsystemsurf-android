@@ -149,7 +149,8 @@ class DSSCardCollectionView @JvmOverloads constructor(
                 finalDigits = card.lastFour ?: "",
                 type = type,
             )
-            val lp = holder.itemView.layoutParams as RecyclerView.LayoutParams
+            val lp = (holder.itemView.layoutParams as? RecyclerView.LayoutParams)
+                ?: RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT, RecyclerView.LayoutParams.WRAP_CONTENT)
             lp.width = cardWidthDp.dpToPx(context)
             lp.height = cardHeightDp.dpToPx(context)
             if (scrollDirection == RecyclerView.HORIZONTAL) {

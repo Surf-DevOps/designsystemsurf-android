@@ -1,26 +1,35 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
-import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.view.Gravity
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.DateHelpers
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSCardPlanRechargeView` do iOS — cartão principal de plano + recarga,
- * com validade (esquerda), data/GB (direita), método de pagamento e swipe-to-renew.
+ * com validade (esquerda), data/GB (direita), método de pagamento e slide-to-renew.
+ *
+ * Layout vertical: o slider acompanha o crescimento do bloco de método de pagamento
+ * quando o usuário toca em "Alterar" (passa de 1 linha pra 2 linhas).
  */
 class DSSCardPlanRechargeView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-) : FrameLayout(context, attrs, defStyleAttr), ThemeAware {
+) : LinearLayout(context, attrs, defStyleAttr), ThemeAware {
 
     interface Delegate {
         fun didToggleEditingMode(isEditing: Boolean)
@@ -32,10 +41,7 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
 
     val validityView = DSSValidityView(context)
     val dataView = DSSDataView(context)
-    val renewButtonSlider = DSSSwipeView(context).apply {
-        sliderCornerRadiusDp = 22f
-        thumbnailColor = Color.WHITE
-    }
+    val renewButtonSlider = DSSSwipeView(context)
     val contentCardView = DSSContentCardView(context).apply {
         renewButtonSlider = this@DSSCardPlanRechargeView.renewButtonSlider
     }
@@ -44,7 +50,14 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     private var currentPaymentType: PaymentType = PaymentType.CREDIT_CARD
 
     init {
+        orientation = VERTICAL
         clipToOutline = true
+        setPadding(
+            24f.dpToPx(context),
+            20f.dpToPx(context),
+            24f.dpToPx(context),
+            10f.dpToPx(context),
+        )
         setupTree()
         contentCardView.delegate = object : DSSContentCardView.Delegate {
             override fun didToggleEditingMode(isEditing: Boolean) {
@@ -67,55 +80,43 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     private fun refresh() {
         background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.surface(),
+            backgroundColor = DSSColors.backgroundSecondary(),
             cornerRadiusDp = 16f,
-            strokeColor = DSSColors.borderDefault(),
-            strokeWidthDp = 1f,
         )
+        renewButtonSlider.outerColor = DSSColors.primary()
+        renewButtonSlider.innerColor = Color.WHITE
+        renewButtonSlider.iconColor = Color.BLACK
+        renewButtonSlider.labelTextColor = Color.WHITE
     }
 
     private fun setupTree() {
-        val pad24 = 24f.dpToPx(context)
-        val pad20 = 20f.dpToPx(context)
         val width122 = 122f.dpToPx(context)
         val height90 = 90f.dpToPx(context)
+        val gap16 = 16f.dpToPx(context)
 
-        // validity em cima-esquerda
-        addView(
-            validityView,
-            LayoutParams(width122, height90).apply {
-                gravity = android.view.Gravity.TOP or android.view.Gravity.START
-                leftMargin = pad24
-                topMargin = pad20
-            },
-        )
-        // data em cima-direita
-        addView(
-            dataView,
-            LayoutParams(width122, height90).apply {
-                gravity = android.view.Gravity.TOP or android.view.Gravity.END
-                rightMargin = pad24
-                topMargin = pad20
-            },
-        )
-        // content card abaixo
+        // Linha superior: validity (esq) | spacer flexível | data (dir)
+        val topRow = LinearLayout(context).apply { orientation = HORIZONTAL }
+        topRow.addView(validityView, LayoutParams(width122, height90))
+        topRow.addView(View(context), LayoutParams(0, 1, 1f))
+        topRow.addView(dataView, LayoutParams(width122, height90))
+        addView(topRow, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
+
         addView(
             contentCardView,
             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                gravity = android.view.Gravity.TOP
-                leftMargin = pad24
-                rightMargin = pad24
-                topMargin = pad20 + height90 + 10f.dpToPx(context)
+                topMargin = gap16
             },
         )
-        // renew slider no rodapé
+
         addView(
             renewButtonSlider,
+            // 44dp espelha exatamente o XML do flachip-android:
+            //   <SlideToActView android:layout_height="44dp"
+            //                   app:area_margin="4dp" app:icon_margin="8dp" />
+            // Os margins são configurados em DSSSwipeView.
             LayoutParams(LayoutParams.MATCH_PARENT, 44f.dpToPx(context)).apply {
-                gravity = android.view.Gravity.BOTTOM
-                leftMargin = pad24
-                rightMargin = pad24
-                bottomMargin = 10f.dpToPx(context)
+                topMargin = gap16
+                gravity = Gravity.BOTTOM
             },
         )
     }
@@ -148,26 +149,85 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
         this.cardData = data
         this.currentPaymentType = data.payment
 
-        validityView.daysLabel.text = "${data.validityDays} dias"
-        validityView.validUntilLabel.text = "válido até ${data.planDate}"
+        configureValidity(data)
+        configureDataUsage(data)
+        configurePayment(data)
+        configureRenewButton(data)
 
+        requestLayout()
+    }
+
+    private fun configureValidity(data: CardData) {
+        val start = DateHelpers.parseGatewayDate(data.planDate)
+        val end = start?.let { DateHelpers.addDays(it, data.validityDays) }
+
+        if (end != null) {
+            val days = DateHelpers.daysRemaining(end)
+            validityView.daysLabel.text = "$days dias"
+            validityView.validUntilLabel.text = when {
+                days <= 2 -> "Recarregue agora!"
+                days <= 5 -> "vence em $days dias"
+                else -> "válido até ${DateHelpers.formatDDMM(end)}"
+            }
+            val totalDays = data.validityDays.coerceAtLeast(1)
+            val used = (totalDays - days.coerceAtLeast(0)).coerceAtLeast(0)
+            validityView.progressDaysView.progress = ((used.toFloat() / totalDays) * 100).toInt()
+            applyProgressTint(validityView.progressDaysView, progressColorForDays(days))
+        } else {
+            validityView.daysLabel.text = "${data.validityDays} dias"
+            validityView.validUntilLabel.text = "válido até ${data.planDate}"
+        }
+    }
+
+    private fun configureDataUsage(data: CardData) {
         dataView.gigasLabel.text = "${data.available}GB"
         dataView.availableLabel.text = "disponível ${data.totalValue}GB"
         if (data.totalValue > 0) {
-            val used = data.totalValue - data.availableValue
-            dataView.progressDataView.progress = ((used.toFloat() / data.totalValue) * 100).toInt()
+            val used = (data.totalValue - data.availableValue).toFloat()
+            val usedRatio = (used / data.totalValue.toFloat()).coerceIn(0f, 1f)
+            dataView.progressDataView.progress = (usedRatio * 100).toInt()
+            applyProgressTint(dataView.progressDataView, progressColorForUsage(usedRatio))
         }
+    }
 
+    /**
+     * Tinge apenas a camada `android.R.id.progress` (espelha `progressTintColor` do
+     * iOS). O `setColorFilter` no drawable inteiro tinge também a track, sumindo o
+     * contraste.
+     */
+    private fun applyProgressTint(progressBar: ProgressBar, color: Int) {
+        progressBar.progressTintList = ColorStateList.valueOf(color)
+        (progressBar.progressDrawable as? LayerDrawable)
+            ?.findDrawableByLayerId(android.R.id.progress)
+            ?.setTint(color)
+    }
+
+    private fun configurePayment(data: CardData) {
         contentCardView.selectedPaymentType = data.payment
-        contentCardView.typeCardLabel.text = if (data.payment == PaymentType.PIX) "Pix" else "Cartão de crédito"
+        contentCardView.typeCardLabel.text =
+            if (data.payment == PaymentType.PIX) "Pix" else "Cartão de crédito"
+        contentCardView.updatePaymentOptionsUI()
+    }
 
-        val priceLabel = if (data.mvno == "iFood") {
-            "  Repetir recarga  R$ 25,00"
-        } else {
-            val intPrice = data.price.toIntOrNull() ?: 0
-            "  Repetir recarga  R$ %d,00".format(intPrice)
+    private fun configureRenewButton(data: CardData) {
+        // Valor vem em centavos (3000 → "30,00"). Espelha `Utility.formatPrice` do iOS.
+        val cents = when {
+            data.mvno == "iFood" -> 2500
+            else -> data.price.toIntOrNull() ?: 0
         }
-        renewButtonSlider.textLabel.text = priceLabel
+        renewButtonSlider.labelText = "Repetir recarga  ${Utility.formatPrice(cents)}"
+    }
+
+    private fun progressColorForDays(days: Int): Int = when {
+        days >= 21 -> Color.parseColor("#34C759")
+        days in 11..20 -> Color.parseColor("#FFCC00")
+        else -> Color.parseColor("#FF3B30")
+    }
+
+    private fun progressColorForUsage(ratio: Float): Int = when {
+        ratio < 0.5f -> Color.parseColor("#34C759")
+        ratio < 0.7f -> Color.parseColor("#FFCC00")
+        else -> Color.parseColor("#FF3B30")
     }
 
     fun resetSlider() {

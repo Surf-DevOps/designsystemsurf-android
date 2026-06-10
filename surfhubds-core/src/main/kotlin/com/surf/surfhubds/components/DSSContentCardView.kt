@@ -15,6 +15,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -41,8 +42,14 @@ class DSSContentCardView @JvmOverloads constructor(
 
     var selectedPaymentType: PaymentType = PaymentType.CREDIT_CARD
 
-    /** Resolver de drawables por método (ilMaster / pix). */
-    var iconResolver: (PaymentType) -> android.graphics.drawable.Drawable? = { null }
+    /**
+     * Resolver de drawables por método (ilMaster / pix). Por padrão usa o
+     * [ImageLoader] do core resolvendo pela brand atual.
+     */
+    var iconResolver: (PaymentType) -> android.graphics.drawable.Drawable? = { type ->
+        val name = if (type == PaymentType.PIX) "pix" else "ilMaster"
+        ImageLoader.image(context, name)
+    }
 
     val typeCardLabel = TextView(context).apply {
         text = "Cartão de crédito"

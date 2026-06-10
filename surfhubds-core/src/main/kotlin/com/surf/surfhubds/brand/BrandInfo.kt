@@ -19,8 +19,8 @@ data class BrandInfo(
     val coMvno: String,
     val mvnoName: String,
     val noMvno: String,
-    val scheduleEligible: Boolean = false,
-    val recurrenceEligible: Boolean = false,
+    val scheduleEligible: Boolean = true,
+    val recurrenceEligible: Boolean = true,
 ) {
     companion object {
         fun current(brand: Brand): BrandInfo = when (brand) {
@@ -36,6 +36,7 @@ data class BrandInfo(
                 coMvno = "324",
                 mvnoName = "Fla-Chip",
                 noMvno = "FLAMENGO",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
             Brand.BANDSPORTS -> BrandInfo(
@@ -50,7 +51,8 @@ data class BrandInfo(
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.bandsports",
                 coMvno = "1032",
                 mvnoName = "BandSports Celular",
-                noMvno = "BANDSPORTS",
+                noMvno = "BANDSPORTS CELULAR",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
             Brand.CONECTA -> BrandInfo(
@@ -60,12 +62,13 @@ data class BrandInfo(
                 termsAdesaoURL = "https://megasurfcelular.com.br/termo-de-adesao/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://megasurfcelular.com.br/politica-de-privacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=megasurfapp",
+                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=megasurfapp&params=mtq5otc1ntq3ntu%3D",
                 whatsApp = "5511933003030",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.conecta",
                 coMvno = "98",
                 mvnoName = "ConectaChip",
-                noMvno = "CONECTA",
+                noMvno = "BOTICARIO",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
             Brand.MEGA -> BrandInfo(
@@ -75,12 +78,13 @@ data class BrandInfo(
                 termsAdesaoURL = "https://megasurfcelular.com.br/termo-de-adesao/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://megasurfcelular.com.br/politica-de-privacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=megasurfapp",
+                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=megasurfapp&params=mtq5otc1ntq3ntu%3D",
                 whatsApp = "5511933003030",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.mega",
                 coMvno = "56",
                 mvnoName = "Mega Surf Celular",
-                noMvno = "MEGA",
+                noMvno = "MEGA MAIS",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
             Brand.FLUXO -> BrandInfo(
@@ -94,7 +98,8 @@ data class BrandInfo(
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.fluxo",
                 coMvno = "1098",
                 mvnoName = "Fluxo On",
-                noMvno = "FLUXO",
+                noMvno = "FLUXO ON",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
             Brand.IFOOD -> BrandInfo(
@@ -109,6 +114,8 @@ data class BrandInfo(
                 coMvno = "1049",
                 mvnoName = "iFood Chip",
                 noMvno = "IFOOD",
+                scheduleEligible = true,
+                recurrenceEligible = true,
             )
             Brand.MATIZCONECTA -> BrandInfo(
                 carouselText1 = "Aproveite os melhores planos com internet e ligações ilimitadas",
@@ -122,6 +129,7 @@ data class BrandInfo(
                 coMvno = "1126",
                 mvnoName = "Bcs Prefeitura Maringa",
                 noMvno = "BCS PREFEITURA DE MARINGA",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
             Brand.PAFER -> BrandInfo(
@@ -136,6 +144,8 @@ data class BrandInfo(
                 coMvno = "1155",
                 mvnoName = "Pafer celular",
                 noMvno = "PAFER",
+                scheduleEligible = true,
+                recurrenceEligible = true,
             )
             Brand.PAGUEMENOS -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
@@ -149,7 +159,8 @@ data class BrandInfo(
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.paguemenos",
                 coMvno = "405",
                 mvnoName = "PagueMenos Celular",
-                noMvno = "PAGUEMENOS",
+                noMvno = "PAGUE MENOS CELULAR",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
             Brand.CARREFOURCHIP -> BrandInfo(
@@ -165,6 +176,7 @@ data class BrandInfo(
                 coMvno = "69",
                 mvnoName = "Carrefour Chip",
                 noMvno = "CARREFOUR",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
             Brand.CORREIOSCELULAR -> BrandInfo(
@@ -174,12 +186,13 @@ data class BrandInfo(
                 termsAdesaoURL = "https://www.correioscelular.com.br/termos-de-adesao1/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://www.correioscelular.com.br/politica-de-privacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surftelecomappv2",
+                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surftelecomappv2&params=null",
                 whatsApp = "5511980002020",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.correioscelular",
                 coMvno = "1",
                 mvnoName = "Correios celular",
                 noMvno = "CORREIOS",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
             Brand.UBER -> BrandInfo(
@@ -190,11 +203,12 @@ data class BrandInfo(
                 termsOfertaURL = "https://uberchip.com.br/regulamento-oferta/",
                 termsPrivacidadeURL = "https://uberchip.com.br/politica-de-privacidade/",
                 chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surfuberweb",
-                whatsApp = "5521920001981",
+                whatsApp = "5511920918719",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.uber",
                 coMvno = "48",
                 mvnoName = "Uber Chip",
-                noMvno = "UBER",
+                noMvno = "UBER CHIP",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
             Brand.DEFAULT -> BrandInfo(
@@ -209,6 +223,7 @@ data class BrandInfo(
                 coMvno = "000",
                 mvnoName = "Surf",
                 noMvno = "SURF",
+                scheduleEligible = true,
                 recurrenceEligible = true,
             )
         }

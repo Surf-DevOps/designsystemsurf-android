@@ -9,7 +9,7 @@ class CorreiosCelularTheme : DefaultTheme() {
     override fun buildColors(): ColorTokens = ColorTokens(
         primary = ColorValue.fromHex("#00416B", "#FFFFFF"),
         secondary = ColorValue.fromHex("#FFD400", "#FFFFFF"),
-        primaryButton = ColorValue.fromHex("#FFD400", "#FFFFFF"),
+        primaryButton = ColorValue.fromHex("#00416B", "#FFFFFF"),
         buttonText = ColorValue.fromHex("#FFD400", "#FFFFFF"),
         surface = ColorValue.fromHex("#FFFFFF", "#1C1C1E"),
         background = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),

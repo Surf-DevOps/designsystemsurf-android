@@ -7,9 +7,9 @@ import com.surf.surfhubds.tokens.ColorValue
 
 class PagueMenosTheme : DefaultTheme() {
     override fun buildColors(): ColorTokens = ColorTokens(
-        primary = ColorValue.fromHex("#E30613", "#FF4B55"),
+        primary = ColorValue.fromHex("#0054A6", "#FF4B55"),
         secondary = ColorValue.fromHex("#FFD200", "#FFD95A"),
-        primaryButton = ColorValue.fromHex("#E30613", "#FF4B55"),
+        primaryButton = ColorValue.fromHex("#0054A6", "#FF4B55"),
         buttonText = ColorValue.fromHex("#FFFFFF", "#000000"),
         surface = ColorValue.fromHex("#FFFFFF", "#1C1C1E"),
         background = ColorValue.fromHex("#FFFFFF", "#000000"),

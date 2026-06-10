@@ -310,7 +310,7 @@ class DSSScheduleRechargeSuccessView @JvmOverloads constructor(
         when {
             systemPhone -> {
                 icon.setImageResource(android.R.drawable.sym_action_call)
-                icon.setColorFilter(SYSTEM_BLUE, PorterDuff.Mode.SRC_IN)
+                icon.setColorFilter(0xFF007AFF.toInt(), PorterDuff.Mode.SRC_IN)
                 resolved = true
             }
             imageName != null && imageName.startsWith("data:image") -> {

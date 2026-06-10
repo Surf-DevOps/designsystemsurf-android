@@ -121,8 +121,18 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
 
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(24f.dpToPx(ctx), 28f.dpToPx(ctx), 24f.dpToPx(ctx), 20f.dpToPx(ctx))
+            setPadding(24f.dpToPx(ctx), 12f.dpToPx(ctx), 24f.dpToPx(ctx), 20f.dpToPx(ctx))
         }
+
+        // Handle (40x5, cantos 2.5, systemGray4) — topo 12
+        val handle = View(ctx).apply {
+            background = DrawableFactory.rounded(
+                context = ctx, backgroundColor = DSSColors.divider(), cornerRadiusDp = 2.5f,
+            )
+        }
+        root.addView(handle, LinearLayout.LayoutParams(
+            40f.dpToPx(ctx), 5f.dpToPx(ctx),
+        ).apply { gravity = Gravity.CENTER_HORIZONTAL })
 
         // Título "Cartão da programada"
         val titleLabel = TextView(ctx).apply {
@@ -133,7 +143,7 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
         }
         root.addView(titleLabel, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-        ))
+        ).apply { topMargin = 28f.dpToPx(ctx) })
 
         // Lista de cartões
         val rv = RecyclerView(ctx).apply {
@@ -719,8 +729,18 @@ class DSSScheduledCardSuccessBottomSheet : BottomSheetDialogFragment() {
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
-            setPadding(24f.dpToPx(ctx), 40f.dpToPx(ctx), 24f.dpToPx(ctx), 40f.dpToPx(ctx))
+            setPadding(24f.dpToPx(ctx), 12f.dpToPx(ctx), 24f.dpToPx(ctx), 40f.dpToPx(ctx))
         }
+
+        // Handle (40x5, cantos 2.5, systemGray4) — topo 12
+        val handle = View(ctx).apply {
+            background = DrawableFactory.rounded(
+                context = ctx, backgroundColor = DSSColors.divider(), cornerRadiusDp = 2.5f,
+            )
+        }
+        root.addView(handle, LinearLayout.LayoutParams(
+            40f.dpToPx(ctx), 5f.dpToPx(ctx),
+        ).apply { gravity = Gravity.CENTER_HORIZONTAL })
 
         val image = ImageView(ctx).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
@@ -732,7 +752,7 @@ class DSSScheduledCardSuccessBottomSheet : BottomSheetDialogFragment() {
         }
         root.addView(image, LinearLayout.LayoutParams(
             180f.dpToPx(ctx), 130f.dpToPx(ctx),
-        ))
+        ).apply { topMargin = 40f.dpToPx(ctx) })
 
         val title = TextView(ctx).apply {
             text = "Cartão da programada alterado com sucesso!"

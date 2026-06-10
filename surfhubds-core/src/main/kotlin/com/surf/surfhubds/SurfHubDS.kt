@@ -4,6 +4,7 @@ import android.content.Context
 import com.surf.surfhubds.brand.Brand
 import com.surf.surfhubds.brand.BrandConfig
 import com.surf.surfhubds.brand.BrandResolver
+import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DefaultTheme
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeManager
@@ -52,8 +53,26 @@ object SurfHubDS {
         val resolved = BrandResolver.current(context)
         brand = resolved
         config = BrandConfig.load(context)
+        registerFonts()
         ThemeManager.setTheme(themeFor(resolved))
         if (resolved == Brand.FLUXO) ThemeManager.setColorScheme(ColorScheme.BLACK)
+    }
+
+    /**
+     * Registra a família de fontes do DS (espelha o `DSSFont` do iOS). Os nomes dos
+     * recursos são genéricos (`dss_*`) para que o TTF embarcado possa ser trocado sem
+     * mexer nas referências. Hoje aponta para Roboto, embarcado em `:surfhubds-core/res/font/`.
+     */
+    private fun registerFonts() {
+        DSSFont.setFontFamily(
+            DSSFont.FontFamily.Custom(
+                light = R.font.dss_light,
+                regular = R.font.dss_regular,
+                medium = R.font.dss_medium,
+                bold = R.font.dss_bold,
+                black = R.font.dss_bold,
+            )
+        )
     }
 
     /**

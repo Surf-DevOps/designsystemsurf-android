@@ -263,12 +263,18 @@ class DSSPaymentSelectionView @JvmOverloads constructor(
             card.layoutParams = RecyclerView.LayoutParams(
                 RecyclerView.LayoutParams.MATCH_PARENT,
                 RecyclerView.LayoutParams.WRAP_CONTENT,
-            ).apply { topMargin = 12f.dpToPx(parent.context) }
+            )
             return VH(card)
         }
 
         override fun onBindViewHolder(holder: VH, position: Int) {
             val card = items[position]
+            // iOS: minimumLineSpacing = 12 entre células; a primeira não tem espaçamento
+            // no topo (sectionInset.top = 0). Aplica 12dp apenas a partir do 2º item.
+            (holder.card.layoutParams as? RecyclerView.LayoutParams)?.let { lp ->
+                lp.topMargin = if (position == 0) 0 else 12f.dpToPx(holder.card.context)
+                holder.card.layoutParams = lp
+            }
             val title = "Final ${card.lastFour}"
             holder.card.configure(card.brandIcon, title)
             val selected = (selectedMethod as? DSSPaymentMethod.CreditCard)?.index == position

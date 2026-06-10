@@ -23,6 +23,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -309,8 +310,9 @@ class DSSScheduleRechargeSuccessView @JvmOverloads constructor(
         var resolved = false
         when {
             systemPhone -> {
+                // iOS: SF Symbol "phone.fill" tingido com .systemBlue (#007AFF).
                 icon.setImageResource(android.R.drawable.sym_action_call)
-                icon.setColorFilter(0xFF007AFF.toInt(), PorterDuff.Mode.SRC_IN)
+                icon.setColorFilter(SYSTEM_BLUE, PorterDuff.Mode.SRC_IN)
                 resolved = true
             }
             imageName != null && imageName.startsWith("data:image") -> {
@@ -333,7 +335,8 @@ class DSSScheduleRechargeSuccessView @JvmOverloads constructor(
                 resolved = true
             }
             imageName != null -> {
-                val d = resolver?.invoke(imageName) ?: loadBrandDrawable(imageName)
+                // iOS: ImageLoader.image(named: imageName, brand: BrandResolver.current()).
+                val d = resolver?.invoke(imageName) ?: ImageLoader.image(ctx, imageName)
                 if (d != null) {
                     icon.setImageDrawable(d)
                     resolved = true
@@ -368,11 +371,6 @@ class DSSScheduleRechargeSuccessView @JvmOverloads constructor(
         val brandId = resources.getIdentifier("xmark_circle_fill", "drawable", context.packageName)
         if (brandId != 0) return AppCompatResources.getDrawable(context, brandId)
         return AppCompatResources.getDrawable(context, android.R.drawable.ic_menu_close_clear_cancel)
-    }
-
-    private fun loadBrandDrawable(name: String): Drawable? {
-        val resId = resources.getIdentifier(name.lowercase(), "drawable", context.packageName)
-        return if (resId != 0) AppCompatResources.getDrawable(context, resId) else null
     }
 
     private companion object {

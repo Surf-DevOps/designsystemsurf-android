@@ -1,6 +1,5 @@
 package com.surf.surfhubds.components
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -15,7 +14,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +22,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -87,7 +86,8 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
 
     /**
      * Resolver de bandeira do cartão (ilVisa / ilElo / ilMaster). Recebe o nome lower-case
-     * do recurso e devolve o Drawable da brand. Se nulo, faz lookup por `getIdentifier`.
+     * do recurso e devolve o Drawable da brand. Se nulo, faz lookup via [ImageLoader]
+     * (espelha o `ImageLoader.image(named:brand:)` do iOS).
      */
     var cardImageResolver: ((String) -> Drawable?)? = null
 
@@ -338,14 +338,43 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
         return formatBrazilianPhone(raw)
     }
 
+    /**
+     * Espelha o pipeline do iOS `String.normalizeBrazilianPhone(_:)?.formatPhoneNumber()`.
+     * Primeiro normaliza para E.164 BR (55 + DDD + número, 12 ou 13 dígitos; nil caso
+     * contrário) e só então formata `(DD) 9XXXX-XXXX` quando há exatamente 11 dígitos
+     * após o "55"; nos demais casos devolve a string normalizada inalterada (como o iOS).
+     */
     private fun formatBrazilianPhone(raw: String): String? {
-        var digits = raw.filter { it.isDigit() }
-        if (digits.startsWith("55") && digits.length > 11) digits = digits.substring(2)
-        return when (digits.length) {
-            11 -> "(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-${digits.substring(7)}"
-            10 -> "(${digits.substring(0, 2)}) ${digits.substring(2, 6)}-${digits.substring(6)}"
-            else -> if (digits.isEmpty()) null else digits
-        }
+        val normalized = normalizeBrazilianPhone(raw) ?: return null
+        return formatPhoneNumber(normalized)
+    }
+
+    /** Equivalente ao `String.normalizeBrazilianPhone(_:)` do iOS. */
+    private fun normalizeBrazilianPhone(raw: String): String? {
+        val digits = raw.trim().filter { it.isDigit() }
+        if (digits.isEmpty()) return null
+
+        var cleaned = digits
+        // Remove prefixo internacional com zeros (ex.: 0055..., 00055...) e zeros à esquerda.
+        if (cleaned.startsWith("00")) cleaned = cleaned.dropWhile { it == '0' }
+        while (cleaned.startsWith("0")) cleaned = cleaned.substring(1)
+
+        // Garante prefixo do Brasil.
+        if (!cleaned.startsWith("55")) cleaned = "55$cleaned"
+
+        // E.164 BR: 55 + DDD(2) + número(8 ou 9) => 12 ou 13 dígitos.
+        return if (cleaned.length == 12 || cleaned.length == 13) cleaned else null
+    }
+
+    /** Equivalente ao `String.formatPhoneNumber()` do iOS. */
+    private fun formatPhoneNumber(value: String): String {
+        if (!value.startsWith("55")) return value
+        val trimmed = value.substring(2)
+        if (trimmed.length != 11) return value
+        val ddd = trimmed.substring(0, 2)
+        val prefix = trimmed.substring(2, 7)
+        val suffix = trimmed.substring(7)
+        return "($ddd) $prefix-$suffix"
     }
 
     private fun resolveCardImage(card: CardModel): Drawable? {
@@ -356,9 +385,9 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
             else -> "ilmaster"
         }
         cardImageResolver?.invoke(name)?.let { return it }
+        // iOS: ImageLoader.image(named:brand:) com BrandResolver.current().
         val ctx = context ?: return null
-        val resId = ctx.resources.getIdentifier(name, "drawable", ctx.packageName)
-        return if (resId != 0) AppCompatResources.getDrawable(ctx, resId) else null
+        return ImageLoader.image(ctx, name)
     }
 
     // MARK: - Actions
@@ -719,7 +748,6 @@ class DSSScheduledCardSuccessBottomSheet : BottomSheetDialogFragment() {
 
     private var didFinish = false
 
-    @SuppressLint("DiscouragedApi")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
@@ -744,10 +772,8 @@ class DSSScheduledCardSuccessBottomSheet : BottomSheetDialogFragment() {
 
         val image = ImageView(ctx).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
-            val drawable = illustration ?: run {
-                val resId = ctx.resources.getIdentifier("success_image", "drawable", ctx.packageName)
-                if (resId != 0) AppCompatResources.getDrawable(ctx, resId) else null
-            }
+            // iOS: ImageLoader.image(named: "success_image", brand: BrandResolver.current()).
+            val drawable = illustration ?: ImageLoader.image(ctx, "success_image")
             setImageDrawable(drawable)
         }
         root.addView(image, LinearLayout.LayoutParams(

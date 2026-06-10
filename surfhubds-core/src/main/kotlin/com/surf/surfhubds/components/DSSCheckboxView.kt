@@ -50,7 +50,8 @@ class DSSCheckboxView @JvmOverloads constructor(
         row.addView(checkbox, checkboxLp)
 
         titleLabel.textSize = 14f
-        titleLabel.typeface = DSSFont.regular(context, 14f).typeface
+        titleLabel.typeface = DSSFont.light(context, 14f).typeface
+        titleLabel.maxLines = Int.MAX_VALUE
         row.addView(titleLabel, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -65,6 +66,21 @@ class DSSCheckboxView @JvmOverloads constructor(
 
         refresh()
         setupThemeObserver()
+    }
+
+    /**
+     * Construtor espelhando o `init(initialState:titleCheckbox:)` do iOS.
+     * Aplica o estado inicial e o título após a inicialização padrão da View.
+     * Sem defaults nos parâmetros para evitar ambiguidade com o construtor
+     * `@JvmOverloads` `(Context)` da View.
+     */
+    constructor(
+        context: Context,
+        initialState: State,
+        titleCheckbox: String,
+    ) : this(context, null, 0) {
+        titleLabel.text = titleCheckbox
+        state = initialState
     }
 
     fun setTitle(title: CharSequence) {

@@ -18,7 +18,6 @@ import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.DrawableFactory
-import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSIconTitleButton` do iOS — botão com ícone + título, seleção toggleable,
@@ -49,7 +48,6 @@ class DSSIconTitleButton @JvmOverloads constructor(
     init {
         isClickable = true
         isFocusable = true
-        minimumHeight = 50f.dpToPx(context)
 
         stack.orientation = LinearLayout.HORIZONTAL
         stack.gravity = Gravity.CENTER_VERTICAL
@@ -107,6 +105,9 @@ class DSSIconTitleButton @JvmOverloads constructor(
         normalBorderColor = borderColor
         updateSelectionAppearance()
     }
+
+    /** Espelha `currentTitle()` do iOS — título atual (vazio se nulo). */
+    fun currentTitle(): String = titleView.text?.toString() ?: ""
 
     override fun applyTheme(theme: Theme) { refresh() }
 

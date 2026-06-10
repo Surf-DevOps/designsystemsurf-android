@@ -19,10 +19,11 @@ import com.surf.surfhubds.util.dpToPx
  * Port do `DSSRechargeBottomSheet` do iOS — bottom sheet de confirmação de recarga
  * com seleção de método de pagamento (cartão/PIX), agendamento e bônus.
  *
- * No iOS este componente depende de `Card`, `DSSResumeCard` e `DSSPaymentSelectionView`
- * que ainda não foram portados. Aqui exponho a mesma superfície pública (delegate,
- * `configure`, etc) usando tipos opacos `Any?` para os cartões — as bordas se conectam
- * ao app via callback.
+ * Usa os componentes já portados [DSSResumeCard] e [DSSPaymentSelectionView] para
+ * espelhar fielmente a estrutura e a lógica do iOS. A superfície pública (delegate,
+ * `configure`, `setCreditCards`, etc) mantém `Any?`/`List<Any>` para os cartões a fim
+ * de não quebrar a API existente; internamente apenas itens [DSSPaymentCard] são
+ * encaminhados ao [DSSPaymentSelectionView].
  */
 class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
 
@@ -52,22 +53,17 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
     var delegate: Delegate? = null
 
     private var configuration: Configuration? = null
-    private var creditCards: List<Any> = emptyList()
+    private var creditCards: List<DSSPaymentCard> = emptyList()
     private var showPix = false
     private var showOnlyPix = false
     private var showOnlyCards = false
     private var hideSchedule = false
     private var isScheduled = true
-    private var selectedMethod: PaymentMethod? = null
-    private var selectedCardIndex: Int? = null
 
     private var didFireDismiss = false
 
-    private lateinit var resumeTitle: TextView
-    private lateinit var resumePhone: TextView
-    private lateinit var resumeOffer: TextView
-    private lateinit var resumePrice: TextView
-    private lateinit var paymentSelectionContainer: LinearLayout
+    private lateinit var resumeCard: DSSResumeCard
+    private lateinit var paymentSelectionView: DSSPaymentSelectionView
     private lateinit var scheduleContainer: LinearLayout
     private lateinit var scheduleSwitch: SwitchCompat
     private lateinit var scheduleTitleLabel: TextView
@@ -78,31 +74,26 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
     ): View {
         val ctx = requireContext()
         val scroll = ScrollView(ctx).apply {
-            setBackgroundColor(DSSColors.background())
+            setBackgroundColor(DSSColors.backgroundSecondary())
         }
 
+        // iOS: contentStackView spacing = 20, alignment = .center, padding 16/20.
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(16f.dpToPx(ctx), 20f.dpToPx(ctx), 16f.dpToPx(ctx), 20f.dpToPx(ctx))
         }
 
-        // Resume card section
-        resumeTitle = TextView(ctx).apply {
-            typeface = DSSFont.light(ctx, 22f).typeface
-            textSize = 22f
-            setTextColor(DSSColors.textPrimary())
-            text = "Confirme sua recarga"
+        // Resume card section — usa o DSSResumeCard portado (sem borda, igual ao iOS).
+        resumeCard = DSSResumeCard(ctx).apply {
+            borderWidthDp = 0f
+            setCategoryLabels(number = "Número", offer = "Oferta", price = "Valor")
+            // iOS: setTitle(... systemFont(22, .light), color .red); borderWidth = 0.
+            setTitle("Confirme sua recarga")
+            titleFont = DSSFont.light(ctx, 22f).typeface
         }
-        root.addView(resumeTitle, LinearLayout.LayoutParams(
+        root.addView(resumeCard, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ))
-
-        resumePhone = makeResumeLine(ctx, "Número")
-        resumeOffer = makeResumeLine(ctx, "Oferta")
-        resumePrice = makeResumeLine(ctx, "Valor")
-        root.addView(resumePhone, resumeLineLp(ctx))
-        root.addView(resumeOffer, resumeLineLp(ctx))
-        root.addView(resumePrice, resumeLineLp(ctx))
 
         // Payment section
         val paymentSectionLabel = TextView(ctx).apply {
@@ -115,15 +106,53 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = 20f.dpToPx(ctx) })
 
-        paymentSelectionContainer = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
+        paymentSelectionView = DSSPaymentSelectionView(ctx).apply {
+            delegate = object : DSSPaymentSelectionViewDelegate {
+                override fun didSelectPix(view: DSSPaymentSelectionView, card: DSSPaymentMethodCard) {
+                    updateConfirmButtonState()
+                    updateScheduleVisibility()
+                }
+
+                override fun didSelectNewCard(view: DSSPaymentSelectionView, card: DSSPaymentMethodCard) {
+                    this@DSSRechargeBottomSheet.delegate?.rechargeBottomSheetDidTapAddCard(this@DSSRechargeBottomSheet)
+                }
+
+                override fun didSelectCreditCard(
+                    view: DSSPaymentSelectionView,
+                    card: DSSPaymentMethodCard,
+                    cardData: DSSPaymentCard,
+                    index: Int,
+                ) {
+                    updateConfirmButtonState()
+                    updateScheduleVisibility()
+                }
+
+                override fun didDeselectPix(view: DSSPaymentSelectionView, card: DSSPaymentMethodCard) {
+                    updateConfirmButtonState()
+                    updateScheduleVisibility()
+                }
+
+                override fun didDeselectCreditCard(
+                    view: DSSPaymentSelectionView,
+                    card: DSSPaymentMethodCard,
+                    cardData: DSSPaymentCard,
+                    index: Int,
+                ) {
+                    updateConfirmButtonState()
+                    updateScheduleVisibility()
+                }
+            }
         }
-        root.addView(paymentSelectionContainer, LinearLayout.LayoutParams(
+        // iOS: paymentContainer.heightAnchor.constraint(lessThanOrEqualToConstant: 300)
+        root.addView(paymentSelectionView, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = 12f.dpToPx(ctx) })
 
-        // Schedule section
+        // Schedule section — switch + título na mesma linha, descrição abaixo.
         scheduleContainer = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+        val scheduleRow = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
@@ -135,21 +164,22 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
             }
         }
         scheduleTitleLabel = TextView(ctx).apply {
+            // iOS default: "recharge_schedule.title_no_bonus"
             text = "Programe suas recargas e ganhe bônus!"
             typeface = DSSFont.medium(ctx, 14f).typeface
             textSize = 14f
+            maxLines = 2
             setTextColor(DSSColors.textPrimary())
         }
-        scheduleContainer.addView(scheduleSwitch, LinearLayout.LayoutParams(
+        scheduleRow.addView(scheduleSwitch, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ))
-        scheduleContainer.addView(scheduleTitleLabel, LinearLayout.LayoutParams(
+        scheduleRow.addView(scheduleTitleLabel, LinearLayout.LayoutParams(
             0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f,
         ).apply { leftMargin = 12f.dpToPx(ctx) })
-
-        root.addView(scheduleContainer, LinearLayout.LayoutParams(
+        scheduleContainer.addView(scheduleRow, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-        ).apply { topMargin = 20f.dpToPx(ctx) })
+        ))
 
         val scheduleDescriptionLabel = TextView(ctx).apply {
             text = "suas recargas são feitas automaticamente no cartão de crédito a cada 30 dias."
@@ -157,10 +187,15 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
             textSize = 12f
             setTextColor(DSSColors.textSecondary())
         }
-        root.addView(scheduleDescriptionLabel, LinearLayout.LayoutParams(
+        scheduleContainer.addView(scheduleDescriptionLabel, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = 8f.dpToPx(ctx) })
 
+        root.addView(scheduleContainer, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
+        ).apply { topMargin = 20f.dpToPx(ctx) })
+
+        // iOS: confirmButton title = "recharge_schedule.continue", font regular(16), height 48.
         confirmButton = DSSPrincipalButton(ctx).apply {
             text = "Continuar"
             onTap = { confirmTapped() }
@@ -173,99 +208,91 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
         ))
 
+        // iOS present(): resetSelection -> configure -> setCreditCards -> setPixEnabled
+        // -> setShowOnlyCards -> updatePaymentMethodsVisibility -> hideSchedule.
+        resetSelection()
         applyConfiguration()
-        rebuildPaymentOptions()
+        applyCreditCards()
+        applyPixEnabled()
+        applyShowOnlyCards()
+        updatePaymentMethodsVisibility()
+        if (hideSchedule) scheduleContainer.visibility = View.GONE
+
         updateConfirmButtonState()
         updateScheduleVisibility()
         return scroll
     }
 
-    private fun makeResumeLine(ctx: android.content.Context, label: String): TextView = TextView(ctx).apply {
-        typeface = DSSFont.regular(ctx, 14f).typeface
-        textSize = 14f
-        setTextColor(DSSColors.textPrimary())
-        text = "$label: "
-    }
-
-    private fun resumeLineLp(ctx: android.content.Context) = LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-    ).apply { topMargin = 8f.dpToPx(ctx) }
-
     private fun applyConfiguration() {
         val cfg = configuration ?: return
-        resumeTitle.text = cfg.title
-        resumePhone.text = "Número: ${cfg.phoneNumber}"
-        resumeOffer.text = "Oferta: ${cfg.offerName}"
-        val reais = cfg.priceInCents / 100.0
-        resumePrice.text = "Valor: R$ %.2f".format(reais)
+        resumeCard.setTitle(cfg.title)
+        resumeCard.configure(
+            number = cfg.phoneNumber,
+            offer = cfg.offerName,
+            priceInCents = cfg.priceInCents,
+        )
 
-        val bonus = cfg.scheduleBonus ?: "7GB"
-        scheduleTitleLabel.text = "Programe suas recargas e ganhe até $bonus bônus!"
-        if (!cfg.showScheduleOption || hideSchedule) {
-            scheduleContainer.visibility = View.GONE
+        // iOS: scheduleSwitchContainer.isHidden = !showScheduleOption (em configure).
+        scheduleContainer.visibility =
+            if (cfg.showScheduleOption) View.VISIBLE else View.GONE
+
+        // iOS: bonus vazio ou "0GB" -> title_no_bonus; senão title_with_bonus(bonus).
+        val bonus = cfg.scheduleBonus ?: ""
+        scheduleTitleLabel.text = if (bonus.isEmpty() || bonus == "0GB") {
+            "Programe suas recargas e ganhe bônus!"
+        } else {
+            "Programe suas recargas e ganhe até $bonus de bônus!"
         }
     }
 
-    private fun rebuildPaymentOptions() {
-        paymentSelectionContainer.removeAllViews()
-        val ctx = paymentSelectionContainer.context
-
-        if (!showOnlyCards && showPix) {
-            paymentSelectionContainer.addView(makePaymentRow(ctx, "PIX", PaymentMethod.PIX, cardIndex = null))
+    /** Encaminha os cartões filtrados ao [DSSPaymentSelectionView] e aplica pré-seleções. */
+    private fun applyCreditCards() {
+        paymentSelectionView.setCreditCards(creditCards)
+        // iOS: cards.isEmpty && showPix -> select .pix
+        if (creditCards.isEmpty() && showPix) {
+            paymentSelectionView.setSelectedPaymentMethod(DSSPaymentMethod.Pix)
         }
-        creditCards.forEachIndexed { index, _ ->
-            paymentSelectionContainer.addView(
-                makePaymentRow(ctx, "Cartão de crédito #${index + 1}", PaymentMethod.CREDIT_CARD, cardIndex = index),
-            )
-        }
-        if (!showOnlyPix) {
-            paymentSelectionContainer.addView(makePaymentRow(ctx, "+ Adicionar novo cartão", PaymentMethod.NEW_CARD, cardIndex = null))
-        }
+        updateConfirmButtonState()
+        updateScheduleVisibility()
     }
 
-    private fun makePaymentRow(
-        ctx: android.content.Context, title: String, method: PaymentMethod, cardIndex: Int?,
-    ): View {
-        val tv = TextView(ctx).apply {
-            text = title
-            typeface = DSSFont.regular(ctx, 16f).typeface
-            textSize = 16f
-            setTextColor(DSSColors.textPrimary())
-            setPadding(12f.dpToPx(ctx), 16f.dpToPx(ctx), 12f.dpToPx(ctx), 16f.dpToPx(ctx))
-            isClickable = true
-            setOnClickListener {
-                when (method) {
-                    PaymentMethod.NEW_CARD -> delegate?.rechargeBottomSheetDidTapAddCard(this@DSSRechargeBottomSheet)
-                    PaymentMethod.PIX -> {
-                        selectedMethod = PaymentMethod.PIX
-                        selectedCardIndex = null
-                    }
-                    PaymentMethod.CREDIT_CARD -> {
-                        selectedMethod = PaymentMethod.CREDIT_CARD
-                        selectedCardIndex = cardIndex
-                    }
-                }
-                updateConfirmButtonState()
-                updateScheduleVisibility()
-            }
+    private fun applyPixEnabled() {
+        if (showOnlyPix) {
+            paymentSelectionView.setSelectedPaymentMethod(DSSPaymentMethod.Pix)
+            updatePaymentMethodsVisibility()
         }
-        return tv
+        // iOS: creditCards.isEmpty && enabled -> select .pix
+        if (creditCards.isEmpty() && showPix) {
+            paymentSelectionView.setSelectedPaymentMethod(DSSPaymentMethod.Pix)
+        }
+        updateConfirmButtonState()
+        updateScheduleVisibility()
+    }
+
+    private fun applyShowOnlyCards() {
+        updatePaymentMethodsVisibility()
+        // iOS: onlyCards && !creditCards.isEmpty -> select .creditCard(index: 0)
+        if (showOnlyCards && creditCards.isNotEmpty()) {
+            paymentSelectionView.setSelectedPaymentMethod(DSSPaymentMethod.CreditCard(0))
+        }
+        updateConfirmButtonState()
+        updateScheduleVisibility()
     }
 
     private fun updateConfirmButtonState() {
-        val hasSelection = selectedMethod != null && selectedMethod != PaymentMethod.NEW_CARD
-        if (::confirmButton.isInitialized) {
-            confirmButton.isEnabled = hasSelection
-            confirmButton.alpha = if (hasSelection) 1.0f else 0.5f
-        }
+        if (!::confirmButton.isInitialized || !::paymentSelectionView.isInitialized) return
+        // iOS: getSelectedPaymentMethod() != nil
+        val hasSelection = paymentSelectionView.getSelectedPaymentMethod() != null
+        confirmButton.isEnabled = hasSelection
+        confirmButton.alpha = if (hasSelection) 1.0f else 0.5f
     }
 
     private fun updateScheduleVisibility() {
-        val showScheduleOption = configuration?.showScheduleOption == true && !hideSchedule
-        val shouldShow = selectedMethod != PaymentMethod.PIX && showScheduleOption
-        if (::scheduleContainer.isInitialized) {
-            scheduleContainer.visibility = if (shouldShow) View.VISIBLE else View.GONE
-        }
+        if (!::scheduleContainer.isInitialized || !::paymentSelectionView.isInitialized) return
+        val isPixSelected = paymentSelectionView.getSelectedPaymentMethod() == DSSPaymentMethod.Pix
+        // iOS: shouldShow = !isPixSelected && configuration?.showScheduleOption == true
+        val shouldShow = !isPixSelected && configuration?.showScheduleOption == true && !hideSchedule
+        scheduleContainer.visibility = if (shouldShow) View.VISIBLE else View.GONE
         if (!shouldShow) {
             scheduleSwitch.isChecked = true
             isScheduled = true
@@ -273,13 +300,17 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun confirmTapped() {
-        when (selectedMethod) {
-            PaymentMethod.PIX -> delegate?.rechargeBottomSheetDidConfirmWithPix(this, isScheduled)
-            PaymentMethod.CREDIT_CARD -> {
-                val card = selectedCardIndex?.let { creditCards.getOrNull(it) }
-                delegate?.rechargeBottomSheetDidConfirmWithCard(this, card, isScheduled)
+        val isScheduled = this.isScheduled
+        when (val selected = paymentSelectionView.getSelectedPaymentMethod()) {
+            DSSPaymentMethod.Pix ->
+                delegate?.rechargeBottomSheetDidConfirmWithPix(this, isScheduled)
+            is DSSPaymentMethod.CreditCard -> {
+                paymentSelectionView.getSelectedCreditCardData()?.let { cardData ->
+                    delegate?.rechargeBottomSheetDidConfirmWithCard(this, cardData, isScheduled)
+                }
             }
-            else -> return
+            // .newCard / null -> não confirma (iOS: break / guard).
+            else -> Unit
         }
         dismiss()
     }
@@ -294,59 +325,70 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
 
     // MARK: - Public API
 
+    /** Configura o BottomSheet com os dados da recarga. */
     fun configure(configuration: Configuration) {
         this.configuration = configuration
-        if (::resumeTitle.isInitialized) applyConfiguration()
+        if (::resumeCard.isInitialized) applyConfiguration()
     }
 
+    /**
+     * Define os cartões de crédito disponíveis. Mantém a assinatura `List<Any>` da API
+     * existente; somente itens [DSSPaymentCard] são encaminhados ao seletor.
+     */
     fun setCreditCards(cards: List<Any>) {
-        this.creditCards = cards
-        if (::paymentSelectionContainer.isInitialized) {
-            rebuildPaymentOptions()
-            updateConfirmButtonState()
-            updateScheduleVisibility()
-        }
+        this.creditCards = cards.filterIsInstance<DSSPaymentCard>()
+        if (::paymentSelectionView.isInitialized) applyCreditCards()
     }
 
+    /** Habilita/desabilita a opção de PIX. */
     fun setPixEnabled(enabled: Boolean, onlyPix: Boolean = false) {
         this.showPix = enabled
         this.showOnlyPix = onlyPix
-        if (onlyPix) {
-            selectedMethod = PaymentMethod.PIX
-        }
-        if (::paymentSelectionContainer.isInitialized) {
-            rebuildPaymentOptions()
-            updateConfirmButtonState()
-            updateScheduleVisibility()
-        }
+        if (::paymentSelectionView.isInitialized) applyPixEnabled()
     }
 
+    /** Define se deve mostrar apenas cartões. */
     fun setShowOnlyCards(onlyCards: Boolean) {
         this.showOnlyCards = onlyCards
-        if (onlyCards && creditCards.isNotEmpty()) {
-            selectedMethod = PaymentMethod.CREDIT_CARD
-            selectedCardIndex = 0
+        if (::paymentSelectionView.isInitialized) applyShowOnlyCards()
+    }
+
+    /**
+     * Atualiza a visibilidade dos métodos de pagamento (PIX / novo cartão) com base
+     * nas flags `showPix`, `showOnlyPix` e `showOnlyCards`. Público no iOS.
+     */
+    fun updatePaymentMethodsVisibility() {
+        if (!::paymentSelectionView.isInitialized) return
+        if (showOnlyCards) {
+            paymentSelectionView.setPixVisibility(false)
+        } else {
+            paymentSelectionView.setPixVisibility(showPix)
         }
-        if (::paymentSelectionContainer.isInitialized) {
-            rebuildPaymentOptions()
-            updateConfirmButtonState()
-            updateScheduleVisibility()
+
+        if (showOnlyPix) {
+            paymentSelectionView.setNewCardVisibility(false)
+        } else {
+            paymentSelectionView.setNewCardVisibility(true)
         }
     }
 
+    /** Define o texto do botão de confirmação. */
     fun setConfirmButtonTitle(title: String) {
         if (::confirmButton.isInitialized) confirmButton.text = title
     }
 
+    /** Define o estado do switch de agendamento. */
     fun setScheduleSwitchOn(isOn: Boolean) {
-        isScheduled = isOn
         if (::scheduleSwitch.isInitialized) scheduleSwitch.isChecked = isOn
+        isScheduled = isOn
     }
 
+    /** Reseta o estado de seleção. */
     fun resetSelection() {
-        selectedMethod = null
-        selectedCardIndex = null
-        updateConfirmButtonState()
+        if (::paymentSelectionView.isInitialized) {
+            paymentSelectionView.setSelectedPaymentMethod(null)
+            updateConfirmButtonState()
+        }
     }
 
     companion object {
@@ -363,7 +405,7 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
             val sheet = DSSRechargeBottomSheet()
             sheet.delegate = delegate
             sheet.configuration = configuration
-            sheet.creditCards = cards
+            sheet.creditCards = cards.filterIsInstance<DSSPaymentCard>()
             sheet.showPix = showPix
             sheet.showOnlyPix = showOnlyPix
             sheet.showOnlyCards = showOnlyCards

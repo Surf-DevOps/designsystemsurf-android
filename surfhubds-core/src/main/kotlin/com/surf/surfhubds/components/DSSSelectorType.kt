@@ -2,6 +2,7 @@ package com.surf.surfhubds.components
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -13,8 +14,8 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
-import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
+import com.surf.surfhubds.util.dpToPxFloat
 
 /**
  * Port do `DSSSelectorType` do iOS — abas com indicador embaixo
@@ -47,8 +48,9 @@ class DSSSelectorType @JvmOverloads constructor(
     private val backgroundLines = mutableListOf<View>()
 
     private val selectedColor get() = DSSColors.primary()
-    private val unselectedColor: Int = Color.DKGRAY
-    private val lineColor: Int = Color.argb(255, 230, 230, 230) // ~ white:0.9
+    // iOS: UIColor.darkGray == white 1/3 == rgb(85,85,85). (Android Color.DKGRAY é 68,68,68.)
+    private val unselectedColor: Int = Color.rgb(85, 85, 85)
+    private val lineColor: Int = Color.argb(255, 230, 230, 230) // iOS: UIColor(white: 0.9, alpha: 1)
     private val indicatorHeightDp: Float = 5f
     private val indicatorWidthDp: Float = 30f
 
@@ -95,11 +97,7 @@ class DSSSelectorType @JvmOverloads constructor(
             }
 
             val indicator = View(context).apply {
-                background = DrawableFactory.rounded(
-                    context = context,
-                    backgroundColor = if (index == selectedIndex) selectedColor else Color.TRANSPARENT,
-                    cornerRadiusDp = 4f,
-                )
+                background = indicatorDrawable(if (index == selectedIndex) selectedColor else Color.TRANSPARENT)
             }
 
             // Stacking: button | background line + indicator overlap at bottom
@@ -144,11 +142,23 @@ class DSSSelectorType @JvmOverloads constructor(
         for ((index, button) in buttons.withIndex()) {
             val isSelected = index == selectedIndex
             button.setTextColor(if (isSelected) selectedColor else unselectedColor)
-            indicatorViews[index].background = DrawableFactory.rounded(
-                context = context,
-                backgroundColor = if (isSelected) selectedColor else Color.TRANSPARENT,
-                cornerRadiusDp = 4f,
-            )
+            indicatorViews[index].background =
+                indicatorDrawable(if (isSelected) selectedColor else Color.TRANSPARENT)
+        }
+    }
+
+    /**
+     * iOS: `cornerRadius = 4` com `maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]`
+     * (apenas cantos SUPERIORES). `DrawableFactory.rounded` arredonda os 4 cantos, então aqui
+     * montamos um [GradientDrawable] arredondando só o topo (top-left + top-right).
+     */
+    private fun indicatorDrawable(backgroundColor: Int): GradientDrawable {
+        val r = 4f.dpToPxFloat(context)
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            setColor(backgroundColor)
+            // ordem: TL, TL, TR, TR, BR, BR, BL, BL (x/y por canto)
+            cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
         }
     }
 

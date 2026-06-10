@@ -1,20 +1,26 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
 import androidx.appcompat.widget.AppCompatButton
 import com.surf.surfhubds.font.DSSFont
-import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSActionCardButton` do iOS — botão "action card" com tamanho fixo,
- * canto arredondado, borda e título alinhado ao bottom-left.
+ * canto arredondado, borda, sombra e título alinhado ao bottom-left.
+ *
+ * Espelha o `applyColors()` do iOS: o card NÃO usa tokens semânticos de brand,
+ * e sim cores fixas que variam apenas por `ColorScheme` (light/dark/black),
+ * exatamente como o original (`.white` / `.secondarySystemBackground` / `.black`).
  */
 class DSSActionCardButton @JvmOverloads constructor(
     context: Context,
@@ -25,6 +31,11 @@ class DSSActionCardButton @JvmOverloads constructor(
     companion object {
         const val DEFAULT_WIDTH_DP: Float = 140f
         const val DEFAULT_HEIGHT_DP: Float = 105f
+    }
+
+    /** `convenience init(title:)` do iOS. */
+    constructor(context: Context, title: CharSequence) : this(context) {
+        cardTitle = title
     }
 
     var cardTitle: CharSequence = ""
@@ -40,12 +51,14 @@ class DSSActionCardButton @JvmOverloads constructor(
         maxLines = 2
         textSize = 15f
         typeface = DSSFont.regular(context, 15f).typeface
-        // padding: top 18, leading 14, bottom 18, trailing 14
+        // contentInsets iOS: top 18, leading 14, bottom 18, trailing 14
         val padH = 14f.dpToPx(context)
         val padV = 18f.dpToPx(context)
         setPadding(padH, padV, padH, padV)
         minWidth = DEFAULT_WIDTH_DP.dpToPx(context)
         minHeight = DEFAULT_HEIGHT_DP.dpToPx(context)
+        // Sombra iOS: black @ 0.08, radius 6, offset (0, 2) -> aproxima com elevation.
+        elevation = 4f.dpToPx(context).toFloat()
         refresh()
         setupThemeObserver()
     }
@@ -53,13 +66,31 @@ class DSSActionCardButton @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
+        val scheme = ThemeManager.colorScheme
+        val isBlack = scheme == ColorScheme.BLACK
+        val isDark = scheme == ColorScheme.DARK || isBlack
+
+        // backgroundColor = isBlack ? .black : (isDark ? .secondarySystemBackground : .white)
+        val bg = when {
+            isBlack -> Color.BLACK
+            isDark -> Color.rgb(28, 28, 30) // secondarySystemBackground (dark)
+            else -> Color.WHITE
+        }
+        // borderColor = isDark ? systemGray4 : UIColor(white: 0.85)
+        val border = if (isDark) {
+            Color.rgb(58, 58, 60) // systemGray4 (dark)
+        } else {
+            Color.rgb(217, 217, 217) // UIColor(white: 0.85)
+        }
+
         background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.surface(),
+            backgroundColor = bg,
             cornerRadiusDp = 12f,
-            strokeColor = DSSColors.borderDefault(),
+            strokeColor = border,
             strokeWidthDp = 1f,
         )
-        setTextColor(DSSColors.textPrimary())
+        // baseForegroundColor = isDark ? .white : .black
+        setTextColor(if (isDark) Color.WHITE else Color.BLACK)
     }
 }

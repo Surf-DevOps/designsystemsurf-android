@@ -26,12 +26,23 @@ class DSSScheduleCardListView @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr), ThemeAware {
 
+    /**
+     * Recorrência ativa de um cartão (espelha `Card.recurrence` do iOS).
+     * O componente só verifica se é não-nulo (cartão "da programada").
+     */
+    data class Recurrence(
+        val planValue: Double = 0.0,
+    )
+
     data class CardModel(
         val id: String,
         val lastFour: String?,
         val flag: String?,
         val isDefault: Boolean,
+        /** Drawable pré-resolvido da bandeira. Fallback quando [cardImageResolver] é nulo. */
         val brandIcon: android.graphics.drawable.Drawable? = null,
+        /** Quando não-nulo, o cartão possui recorrência ativa (cartão "da programada"). */
+        val recurrence: Recurrence? = null,
     )
 
     interface Delegate {
@@ -44,6 +55,17 @@ class DSSScheduleCardListView @JvmOverloads constructor(
     /** Quando true, exibe apenas o cartão default e esconde o botão "Cadastrar novo cartão". */
     var showIsOnlyDefault: Boolean = false
         set(value) { field = value; reloadData() }
+
+    /** Quando true, exibe apenas o(s) cartão(ões) com recorrência ativa (recurrence != null). */
+    var showOnlyRecurrenceCard: Boolean = false
+        set(value) { field = value; reloadData() }
+
+    /**
+     * Resolver da bandeira do cartão a partir do nome do recurso (ilvisa / ilelo / ilmaster),
+     * espelhando o `ImageLoader.image(named:brand:)` do iOS. Quando nulo, usa
+     * [CardModel.brandIcon]; se também nulo, faz lookup via [com.surf.surfhubds.util.ImageLoader].
+     */
+    var cardImageResolver: ((String) -> android.graphics.drawable.Drawable?)? = null
 
     private val stack = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
     private val registerButton = TextView(context).apply {
@@ -85,32 +107,64 @@ class DSSScheduleCardListView @JvmOverloads constructor(
     }
 
     private fun displayedCards(): List<CardModel> {
-        return if (showIsOnlyDefault) cards.filter { it.isDefault } else cards
+        if (showOnlyRecurrenceCard) return cards.filter { it.recurrence != null }
+        if (showIsOnlyDefault) return cards.filter { it.isDefault }
+        return cards
     }
 
     private fun reloadData() {
         stack.removeAllViews()
         val displayed = displayedCards()
-        if (showIsOnlyDefault) {
+        // showOnlyRecurrenceCard: trava seleção no cartão da recorrência
+        // showIsOnlyDefault: força seleção no default sempre
+        // caso contrário: seleciona o default apenas se não há seleção
+        if (showOnlyRecurrenceCard) {
+            val ri = displayed.indexOfFirst { it.recurrence != null }
+            selectedIndex = when {
+                ri >= 0 -> ri
+                displayed.isEmpty() -> null
+                else -> 0
+            }
+        } else if (showIsOnlyDefault) {
             selectedIndex = displayed.indexOfFirst { it.isDefault }.takeIf { it >= 0 } ?: 0
         } else if (selectedIndex == null) {
             val di = displayed.indexOfFirst { it.isDefault }
             if (di >= 0) selectedIndex = di
         }
+        val locked = showIsOnlyDefault || showOnlyRecurrenceCard
         for ((i, card) in displayed.withIndex()) {
             val row = CardRowView(context)
-            row.configure(card, isSelected = selectedIndex == i)
-            row.setOnClickListener { if (!showIsOnlyDefault) onRowTapped(i) }
+            row.configure(card, isSelected = selectedIndex == i, image = resolveCardImage(card))
+            row.setOnClickListener { if (!locked) onRowTapped(i) }
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply { topMargin = if (i == 0) 0 else 12f.dpToPx(context) }
             stack.addView(row, lp)
         }
-        registerButton.visibility = if (showIsOnlyDefault) View.GONE else View.VISIBLE
+        registerButton.visibility = if (locked) View.GONE else View.VISIBLE
+    }
+
+    /**
+     * Resolve a bandeira a partir de `card.flag` (visa/elo/master), espelhando o
+     * `CardType(flag:)` + `ImageLoader.image(named:)` do iOS. Usa [cardImageResolver]
+     * quando definido; senão [CardModel.brandIcon]; senão lookup via [com.surf.surfhubds.util.ImageLoader].
+     */
+    private fun resolveCardImage(card: CardModel): android.graphics.drawable.Drawable? {
+        val flag = (card.flag ?: "").lowercase()
+        val name = when {
+            flag.contains("visa") -> "ilvisa"
+            flag.contains("elo") -> "ilelo"
+            else -> "ilmaster"
+        }
+        cardImageResolver?.invoke(name)?.let { return it }
+        card.brandIcon?.let { return it }
+        return com.surf.surfhubds.util.ImageLoader.image(context, name)
     }
 
     private fun onRowTapped(index: Int) {
+        // Quando showIsOnlyDefault/showOnlyRecurrenceCard, seleção fica travada.
+        if (showIsOnlyDefault || showOnlyRecurrenceCard) return
         val displayed = displayedCards()
         if (index >= displayed.size) return
         selectedIndex = index
@@ -193,10 +247,10 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             setupThemeObserver()
         }
 
-        fun configure(card: CardModel, isSelected: Boolean) {
+        fun configure(card: CardModel, isSelected: Boolean, image: android.graphics.drawable.Drawable?) {
             this.isDefaultCard = card.isDefault
             lastFourLabel.text = "Final ${card.lastFour ?: "****"}"
-            cardImage.setImageDrawable(card.brandIcon)
+            cardImage.setImageDrawable(image)
             applyStyle(card.isDefault, isSelected)
         }
 

@@ -56,13 +56,15 @@ class DSSExpandableItemView @JvmOverloads constructor(
         toggleButton.background = null
         toggleButton.text = "+"
         toggleButton.textSize = 22f
-        toggleButton.minWidth = 20f.dpToPx(context)
+        toggleButton.minWidth = 0
+        toggleButton.minimumWidth = 0
         toggleButton.setPadding(0, 0, 0, 0)
         toggleButton.setOnClickListener { toggleDetails() }
 
         titleRow.addView(titleLabel, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
+        // iOS: toggleButton.widthAnchor.constraint(equalToConstant: 20) — largura fixa 20.
         titleRow.addView(toggleButton, LayoutParams(
-            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,
+            20f.dpToPx(context), LayoutParams.WRAP_CONTENT,
         ).apply { leftMargin = 8f.dpToPx(context) })
 
         detailsLabel.textSize = 14f
@@ -75,7 +77,7 @@ class DSSExpandableItemView @JvmOverloads constructor(
             topMargin = 4f.dpToPx(context)
         })
 
-        setOnClickListener { toggleDetails() }
+        // iOS dispara o toggle apenas pelo toggleButton (não pelo corpo do card).
         applyColors()
         setupThemeObserver()
     }

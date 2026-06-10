@@ -13,12 +13,15 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatButton
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.util.concurrent.TimeUnit
@@ -89,6 +92,10 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
     private var offer: String? = null
     private var priceInCents: Int? = null
     private var pixCode: String? = null
+
+    // Overrides de estilo (configureStyle). iOS preserva essas cores em troca de tema.
+    @ColorInt private var titleColorOverride: Int? = null
+    @ColorInt private var buttonColorOverride: Int? = null
 
     private var targetTimestamp: Long? = null
     private val handler = Handler(Looper.getMainLooper())
@@ -179,6 +186,7 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
         priceInCents: Int,
         durationInSeconds: Int,
         pixCode: String? = null,
+        showTimer: Boolean = false,
     ) {
         if (durationInSeconds <= 0) {
             visibility = View.GONE
@@ -200,6 +208,37 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
         startTimer()
     }
 
+    /**
+     * Configura o card com estilo customizado (espelha `configureStyle` do iOS).
+     * Cada parâmetro nulo é ignorado, preservando o valor atual.
+     * @param titleColor cor do título (ColorInt).
+     * @param buttonColor cor do texto e da borda do botão de copiar (ColorInt).
+     */
+    fun configureStyle(
+        titleText: String? = null,
+        @ColorInt titleColor: Int? = null,
+        buttonTitle: String? = null,
+        @ColorInt buttonColor: Int? = null,
+    ) {
+        if (titleText != null) titleLabel.text = titleText
+        if (titleColor != null) {
+            titleColorOverride = titleColor
+            titleLabel.setTextColor(titleColor)
+        }
+        if (buttonTitle != null) copyButton.text = buttonTitle
+        if (buttonColor != null) {
+            buttonColorOverride = buttonColor
+            copyButton.setTextColor(buttonColor)
+            copyButton.background = DrawableFactory.rounded(
+                context = context,
+                backgroundColor = android.graphics.Color.TRANSPARENT,
+                cornerRadiusDp = 25f,
+                strokeColor = buttonColor,
+                strokeWidthDp = 2f,
+            )
+        }
+    }
+
     fun setCopyButtonVisible(visible: Boolean) {
         copyButton.visibility = if (visible) View.VISIBLE else View.GONE
     }
@@ -214,13 +253,11 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
     /** Limpa dados persistidos manualmente. */
     fun clearData() {
         clearPersistedData()
-        visibility = View.GONE
     }
 
-    /** Para o timer (quando a view é desanexada). */
+    /** Para o timer (quando a view é desanexada). iOS apenas invalida o timer, mantém o targetDate. */
     fun stopTimer() {
         handler.removeCallbacks(tick)
-        targetTimestamp = null
     }
 
     override fun onDetachedFromWindow() {
@@ -231,22 +268,38 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
+        // iOS applyContainerColors():
+        //  .black  -> backgroundColor secundário, sem borda
+        //  .dark   -> backgroundColor secundário, borda 2pt (cinza)
+        //  .light  -> backgroundColor padrão, sem borda
+        val scheme = ThemeManager.colorScheme
+        val strokeColor: Int?
+        val strokeWidthDp: Float
+        if (scheme == ColorScheme.DARK) {
+            strokeColor = DSSColors.borderDefault()
+            strokeWidthDp = 2f
+        } else {
+            strokeColor = null
+            strokeWidthDp = 0f
+        }
         background = DrawableFactory.rounded(
             context = context,
             backgroundColor = DSSColors.surface(),
             cornerRadiusDp = cornerRadiusDp,
-            strokeColor = DSSColors.borderDefault(),
-            strokeWidthDp = 1f,
+            strokeColor = strokeColor,
+            strokeWidthDp = strokeWidthDp,
         )
-        titleLabel.setTextColor(DSSColors.error())
+        // Título: vermelho-escuro do iOS (~0.65,0.16,0.16) -> token error; override de configureStyle tem prioridade.
+        titleLabel.setTextColor(titleColorOverride ?: DSSColors.error())
         timeLabel.setTextColor(DSSColors.textPrimary())
 
-        copyButton.setTextColor(DSSColors.error())
+        val buttonColor = buttonColorOverride ?: DSSColors.error()
+        copyButton.setTextColor(buttonColor)
         copyButton.background = DrawableFactory.rounded(
             context = context,
             backgroundColor = android.graphics.Color.TRANSPARENT,
             cornerRadiusDp = 25f,
-            strokeColor = DSSColors.error(),
+            strokeColor = buttonColor,
             strokeWidthDp = 2f,
         )
     }
@@ -320,7 +373,8 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
         val o = offer
         val p = priceInCents
         if (m != null && o != null && p != null) {
-            resumeCard.configure(number = m, offer = o, priceInCents = p)
+            // iOS reconfigura com title vazio ("") ao restaurar dados persistidos.
+            resumeCard.configure(title = "", number = m, offer = o, priceInCents = p)
             visibility = View.VISIBLE
             startTimer()
         } else {

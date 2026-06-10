@@ -50,6 +50,14 @@ class DSSPixInfoCardView @JvmOverloads constructor(
     var cornerRadiusDp: Float = 12f
         set(value) { field = value; refresh() }
 
+    /**
+     * Espelha o `backgroundColor` público do iOS (default `systemGray6` ->
+     * [DSSColors.backgroundSecondary]). Quando `null`, usa o token semântico.
+     */
+    @ColorInt
+    var backgroundColorOverride: Int? = null
+        set(value) { field = value; refresh() }
+
     init {
         addView(
             container,
@@ -121,7 +129,7 @@ class DSSPixInfoCardView @JvmOverloads constructor(
     private fun refresh() {
         background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.surface(),
+            backgroundColor = backgroundColorOverride ?: DSSColors.backgroundSecondary(),
             cornerRadiusDp = cornerRadiusDp,
         )
 
@@ -168,7 +176,10 @@ class DSSPixInfoCardView @JvmOverloads constructor(
     companion object {
         @JvmStatic
         fun defaultStyle(context: Context): DSSPixInfoCardView {
-            return DSSPixInfoCardView(context).apply { cornerRadiusDp = 12f }
+            return DSSPixInfoCardView(context).apply {
+                cornerRadiusDp = 12f
+                backgroundColorOverride = DSSColors.backgroundSecondary()
+            }
         }
     }
 }

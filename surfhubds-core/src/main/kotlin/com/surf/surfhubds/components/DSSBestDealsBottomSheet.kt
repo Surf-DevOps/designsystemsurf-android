@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
+import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -69,8 +70,10 @@ class DSSBestDealsBottomSheet : BottomSheetDialogFragment() {
         val descriptionLabel = TextView(ctx).apply {
             text = offerText
             typeface = DSSFont.regular(ctx, 26f).typeface
-            textSize = 22f
+            textSize = 26f
             gravity = Gravity.CENTER
+            // iOS: numberOfLines = 0 (sem limite de linhas)
+            maxLines = Int.MAX_VALUE
             setTextColor(DSSColors.textPrimary())
         }
         content.addView(descriptionLabel, LinearLayout.LayoutParams(
@@ -79,6 +82,13 @@ class DSSBestDealsBottomSheet : BottomSheetDialogFragment() {
 
         val acceptButton = DSSPrincipalButton(ctx).apply {
             text = "Eu quero!"
+            // iOS passa backgroundColor: DSSColors.primaryButton (sobrescreve o default primary do botão)
+            setBackground(DrawableFactory.rounded(
+                context = ctx,
+                backgroundColor = DSSColors.primaryButton(),
+                cornerRadiusDp = cornerRadiusDp,
+            ))
+            setTextColor(DSSColors.buttonText())
             onTap = {
                 dismiss()
                 delegate?.bestDealsBottomSheetDidAcceptUpgrade(this@DSSBestDealsBottomSheet, upgrade)

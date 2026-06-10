@@ -18,7 +18,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.text.SimpleDateFormat
@@ -171,8 +173,12 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
-        titleLabel.setTextColor(DSSColors.textPrimary())
-        emptyStateLabel.setTextColor(DSSColors.textSecondary())
+        val scheme = ThemeManager.colorScheme
+        val isDark = scheme == ColorScheme.DARK || scheme == ColorScheme.BLACK
+        // iOS: titleLabel.textColor = isDark ? .white : DSSColors.textPrimary
+        titleLabel.setTextColor(if (isDark) Color.WHITE else DSSColors.textPrimary())
+        // iOS: emptyStateLabel.textColor = isDark ? .lightGray : DSSColors.textSecondary
+        emptyStateLabel.setTextColor(if (isDark) Color.LTGRAY else DSSColors.textSecondary())
         adapter.notifyDataSetChanged()
     }
 
@@ -277,7 +283,10 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         override fun applyTheme(theme: Theme) { refresh() }
 
         private fun refresh() {
-            val primary = DSSColors.textPrimary()
+            val scheme = ThemeManager.colorScheme
+            val isDark = scheme == ColorScheme.DARK || scheme == ColorScheme.BLACK
+            // iOS: primaryColor = isDark ? .white : DSSColors.textPrimary (título + tint dos chevrons)
+            val primary = if (isDark) Color.WHITE else DSSColors.textPrimary()
             titleLabel.setTextColor(primary)
             previousButton.setColorFilter(primary, PorterDuff.Mode.SRC_IN)
             nextButton.setColorFilter(primary, PorterDuff.Mode.SRC_IN)
@@ -401,11 +410,27 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         override fun applyTheme(theme: Theme) { refresh() }
 
         private fun refresh() {
+            val scheme = ThemeManager.colorScheme
+            val isBlack = scheme == ColorScheme.BLACK
+            val isDark = scheme == ColorScheme.DARK || isBlack
+
+            // iOS: containerView.backgroundColor = .black ? .black : (isDark ? .secondarySystemBackground : DSSColors.surface)
+            val containerBg = when {
+                isBlack -> Color.BLACK
+                isDark -> Color.rgb(28, 28, 30) // secondarySystemBackground (dark)
+                else -> DSSColors.surface()
+            }
+            // iOS: borderColor = isDark ? systemGray4 : DSSColors.borderDefault
+            val borderColor = if (isDark) {
+                Color.rgb(58, 58, 60) // systemGray4 (dark)
+            } else {
+                DSSColors.borderDefault()
+            }
             container.background = DrawableFactory.rounded(
                 context = context,
-                backgroundColor = DSSColors.surface(),
+                backgroundColor = containerBg,
                 cornerRadiusDp = 12f,
-                strokeColor = DSSColors.borderDefault(),
+                strokeColor = borderColor,
                 strokeWidthDp = 1f,
             )
             iconContainer.background = DrawableFactory.rounded(
@@ -415,8 +440,9 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
             )
             iconImageView.setColorFilter(DSSColors.success(), PorterDuff.Mode.SRC_IN)
 
-            val primary = DSSColors.textPrimary()
-            val secondary = DSSColors.textSecondary()
+            // iOS: primaryColor = isDark ? .white : DSSColors.textPrimary ; secondaryColor = isDark ? .lightGray : DSSColors.textSecondary
+            val primary = if (isDark) Color.WHITE else DSSColors.textPrimary()
+            val secondary = if (isDark) Color.LTGRAY else DSSColors.textSecondary()
             titleLabel.setTextColor(primary)
             descriptionLabel.setTextColor(primary)
             validityLabel.setTextColor(primary)

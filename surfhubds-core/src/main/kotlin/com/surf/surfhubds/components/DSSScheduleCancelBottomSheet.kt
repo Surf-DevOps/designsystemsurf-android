@@ -16,13 +16,16 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
+import com.surf.surfhubds.theme.ThemeManager
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSScheduleCancelBottomSheet` do iOS — bottom sheet de "Recarga Programada"
  * com lista de benefícios e botões "Manter benefícios" / "Confirmar cancelamento".
  *
- * Após confirmar o cancelamento abre automaticamente o [DSSScheduleCancelledBottomSheet].
+ * Ao confirmar o cancelamento dispara [delegate] e [onConfirmCancellation]; quem decide
+ * abrir o segundo sheet ("Programada cancelada!") é o app (igual ao iOS).
  */
 class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
 
@@ -32,15 +35,16 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
     }
 
     var delegate: Delegate? = null
+    /** Closure chamada ao confirmar cancelamento (alternativa ao delegate, permite o app controlar o fluxo). */
+    var onConfirmCancellation: (() -> Unit)? = null
     /** Drawable do "keep_schedule" provido pelo módulo de brand. */
     var illustration: Drawable? = null
-
-    private var hostActivity: FragmentActivity? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         val ctx = requireContext()
+        val isBlack = ThemeManager.colorScheme == ColorScheme.BLACK
         val scroll = ScrollView(ctx).apply { setBackgroundColor(DSSColors.background()) }
 
         val root = LinearLayout(ctx).apply {
@@ -72,12 +76,15 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
         val benefitsContainer = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
         }
+        // iOS: colorScheme == .black ? .systemRed : DSSColors.primary
+        val benefitColor = if (isBlack) Color.RED else DSSColors.primary()
         benefits.forEach { text ->
             val label = TextView(ctx).apply {
                 this.text = "✓ $text"
                 typeface = DSSFont.regular(ctx, 15f).typeface
                 textSize = 15f
-                setTextColor(DSSColors.primary())
+                maxLines = Int.MAX_VALUE
+                setTextColor(benefitColor)
             }
             benefitsContainer.addView(label, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -87,8 +94,14 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = 24f.dpToPx(ctx) })
 
+        // iOS: backgroundColor = isBlack ? DSSColors.primaryButton : DSSColors.primary,
+        //      textColor = .white, font = DSSFont.regular(16)
         val keepButton = DSSPrincipalButton(ctx).apply {
             text = "Manter benefícios"
+            customBackgroundColor = if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
+            customTextColor = Color.WHITE
+            typeface = DSSFont.regular(ctx, 16f).typeface
+            textSize = 16f
             onTap = { dismiss() }
         }
         root.addView(keepButton, LinearLayout.LayoutParams(
@@ -118,13 +131,14 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun confirmCancelTapped() {
+        // iOS: captura delegate + onConfirmCancellation, anima a saída e dispara ambos
+        // (delegate primeiro, depois a closure). O iOS NÃO abre o segundo sheet
+        // automaticamente — isso fica a cargo do app via delegate/closure.
         val capturedDelegate = delegate
-        val capturedHost = hostActivity
+        val capturedOnConfirm = onConfirmCancellation
         dismiss()
         capturedDelegate?.scheduleCancelBottomSheetDidFinishCancellation(this)
-        capturedHost?.let {
-            DSSScheduleCancelledBottomSheet.present(it)
-        }
+        capturedOnConfirm?.invoke()
     }
 
     companion object {
@@ -132,11 +146,12 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
             activity: FragmentActivity,
             illustration: Drawable? = null,
             delegate: Delegate? = null,
+            onConfirmCancellation: (() -> Unit)? = null,
         ): DSSScheduleCancelBottomSheet {
             val sheet = DSSScheduleCancelBottomSheet()
             sheet.delegate = delegate
+            sheet.onConfirmCancellation = onConfirmCancellation
             sheet.illustration = illustration
-            sheet.hostActivity = activity
             sheet.show(activity.supportFragmentManager, "DSSScheduleCancelBottomSheet")
             return sheet
         }

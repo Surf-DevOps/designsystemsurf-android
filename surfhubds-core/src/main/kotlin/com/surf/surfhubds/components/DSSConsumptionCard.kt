@@ -14,9 +14,12 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
-import kotlin.math.roundToInt
+import com.surf.surfhubds.theme.ThemeManager
+import java.util.Locale
+import kotlin.math.ceil
 
 /**
  * Port do `DSSConsumptionCard` do iOS — cartão horizontal "Total disponível" exibindo
@@ -118,11 +121,28 @@ class DSSConsumptionCard @JvmOverloads constructor(
     }
 
     private fun refresh() {
-        container.background = DrawableFactory.rounded(
-            context = context,
-            backgroundColor = DSSColors.primary(),
-            cornerRadiusDp = 16f,
-        )
+        // Espelha `applyColors()` do iOS:
+        // - claro: fundo = DSSColors.primary, sem borda.
+        // - escuro (.dark): fundo = secondarySystemBackground (surface) + borda 2dp (separator).
+        // - escuro (.black): fundo = secondarySystemBackground (surface), sem borda.
+        val scheme = ThemeManager.colorScheme
+        val isDark = scheme == ColorScheme.DARK || scheme == ColorScheme.BLACK
+        container.background = if (isDark) {
+            val showBorder = scheme != ColorScheme.BLACK
+            DrawableFactory.rounded(
+                context = context,
+                backgroundColor = DSSColors.surface(),
+                cornerRadiusDp = 16f,
+                strokeColor = if (showBorder) DSSColors.borderDefault() else null,
+                strokeWidthDp = if (showBorder) 2f else 0f,
+            )
+        } else {
+            DrawableFactory.rounded(
+                context = context,
+                backgroundColor = DSSColors.primary(),
+                cornerRadiusDp = 16f,
+            )
+        }
     }
 
     fun configure(config: Configuration) {
@@ -150,9 +170,14 @@ class DSSConsumptionCard @JvmOverloads constructor(
         iconView.setImageDrawable(iconResolver(config.cardType))
     }
 
+    /**
+     * Espelha `Utility.formatMBToGBWithDecimal` do iOS:
+     * converte MB->GB (/1000), arredonda PARA CIMA com 1 casa (`ceil(gb*10)/10`)
+     * e formata SEMPRE com 1 casa decimal (`%.1f`, ex.: "5.0").
+     */
     private fun formatMbToGb(mb: Int): String {
         val gb = mb / 1000.0
-        val rounded = (gb * 10).roundToInt() / 10.0
-        return if (rounded % 1.0 == 0.0) rounded.toInt().toString() else rounded.toString()
+        val rounded = ceil(gb * 10.0) / 10.0
+        return String.format(Locale.US, "%.1f", rounded)
     }
 }

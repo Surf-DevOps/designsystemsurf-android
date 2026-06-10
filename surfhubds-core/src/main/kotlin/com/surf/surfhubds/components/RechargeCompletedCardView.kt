@@ -17,10 +17,15 @@ import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
+import com.surf.surfhubds.util.formatPhoneNumber
 
 /** Benefício do plano — um bullet. */
 data class PlanBenefit(val text: String)
+
+/** Método de pagamento — espelha `DSSPaymentMethodType` do iOS. */
+enum class DSSPaymentMethodType { CREDIT_CARD, PIX }
 
 /** Configuração da [RechargeCompletedCardView]. */
 data class PlanInfoCardConfig(
@@ -31,6 +36,7 @@ data class PlanInfoCardConfig(
     val lastDigitsCard: String,
     val dateNextRecharge: String,
     val hasScheduledRecharge: Boolean = true,
+    val paymentMethod: DSSPaymentMethodType = DSSPaymentMethodType.CREDIT_CARD,
 )
 
 /**
@@ -139,10 +145,10 @@ class RechargeCompletedCardView @JvmOverloads constructor(
 
     fun configure(config: PlanInfoCardConfig) {
         numberTitleLabel.text = "Número"
-        numberValueLabel.text = formatPhoneNumber(config.msisdn)
+        numberValueLabel.text = config.msisdn.formatPhoneNumber()
 
         planTitleLabel.text = "Plano"
-        totalPlanLabel.text = config.totalDataPlan
+        totalPlanLabel.text = Utility.formatMBToGB(config.totalDataPlan)
 
         val bullets = listOf(bullet1, bullet2, bullet3)
         bullets.forEachIndexed { i, b -> b.visibility = if (i < config.benefits.size) View.VISIBLE else View.GONE }
@@ -151,24 +157,33 @@ class RechargeCompletedCardView @JvmOverloads constructor(
         }
 
         valueTitleLabel.text = "Valor"
-        val cents = config.value.toIntOrNull() ?: 0
-        valueValueLabel.text = "R$ %.2f".format(cents / 100.0).replace('.', ',')
+        valueValueLabel.text = "R$ ${Utility.formatPrice(config.value.toIntOrNull() ?: 0)}"
 
         paymentTitleLabel.text = "Pagamento"
-        paymentMethodLabel.text = "Cartão de Crédito"
-        paymentRightLabel.text = "Final ${config.lastDigitsCard}"
+
+        when (config.paymentMethod) {
+            DSSPaymentMethodType.CREDIT_CARD -> {
+                paymentMethodLabel.text = "Cartão de Crédito"
+                paymentRightLabel.text = "Final ${config.lastDigitsCard}"
+                paymentRightLabel.visibility = View.VISIBLE
+            }
+            DSSPaymentMethodType.PIX -> {
+                paymentMethodLabel.text = "Pix"
+                paymentRightLabel.text = null
+                paymentRightLabel.visibility = View.GONE
+            }
+        }
 
         if (config.hasScheduledRecharge) {
             paymentMethodRow.text = "Recarga Programada"
             paymentStatusLabel.text = "Ativa"
             paymentMethodRow.visibility = View.VISIBLE
             paymentStatusLabel.visibility = View.VISIBLE
-            bottomInfoLabel.text = "Próxima recarga ${config.dateNextRecharge}"
-            bottomInfoLabel.visibility = View.VISIBLE
+            bottomInfoLabel.text =
+                "Próxima recarga ${Utility.formatDateToBrazilianFormatPlus30Days(config.dateNextRecharge)}"
         } else {
             paymentMethodRow.visibility = View.GONE
             paymentStatusLabel.visibility = View.GONE
-            bottomInfoLabel.visibility = View.GONE
         }
     }
 
@@ -269,18 +284,6 @@ class RechargeCompletedCardView @JvmOverloads constructor(
             "ic_check_circle", "drawable", context.packageName,
         )
         return if (resId != 0) AppCompatResources.getDrawable(context, resId) else null
-    }
-
-    private fun formatPhoneNumber(raw: String): String {
-        val digits = raw.filter { it.isDigit() }
-        if (digits.length >= 11) {
-            val ddd = digits.substring(0, 2)
-            val first = digits.substring(2, 3)
-            val middle = digits.substring(3, 7)
-            val last = digits.substring(7, 11)
-            return "($ddd) $first $middle-$last"
-        }
-        return raw
     }
 }
 

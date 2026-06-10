@@ -57,4 +57,28 @@ class DSSActionCardCollectionView @JvmOverloads constructor(
             stack.addView(btn, lp)
         }
     }
+
+    /**
+     * Espelha o `intrinsicContentSize` do iOS: altura intrínseca igual à
+     * [DSSActionCardButton.DEFAULT_HEIGHT_DP] (largura sem métrica intrínseca,
+     * dirigida pelo conteúdo). Quando o pai não fixa a altura (modo != EXACTLY),
+     * a view assume a altura padrão do card.
+     */
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        if (heightMode == MeasureSpec.EXACTLY) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+            return
+        }
+        val intrinsicHeight = DSSActionCardButton.DEFAULT_HEIGHT_DP.dpToPx(context)
+        val resolvedHeight = if (heightMode == MeasureSpec.AT_MOST) {
+            minOf(intrinsicHeight, MeasureSpec.getSize(heightMeasureSpec))
+        } else {
+            intrinsicHeight
+        }
+        super.onMeasure(
+            widthMeasureSpec,
+            MeasureSpec.makeMeasureSpec(resolvedHeight, MeasureSpec.EXACTLY),
+        )
+    }
 }

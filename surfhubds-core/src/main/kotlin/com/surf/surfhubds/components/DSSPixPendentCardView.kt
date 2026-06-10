@@ -15,6 +15,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatButton
 import com.surf.surfhubds.font.DSSFont
@@ -103,6 +104,12 @@ class DSSPixPendentCardView @JvmOverloads constructor(
     private var pixCode: String? = null
     private var customTitle: String? = null
 
+    // Overrides de estilo (via configureStyle) — preservados em trocas de tema.
+    @ColorInt
+    private var titleColorOverride: Int? = null
+    @ColorInt
+    private var buttonColorOverride: Int? = null
+
     private var targetTimestamp: Long? = null
     private val handler = Handler(Looper.getMainLooper())
     private val tick = object : Runnable {
@@ -161,7 +168,9 @@ class DSSPixPendentCardView @JvmOverloads constructor(
             expandButton.setImageDrawable(loadChevronDown())
             headerRow.addView(
                 expandButton,
-                LinearLayout.LayoutParams(24f.dpToPx(context), 24f.dpToPx(context)),
+                LinearLayout.LayoutParams(24f.dpToPx(context), 24f.dpToPx(context)).apply {
+                    marginStart = 12f.dpToPx(context)
+                },
             )
         }
 
@@ -175,10 +184,11 @@ class DSSPixPendentCardView @JvmOverloads constructor(
 
         // Time label
         timeLabel.textSize = if (collapsible) 16f else 14f
-        timeLabel.typeface = DSSFont.bold(
-            context,
-            if (collapsible) 16f else 14f,
-        ).typeface
+        timeLabel.typeface = if (collapsible) {
+            DSSFont.bold(context, 16f).typeface
+        } else {
+            DSSFont.medium(context, 14f).typeface
+        }
         container.addView(
             timeLabel,
             LinearLayout.LayoutParams(
@@ -199,6 +209,7 @@ class DSSPixPendentCardView @JvmOverloads constructor(
             )
         }
 
+        if (!collapsible) resumeCard.borderWidthDp = 0f
         container.addView(
             resumeCard,
             LinearLayout.LayoutParams(
@@ -238,7 +249,13 @@ class DSSPixPendentCardView @JvmOverloads constructor(
         if (pixIcon == null) iconImageView.setImageDrawable(PaymentMethodImages.pixIcon(context))
     }
 
-    /** Configura o card com os dados do PIX pendente. */
+    /**
+     * Configura o card com os dados do PIX pendente.
+     * Define o tempo em segundos que será convertido para formato HH:MM:SS.
+     *
+     * @param showTimer espelha o parâmetro do iOS (sem efeito visual: o timer
+     *   é sempre exibido em ambas as plataformas).
+     */
     fun configure(
         title: String? = null,
         msisdn: String,
@@ -246,6 +263,7 @@ class DSSPixPendentCardView @JvmOverloads constructor(
         priceInCents: Int,
         durationInSeconds: Int,
         pixCode: String? = null,
+        showTimer: Boolean = false,
     ) {
         if (durationInSeconds <= 0) {
             visibility = View.GONE
@@ -259,13 +277,39 @@ class DSSPixPendentCardView @JvmOverloads constructor(
         this.priceInCents = priceInCents
         this.pixCode = pixCode
 
-        resumeCard.configure(number = msisdn, offer = offer, priceInCents = priceInCents)
+        resumeCard.configure(title = title, number = msisdn, offer = offer, priceInCents = priceInCents)
         targetTimestamp = System.currentTimeMillis() +
             TimeUnit.SECONDS.toMillis(durationInSeconds.toLong())
 
         visibility = View.VISIBLE
         savePersistedData()
         startTimer()
+    }
+
+    /** Configura o card com estilo customizado. */
+    fun configureStyle(
+        titleText: String? = null,
+        @ColorInt titleColor: Int? = null,
+        buttonTitle: String? = null,
+        @ColorInt buttonColor: Int? = null,
+    ) {
+        titleText?.let { titleLabel.text = it }
+        titleColor?.let {
+            titleColorOverride = it
+            titleLabel.setTextColor(it)
+        }
+        buttonTitle?.let { copyButton.text = it }
+        buttonColor?.let {
+            buttonColorOverride = it
+            copyButton.setTextColor(it)
+            copyButton.background = DrawableFactory.rounded(
+                context = context,
+                backgroundColor = Color.TRANSPARENT,
+                cornerRadiusDp = 25f,
+                strokeColor = it,
+                strokeWidthDp = 2f,
+            )
+        }
     }
 
     fun setCopyButtonVisible(visible: Boolean) {
@@ -330,17 +374,18 @@ class DSSPixPendentCardView @JvmOverloads constructor(
             strokeWidthDp = 1f,
         )
 
-        titleLabel.setTextColor(DSSColors.error())
+        titleLabel.setTextColor(titleColorOverride ?: DSSColors.error())
         timeLabel.setTextColor(DSSColors.textPrimary())
         subtitleLabel.setTextColor(DSSColors.textSecondary())
         separator.setBackgroundColor(DSSColors.divider())
 
-        copyButton.setTextColor(DSSColors.error())
+        val buttonColor = buttonColorOverride ?: DSSColors.error()
+        copyButton.setTextColor(buttonColor)
         copyButton.background = DrawableFactory.rounded(
             context = context,
             backgroundColor = Color.TRANSPARENT,
             cornerRadiusDp = 25f,
-            strokeColor = DSSColors.error(),
+            strokeColor = buttonColor,
             strokeWidthDp = 2f,
         )
     }
@@ -419,7 +464,7 @@ class DSSPixPendentCardView @JvmOverloads constructor(
         val o = offer
         val p = priceInCents
         if (m != null && o != null && p != null) {
-            resumeCard.configure(number = m, offer = o, priceInCents = p)
+            resumeCard.configure(title = customTitle ?: "", number = m, offer = o, priceInCents = p)
             visibility = View.VISIBLE
             startTimer()
         } else {

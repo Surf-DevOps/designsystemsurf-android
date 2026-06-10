@@ -20,6 +20,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
+import com.surf.surfhubds.util.formatPhoneNumber
 
 /** Status de portabilidade — equivalente ao enum Swift. */
 enum class PortabilityStatus { CANCELLED, CONFIRMED, PENDING, SUCCESS, DEFAULT }
@@ -181,6 +182,21 @@ class PortabilityCardView @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Re-renderiza o estado atual sem re-mapear a string da API nem re-disparar callbacks.
+     * Usado quando os drawables ([progressImages]) chegam depois do [configure].
+     */
+    private fun renderCurrentStatus() {
+        val response = statusResponse ?: return
+        when (currentStatus) {
+            PortabilityStatus.CANCELLED -> configError(response)
+            PortabilityStatus.CONFIRMED -> configConfirmed(response)
+            PortabilityStatus.PENDING -> configPending(response)
+            PortabilityStatus.SUCCESS -> configSuccess(response)
+            PortabilityStatus.DEFAULT -> configDefault(response)
+        }
+    }
+
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
@@ -252,7 +268,17 @@ class PortabilityCardView @JvmOverloads constructor(
 
     private fun setupErrorCard(response: PortabilityStatusResponse) {
         clearCard()
+        cardContainer.background = cardBg()
         val pad = 16f.dpToPx(context)
+        val column = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad, 24f.dpToPx(context), pad, pad)
+        }
+        // Imagem de erro (placa com X) — equivalente ao errorImageView (60x60) do iOS.
+        val errorIcon = ImageView(context).apply {
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            setImageDrawable(progressImages.refused)
+        }
         val msg = TextView(context).apply {
             text = response.resultado?.descricaoTicketStatus
                 ?: "Não foi possível processar sua solicitação."
@@ -260,11 +286,22 @@ class PortabilityCardView @JvmOverloads constructor(
             typeface = DSSFont.regular(context, 16f).typeface
             setSingleLine(false)
             setTextColor(DSSColors.textPrimary())
-            setPadding(pad, pad, pad, pad)
         }
-        cardContainer.background = cardBg()
-        cardContainer.addView(
+        column.addView(
+            errorIcon,
+            LinearLayout.LayoutParams(60f.dpToPx(context), 60f.dpToPx(context)).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            },
+        )
+        column.addView(
             msg,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply { topMargin = 20f.dpToPx(context) },
+        )
+        cardContainer.addView(
+            column,
             FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -280,12 +317,12 @@ class PortabilityCardView @JvmOverloads constructor(
         val pager = ViewPager2(context)
         val pageControl = PageDots(context)
 
-        val msisdn = formatPhoneNumber(response.resultado?.nuMsisdnOutraOperadora?.toString() ?: "")
+        val msisdn = (response.resultado?.nuMsisdnOutraOperadora?.toString() ?: "").formatPhoneNumber()
         val pages = listOf(
             CarouselPage(
                 icon = progressImages.pending,
                 title = "Confirme o SMS",
-                message = "Responda em até 24 horas o SMS que enviamos no número $msisdn " +
+                message = "Responda em até 24 horas o SMS que enviamos no número $msisdn \n" +
                     "para confirmar sua solicitação.",
             ),
             CarouselPage(
@@ -401,7 +438,7 @@ class PortabilityCardView @JvmOverloads constructor(
             setPadding(pad, pad, pad, pad)
         }
         val phoneLabel = TextView(context).apply {
-            text = "Agora seu número é:"
+            text = "Agora seu número\nChip Educação é:"
             textSize = 16f
             typeface = DSSFont.medium(context, 16f).typeface
             gravity = Gravity.CENTER_HORIZONTAL
@@ -409,9 +446,7 @@ class PortabilityCardView @JvmOverloads constructor(
             setTextColor(DSSColors.textPrimary())
         }
         val numberLabel = TextView(context).apply {
-            text = formatPhoneNumber(
-                response.resultado?.nuMsisdnOutraOperadora?.toString() ?: "0",
-            )
+            text = (response.resultado?.nuMsisdnOutraOperadora ?: 0L).toString().formatPhoneNumber()
             textSize = 20f
             typeface = DSSFont.bold(context, 20f).typeface
             gravity = Gravity.CENTER_HORIZONTAL
@@ -446,7 +481,7 @@ class PortabilityCardView @JvmOverloads constructor(
 
     private fun refreshProgressImage() {
         // re-evaluate current state in case images were set after configure
-        statusResponse?.let { configure(currentStatus.name, it) }
+        renderCurrentStatus()
     }
 
     private fun showActionButton() {
@@ -474,18 +509,6 @@ class PortabilityCardView @JvmOverloads constructor(
         "PENDENTE" -> PortabilityStatus.PENDING
         "SUCESSO" -> PortabilityStatus.SUCCESS
         else -> PortabilityStatus.DEFAULT
-    }
-
-    private fun formatPhoneNumber(raw: String): String {
-        val digits = raw.filter { it.isDigit() }
-        if (digits.length >= 11) {
-            val ddd = digits.substring(0, 2)
-            val first = digits.substring(2, 3)
-            val middle = digits.substring(3, 7)
-            val last = digits.substring(7, 11)
-            return "($ddd) $first $middle-$last"
-        }
-        return raw
     }
 
     // MARK: Carousel page model + adapter + dots

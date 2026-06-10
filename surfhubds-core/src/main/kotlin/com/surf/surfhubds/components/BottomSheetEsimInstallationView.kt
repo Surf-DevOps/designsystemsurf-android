@@ -85,22 +85,34 @@ class BottomSheetEsimInstallationView @JvmOverloads constructor(
     }
 
     private fun addViews() {
+        // iOS: somente o `autorizationLabel` tem leading/trailing de 24pt; título,
+        // botão e link são apenas centralizados (centerX). Por isso as margens
+        // laterais ficam por subview, não no container.
         addView(column, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
             gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
             topMargin = 80f.dpToPx(context)
+        })
+
+        // iOS: titleLabel só tem centerX -> largura intrínseca centralizada.
+        column.addView(titleLabel, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
+        ).apply { gravity = Gravity.CENTER_HORIZONTAL })
+        // iOS: autorizationLabel com leading +24 / trailing -24.
+        column.addView(authorizationLabel, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
+        ).apply {
+            topMargin = 54f.dpToPx(context)
             leftMargin = 24f.dpToPx(context)
             rightMargin = 24f.dpToPx(context)
         })
-
-        column.addView(titleLabel, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-        ))
-        column.addView(authorizationLabel, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-        ).apply { topMargin = 54f.dpToPx(context) })
+        // iOS: continueButton só tem centerX -> usa defaultSize (320x50), centralizado.
         column.addView(continueButton, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-        ).apply { topMargin = 24f.dpToPx(context) })
+            320f.dpToPx(context), LinearLayout.LayoutParams.WRAP_CONTENT,
+        ).apply {
+            topMargin = 24f.dpToPx(context)
+            gravity = Gravity.CENTER_HORIZONTAL
+        })
+        // iOS: cancelLabel só tem centerX -> largura intrínseca centralizada.
         column.addView(cancelLabel, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply {

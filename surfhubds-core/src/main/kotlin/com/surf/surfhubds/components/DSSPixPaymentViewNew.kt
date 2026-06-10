@@ -17,6 +17,8 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
@@ -97,7 +99,13 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
     }
     private val qrCodeImageView = ImageView(context).apply {
         scaleType = ImageView.ScaleType.FIT_CENTER
-        setBackgroundColor(Color.WHITE)
+        // iOS: backgroundColor = .white, cornerRadius = 8, clipsToBounds = true
+        background = DrawableFactory.rounded(
+            context = context,
+            backgroundColor = Color.WHITE,
+            cornerRadiusDp = 8f,
+        )
+        clipToOutline = true
     }
     private val pixCodeLabel = TextView(context).apply {
         textSize = 12f
@@ -145,6 +153,11 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
         val hPad = 16f.dpToPx(context)
         val vPad = 20f.dpToPx(context)
         mainStack.setPadding(hPad, vPad, hPad, vPad)
+
+        // iOS setupView: resumeCard.cornerRadius = 8, borderWidth = 1,
+        // backgroundColor = .systemBackground (= cor de fundo da página), borderColor = .systemGray4.
+        resumeCard.cornerRadiusDp = 8f
+        resumeCard.borderWidthDp = 1f
 
         val spacing = 24f.dpToPx(context)
 
@@ -266,6 +279,9 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
     private fun refresh() {
         setBackgroundColor(DSSColors.background())
 
+        // iOS: resumeCard.backgroundColor = .systemBackground (igual ao fundo da página).
+        resumeCard.backgroundColorOverride = DSSColors.background()
+
         titleLabel.setTextColor(DSSColors.textPrimary())
         subtitleLabel.setTextColor(DSSColors.textSecondary())
         paymentDetailsLabel.setTextColor(DSSColors.textPrimary())
@@ -304,7 +320,12 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
         if (text.isEmpty()) return null
         return try {
             val size = 400
-            BarcodeEncoder().encodeBitmap(text, BarcodeFormat.QR_CODE, size, size)
+            // iOS: CIQRCodeGenerator com inputCorrectionLevel "H" e string em UTF-8.
+            val hints = mapOf(
+                EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.H,
+                EncodeHintType.CHARACTER_SET to "UTF-8",
+            )
+            BarcodeEncoder().encodeBitmap(text, BarcodeFormat.QR_CODE, size, size, hints)
         } catch (_: Throwable) {
             null
         }

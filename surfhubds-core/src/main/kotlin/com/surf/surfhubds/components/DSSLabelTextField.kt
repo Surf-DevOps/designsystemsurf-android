@@ -10,7 +10,7 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -23,6 +23,7 @@ import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -64,6 +65,7 @@ class DSSLabelTextField @JvmOverloads constructor(
 
     @ColorInt private var borderColorOverride: Int? = null
     @ColorInt private var backgroundColorOverride: Int? = null
+    private var borderWidthOverride: Float? = null
 
     var nextField: DSSLabelTextField? = null
     var previousField: DSSLabelTextField? = null
@@ -80,7 +82,7 @@ class DSSLabelTextField @JvmOverloads constructor(
         orientation = VERTICAL
 
         titleLabel.textSize = 16f
-        titleLabel.typeface = DSSFont.regular(context, 16f).typeface
+        titleLabel.typeface = DSSFont.light(context, 16f).typeface
         titleLabel.visibility = View.GONE
         addView(titleLabel, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
             bottomMargin = 6f.dpToPx(context)
@@ -90,7 +92,18 @@ class DSSLabelTextField @JvmOverloads constructor(
         editText.background = null
         editText.setPadding(16f.dpToPx(context), 0, 16f.dpToPx(context), 0)
         editText.textSize = 16f
-        editText.typeface = DSSFont.regular(context, 16f).typeface
+        editText.typeface = DSSFont.light(context, 16f).typeface
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
+                val next = nextField
+                if (next != null) {
+                    next.editText.requestFocus()
+                } else {
+                    editText.clearFocus()
+                }
+                true
+            } else false
+        }
         fieldRow.addView(editText, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT, 50f.dpToPx(context),
         ).apply { gravity = Gravity.CENTER_VERTICAL })
@@ -136,6 +149,8 @@ class DSSLabelTextField @JvmOverloads constructor(
         showsErrorLabel: Boolean = false,
         @ColorInt backgroundColor: Int? = null,
         @ColorInt borderColor: Int? = null,
+        fontSize: Float? = null,
+        borderWidth: Float? = null,
     ) {
         this.fieldType = type
         this.hasLabel = label != null
@@ -145,9 +160,12 @@ class DSSLabelTextField @JvmOverloads constructor(
         this.rightButtonAction = rightAction
         this.backgroundColorOverride = backgroundColor
         this.borderColorOverride = borderColor
+        this.borderWidthOverride = borderWidth
 
         if (label != null) {
             titleLabel.text = label
+            titleLabel.typeface = DSSFont.light(context, fontSize ?: 16f).typeface
+            titleLabel.textSize = fontSize ?: 16f
             titleLabel.visibility = View.VISIBLE
         } else titleLabel.visibility = View.GONE
 
@@ -173,14 +191,31 @@ class DSSLabelTextField @JvmOverloads constructor(
             leftButton.visibility = View.VISIBLE
             editText.setPadding(56f.dpToPx(context), 0, editText.paddingRight, 0)
         }
-        rightIcon?.let {
-            rightButton.setImageDrawable(it)
-            rightButton.visibility = View.VISIBLE
-            editText.setPadding(editText.paddingLeft, 0, 56f.dpToPx(context), 0)
+        // Right button: ícone explícito OU olhinho padrão para campos de senha (espelha iOS).
+        when {
+            rightIcon != null -> {
+                rightButton.setImageDrawable(rightIcon)
+                rightButton.visibility = View.VISIBLE
+                editText.setPadding(editText.paddingLeft, 0, 56f.dpToPx(context), 0)
+            }
+            type is Type.Password -> {
+                ImageLoader.image(context, "eye_open")?.let { rightButton.setImageDrawable(it) }
+                rightButton.visibility = View.VISIBLE
+                editText.setPadding(editText.paddingLeft, 0, 56f.dpToPx(context), 0)
+            }
         }
+
+        editText.imeOptions = if (nextField != null) EditorInfo.IME_ACTION_NEXT else EditorInfo.IME_ACTION_DONE
 
         attachWatcher()
         refreshTheme()
+    }
+
+    /** Navegação entre campos (espelha `setupNavigation(previous:next:)` do iOS). */
+    fun setupNavigation(previous: DSSLabelTextField? = null, next: DSSLabelTextField? = null) {
+        this.previousField = previous
+        this.nextField = next
+        editText.imeOptions = if (next != null) EditorInfo.IME_ACTION_NEXT else EditorInfo.IME_ACTION_DONE
     }
 
     private fun onRightTapped() {
@@ -189,6 +224,9 @@ class DSSLabelTextField @JvmOverloads constructor(
             editText.inputType = if (isPasswordHidden) {
                 InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             } else InputType.TYPE_CLASS_NUMBER
+            val iconName = if (isPasswordHidden) "eye_open" else "eye_closed"
+            ImageLoader.image(context, iconName)?.let { rightButton.setImageDrawable(it) }
+            refreshTheme()
             editText.setSelection(editText.text?.length ?: 0)
         } else rightButtonAction?.invoke()
     }
@@ -222,7 +260,7 @@ class DSSLabelTextField @JvmOverloads constructor(
             backgroundColor = backgroundColorOverride ?: Color.TRANSPARENT,
             cornerRadiusDp = 25f,
             strokeColor = borderColor,
-            strokeWidthDp = 1f,
+            strokeWidthDp = borderWidthOverride ?: 1f,
         )
         titleLabel.setTextColor(DSSColors.textPrimary())
         editText.setTextColor(DSSColors.textPrimary())

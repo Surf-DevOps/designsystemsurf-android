@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.Gravity
@@ -47,8 +48,9 @@ class DSSNavigationBar @JvmOverloads constructor(
     init {
         setBackgroundColor(Color.TRANSPARENT)
 
+        // iOS: font padrão = DSSFont.light(18)
         titleLabel.textSize = 18f
-        titleLabel.typeface = DSSFont.regular(context, 18f).typeface
+        titleLabel.typeface = DSSFont.light(context, 18f).typeface
         titleLabel.gravity = Gravity.CENTER
         addView(titleLabel, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
             gravity = Gravity.CENTER
@@ -88,12 +90,26 @@ class DSSNavigationBar @JvmOverloads constructor(
         showsProgressBar: Boolean = false,
         progressTotalSteps: Int = 1,
         progressCurrentStep: Int = 1,
+        // iOS init: parâmetros adicionais (todos opcionais p/ não quebrar API existente)
+        font: Typeface? = null,
+        widthRightButton: Float = 7f,
+        heightRightButton: Float = 24f,
+        @ColorInt leftTintColor: Int? = null,
+        @ColorInt rightTintColor: Int? = null,
+        @ColorInt titleColor: Int? = null,
+        @ColorInt backgroundColorOverride: Int? = null,
     ) {
         titleLabel.text = title
+        // iOS: font padrão = DSSFont.light(18); só sobrescreve se fornecida
+        font?.let { titleLabel.typeface = it }
         val titleLp = titleLabel.layoutParams as LayoutParams
-        titleLp.gravity = if (alignment == TitleAlignment.LEFT) Gravity.START or Gravity.CENTER_VERTICAL
-                          else Gravity.CENTER
-        if (alignment == TitleAlignment.LEFT) titleLp.leftMargin = 48f.dpToPx(context)
+        if (alignment == TitleAlignment.LEFT) {
+            titleLp.gravity = Gravity.START or Gravity.CENTER_VERTICAL
+            titleLp.leftMargin = 48f.dpToPx(context)
+        } else {
+            titleLp.gravity = Gravity.CENTER
+            titleLp.leftMargin = 0
+        }
         titleLabel.layoutParams = titleLp
 
         leftButton.visibility = if (leftIcon != null) View.VISIBLE else View.GONE
@@ -107,10 +123,27 @@ class DSSNavigationBar @JvmOverloads constructor(
             rightButton.setImageDrawable(it)
             rightButton.scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
         }
+        // iOS: tamanho do botão direito é configurável (default 7x24)
+        (rightButton.layoutParams as? LayoutParams)?.let { rlp ->
+            rlp.width = widthRightButton.dpToPx(context)
+            rlp.height = heightRightButton.dpToPx(context)
+            rightButton.layoutParams = rlp
+        }
+
+        // iOS: cores configuráveis na init
+        leftTintColor?.let { leftTintOverride = it }
+        rightTintColor?.let { rightTintOverride = it }
+        titleColor?.let { titleColorOverride = it }
+        backgroundColorOverride?.let { this.backgroundColorOverride = it }
 
         progressBar.visibility = if (showsProgressBar) View.VISIBLE else View.GONE
         if (showsProgressBar) progressBar.configure(progressTotalSteps, progressCurrentStep, animated = false)
         refresh()
+    }
+
+    @Deprecated("Use setRightButtonHidden(_:) instead", ReplaceWith("setRightButtonHidden(isHidden)"))
+    fun plusButton(isHidden: Boolean) {
+        rightButton.visibility = if (isHidden) View.GONE else View.VISIBLE
     }
 
     fun setRightButtonHidden(hidden: Boolean) {
@@ -179,7 +212,12 @@ class DSSProgressBarView @JvmOverloads constructor(
     fun configure(totalSteps: Int, currentStep: Int, animated: Boolean = true) {
         this.totalSteps = totalSteps.coerceAtLeast(1)
         this.currentStep = currentStep.coerceIn(1, this.totalSteps)
-        val target = currentStep.toFloat() / this.totalSteps.toFloat()
+        // iOS: guard totalSteps > 1 else { return bounds.width } -> 1 passo = barra cheia
+        val target = if (this.totalSteps > 1) {
+            this.currentStep.toFloat() / this.totalSteps.toFloat()
+        } else {
+            1f
+        }
         if (animated) {
             ValueAnimator.ofFloat(animatedFraction, target).apply {
                 duration = 300

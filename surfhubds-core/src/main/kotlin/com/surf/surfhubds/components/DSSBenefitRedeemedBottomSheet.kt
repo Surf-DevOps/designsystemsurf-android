@@ -17,6 +17,8 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
+import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -62,7 +64,12 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         val ctx = requireContext()
-        val scroll = ScrollView(ctx).apply { setBackgroundColor(DSSColors.background()) }
+        // iOS: containerView.layer.cornerRadius = 24 (cantos superiores), fundo = .systemBackground.
+        val scroll = ScrollView(ctx).apply {
+            background = DrawableFactory.rounded(
+                context = ctx, backgroundColor = DSSColors.background(), cornerRadiusDp = 24f,
+            )
+        }
 
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
@@ -79,13 +86,21 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
         }
         root.addView(handle, LinearLayout.LayoutParams(40f.dpToPx(ctx), 5f.dpToPx(ctx)))
 
-        // Success icon / brand illustration
+        // Success icon / brand illustration.
+        // iOS: ImageLoader.image(named: "ilBenefitSuccess") ?? SF Symbol "checkmark.seal.fill",
+        // com tintColor = DSSColors.primary.
         val successIcon = ImageView(ctx).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
-            if (illustration != null) {
-                setImageDrawable(illustration)
+            val explicit = illustration
+            if (explicit != null) {
+                setImageDrawable(explicit)
             } else {
-                setImageResource(android.R.drawable.checkbox_on_background)
+                val brandImage = ImageLoader.image(ctx, "ilbenefitsuccess")
+                if (brandImage != null) {
+                    setImageDrawable(brandImage)
+                } else {
+                    setImageResource(android.R.drawable.checkbox_on_background)
+                }
                 setColorFilter(DSSColors.primary())
             }
         }

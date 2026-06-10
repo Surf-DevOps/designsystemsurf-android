@@ -158,10 +158,10 @@ class DSSFixedCalendarView @JvmOverloads constructor(
                 } else {
                     val day = dayNumber
                     val isEnabled = enabledDays.contains(day)
+                    // iOS compara apenas o dia-do-mês da selectedDate (não o mês).
                     val isSelected = selectedDate?.let {
                         val c = Calendar.getInstance().apply { time = it }
-                        c.get(Calendar.DAY_OF_MONTH) == day &&
-                            c.get(Calendar.MONTH) == monthIndex
+                        c.get(Calendar.DAY_OF_MONTH) == day
                     } ?: false
                     cell = makeDayCell(day, isEnabled, isSelected)
                     dayNumber++
@@ -174,13 +174,18 @@ class DSSFixedCalendarView @JvmOverloads constructor(
                 LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT,
-                ),
+                ).apply {
+                    // iOS: daysGrid (vertical stack) tem spacing = 4 entre as linhas.
+                    if (row > 0) topMargin = 4f.dpToPx(context)
+                },
             )
         }
     }
 
     private fun makeDayCell(day: Int, enabled: Boolean, selected: Boolean): View {
-        val frame = FrameLayout(context)
+        // iOS: o "botão" do dia preenche a célula inteira (largura da coluna x 40 de altura).
+        // Quando selecionado, é o próprio botão (célula cheia) que recebe o fundo primary
+        // com cornerRadius 20, e não um quadrado fixo centralizado.
         val label = TextView(context).apply {
             text = day.toString()
             textSize = 15f
@@ -203,21 +208,20 @@ class DSSFixedCalendarView @JvmOverloads constructor(
                 label.setTextColor(DSSColors.textTertiary())
             }
         }
-        val lp = LayoutParams(36f.dpToPx(context), 36f.dpToPx(context)).apply {
-            gravity = Gravity.CENTER
-        }
-        frame.addView(label, lp)
 
         if (enabled) {
-            frame.isClickable = true
-            frame.setOnClickListener {
-                val c = Calendar.getInstance().apply { time = monthDate ?: return@setOnClickListener }
-                c.set(Calendar.DAY_OF_MONTH, day)
+            label.isClickable = true
+            label.setOnClickListener {
+                // iOS: monta y/m/d do monthDate (hora zerada) e atualiza selectedDate.
+                val src = monthDate ?: return@setOnClickListener
+                val c = Calendar.getInstance().apply { time = src }
+                c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), day, 0, 0, 0)
+                c.set(Calendar.MILLISECOND, 0)
                 selectedDate = c.time
                 buildDaysGrid()
             }
         }
-        return frame
+        return label
     }
 
     override fun applyTheme(theme: Theme) { refresh() }

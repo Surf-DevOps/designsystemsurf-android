@@ -21,7 +21,10 @@ import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.ImageLoader
+import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
+import com.surf.surfhubds.util.dpToPxFloat
 import java.net.URL
 import java.util.concurrent.Executors
 
@@ -74,6 +77,19 @@ class DSSPlanCollectionView @JvmOverloads constructor(
     private var showPlanNames: Boolean = true
     private var expandedIndex: Int = -1
 
+    /**
+     * Quando true, exibe a faixa "Oferta atual" no card que casar com o plano vigente.
+     * Espelha `showsCurrentOffer` do iOS — recarrega ao mudar.
+     */
+    var showsCurrentOffer: Boolean = false
+        set(value) {
+            field = value
+            adapter.notifyDataSetChanged()
+        }
+
+    /** `planId` (noPlano) do plano vigente, comparado com os planos da lista. */
+    private var currentPlanId: String? = null
+
     init {
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = adapter
@@ -107,6 +123,22 @@ class DSSPlanCollectionView @JvmOverloads constructor(
 
     /** Retorna o plano expandido/selecionado, se houver. */
     fun getSelectedPlan(): PlanModel? = adapter.itemAt(expandedIndex)
+
+    /**
+     * Define o plano vigente (oferta atual) pelo `planId` (equivalente ao `noPlano` do iOS).
+     * A faixa só aparece se [showsCurrentOffer] for true.
+     */
+    fun setCurrentPlan(planId: String?) {
+        currentPlanId = planId
+        adapter.notifyDataSetChanged()
+    }
+
+    /** Indica se o plano informado é o vigente (oferta atual): casa por `planId`. */
+    private fun isCurrentOffer(plan: PlanModel): Boolean {
+        if (!showsCurrentOffer) return false
+        val current = currentPlanId ?: return false
+        return current == plan.planId
+    }
 
     /** Limpa a seleção atual. */
     fun clearSelection() {
@@ -151,6 +183,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             val isExpanded = position == expandedIndex
             holder.cell.setExpanded(isExpanded, animated = false)
             holder.cell.setSelectedStyle(isExpanded)
+            holder.cell.setCurrentOffer(isCurrentOffer(plan))
             holder.cell.setOnClickListener {
                 val previouslyExpanded = expandedIndex
                 val expanding = position != expandedIndex
@@ -184,6 +217,10 @@ class DSSPlanCollectionView @JvmOverloads constructor(
 
         private val container = FrameLayout(context)
         private val mainColumn = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+
+        // Faixa "Oferta atual" (fica acima/atrás do card; o card cobre a parte inferior).
+        private val currentOfferBadge = TextView(context)
+        private var currentOfferShown = false
 
         // Header
         private val headerContainer = FrameLayout(context)
@@ -222,6 +259,30 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             val pad = 16f.dpToPx(context)
             setPadding(pad, 8f.dpToPx(context), pad, 8f.dpToPx(context))
 
+            // Faixa "Oferta atual" — adicionada ANTES do container para ficar atrás dele.
+            currentOfferBadge.apply {
+                text = "Oferta atual"
+                textSize = 14f
+                typeface = DSSFont.medium(context, 14f).typeface
+                setTextColor(android.graphics.Color.WHITE)
+                gravity = Gravity.CENTER
+                setPadding(
+                    20f.dpToPx(context),
+                    6f.dpToPx(context),
+                    20f.dpToPx(context),
+                    14f.dpToPx(context),
+                )
+                visibility = View.GONE
+            }
+            addView(
+                currentOfferBadge,
+                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                    // iOS: top = contentView.top; trailing = contentView.trailing - 16.
+                    // O padding horizontal do cell (16) já posiciona a borda direita.
+                    gravity = Gravity.TOP or Gravity.END
+                },
+            )
+
             container.layoutParams = LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT,
@@ -232,6 +293,30 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             )
             container.addView(mainColumn)
             addView(container)
+        }
+
+        /**
+         * Mostra/esconde a faixa "Oferta atual" acima do card.
+         * iOS empurra o card 20pt para baixo (top 8 -> 28) para a faixa aparecer atrás dele.
+         */
+        fun setCurrentOffer(show: Boolean) {
+            currentOfferShown = show
+            currentOfferBadge.visibility = if (show) View.VISIBLE else View.GONE
+            val lp = container.layoutParams as? LayoutParams ?: return
+            lp.topMargin = if (show) CURRENT_OFFER_EXTRA_HEIGHT.dpToPx(context) else 0
+            container.layoutParams = lp
+            refreshCurrentOfferBackground()
+        }
+
+        private fun refreshCurrentOfferBackground() {
+            val color = DSSColors.primary()
+            val r = 12f.dpToPxFloat(context)
+            currentOfferBadge.background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                setColor(color)
+                // Apenas cantos superiores (iOS maskedCorners = topLeft|topRight).
+                cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
+            }
         }
 
         private fun setupHeader() {
@@ -413,8 +498,9 @@ class DSSPlanCollectionView @JvmOverloads constructor(
         fun configure(plan: PlanModel, showPlanName: Boolean) {
             validityLabel.text = plan.validityText
             val displayPrice = if (plan.parcelas > 1) plan.priceCents / plan.parcelas else plan.priceCents
+            // iOS: parcelas>1 -> "Nx R$<valor>" (sem espaço); parcelas==1 -> "R$ <valor>" (com espaço).
             priceLabel.text = if (plan.parcelas > 1) {
-                "${plan.parcelas}x R$ ${formatPrice(displayPrice)}"
+                "${plan.parcelas}x R$${formatPrice(displayPrice)}"
             } else {
                 "R$ ${formatPrice(displayPrice)}"
             }
@@ -424,8 +510,10 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             planNameLabel.visibility = if (showPlanName) View.VISIBLE else View.GONE
 
             benefitsStack.removeAllViews()
-            for (item in plan.checkListItems) {
-                benefitsStack.addView(createItemView(item, isCheckmark = true))
+            // iOS benefitsStackView.spacing = 6.
+            plan.checkListItems.forEachIndexed { index, item ->
+                val spacing = if (index == 0) 0f else 6f
+                benefitsStack.addView(createItemView(item, isCheckmark = true, topSpacingDp = spacing))
             }
 
             configureSection(ilimitadosStack, ilimitadosTitle, plan.unlimitedItems)
@@ -439,6 +527,12 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             configureSection(assinaturasStack, assinaturasTitle, subs)
 
             configureChannelsSection(plan.packageType)
+
+            // iOS: garante estado inicial colapsado após configurar.
+            isExpanded = false
+            expandableContainer.visibility = View.GONE
+            downArrow.animate().cancel()
+            downArrow.rotation = 0f
         }
 
         private fun configureSection(stack: LinearLayout, title: TextView, items: List<CheckListItem>) {
@@ -447,8 +541,10 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             title.visibility = if (hasItems) View.VISIBLE else View.GONE
             stack.visibility = if (hasItems) View.VISIBLE else View.GONE
             if (!hasItems) return
-            for (item in items) {
-                stack.addView(createItemView(item, isCheckmark = false))
+            // iOS makeSectionItemsStack().spacing = 12.
+            items.forEachIndexed { index, item ->
+                val spacing = if (index == 0) 0f else 12f
+                stack.addView(createItemView(item, isCheckmark = false, topSpacingDp = spacing))
             }
         }
 
@@ -459,10 +555,31 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 return
             }
             channelsView.visibility = View.VISIBLE
-            channelsLabel.text = if (type.contains("ESSENCIAL")) "+5 canais" else "+17 canais"
+            val essencial = type.contains("ESSENCIAL")
+            channelsLabel.text = if (essencial) "+5 canais" else "+17 canais"
+
+            // iOS: ImageLoader.image(named: "channels_essencial"/"channels_total").
+            val imageName = if (essencial) "channels_essencial" else "channels_total"
+            val drawable = ImageLoader.image(context, imageName)
+            if (drawable != null) {
+                channelsImage.setImageDrawable(drawable)
+                channelsImage.background = null
+            } else {
+                // Placeholder: fundo cinza com canto 4 (iOS systemGray5 + cornerRadius 4).
+                channelsImage.setImageDrawable(null)
+                channelsImage.background = DrawableFactory.rounded(
+                    context = context,
+                    backgroundColor = DSSColors.backgroundSecondary(),
+                    cornerRadiusDp = 4f,
+                )
+            }
         }
 
-        private fun createItemView(item: CheckListItem, isCheckmark: Boolean): View {
+        /**
+         * @param topSpacingDp espaçamento (dp) acima do item — espelha o `spacing` do UIStackView do iOS
+         *   (benefits = 6, seções Ilimitados/Assinaturas = 12). 0 para o primeiro item.
+         */
+        private fun createItemView(item: CheckListItem, isCheckmark: Boolean, topSpacingDp: Float): View {
             val row = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
@@ -489,19 +606,23 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 textSize = 14f
                 typeface = DSSFont.regular(context, 14f).typeface
                 setTextColor(DSSColors.textSecondary())
+                // iOS: numberOfLines = 0 (multilinha).
+                maxLines = Integer.MAX_VALUE
             }
             row.addView(
                 label,
                 LinearLayout.LayoutParams(
+                    0,
                     LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f,
                 ).apply { leftMargin = 12f.dpToPx(context) },
             )
 
+            // iOS: o espaçamento entre itens vem do UIStackView (sem margem no primeiro item).
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-            ).apply { topMargin = 4f.dpToPx(context); bottomMargin = 4f.dpToPx(context) }
+            ).apply { topMargin = topSpacingDp.dpToPx(context) }
             row.layoutParams = lp
             return row
         }
@@ -509,8 +630,16 @@ class DSSPlanCollectionView @JvmOverloads constructor(
         fun setExpanded(expanded: Boolean, animated: Boolean) {
             if (isExpanded == expanded) return
             isExpanded = expanded
+            // iOS: conteúdo aparece/some instantaneamente; só o chevron anima.
             expandableContainer.visibility = if (expanded) View.VISIBLE else View.GONE
-            downArrow.rotation = if (expanded) 180f else 0f
+            val target = if (expanded) 180f else 0f
+            if (animated) {
+                // iOS: UIView.animate 0.3s easeInOut girando o chevron.
+                downArrow.animate().rotation(target).setDuration(300L).start()
+            } else {
+                downArrow.animate().cancel()
+                downArrow.rotation = target
+            }
         }
 
         fun setSelectedStyle(isSelected: Boolean) {
@@ -547,15 +676,17 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             ilimitadosTitle.setTextColor(DSSColors.textPrimary())
             assinaturasTitle.setTextColor(DSSColors.textPrimary())
             channelsLabel.setTextColor(DSSColors.primary())
+            refreshCurrentOfferBackground()
         }
     }
 
     companion object {
-        internal fun formatPrice(cents: Int): String {
-            val reais = cents / 100
-            val cs = cents % 100
-            return String.format("%d,%02d", reais, cs)
-        }
+        /** Altura extra (dp) reservada para a faixa "Oferta atual" (iOS currentOfferExtraHeight = 20). */
+        internal const val CURRENT_OFFER_EXTRA_HEIGHT = 20f
+
+        // Espelha `Utility.formatPrice` do iOS: NumberFormatter .decimal pt_BR
+        // (separador de milhar "." e decimal ","), 2 casas. Ex.: 1234567 -> "12.345,67".
+        internal fun formatPrice(cents: Int): String = Utility.formatPrice(cents)
 
         private val ioExecutor = Executors.newCachedThreadPool()
 

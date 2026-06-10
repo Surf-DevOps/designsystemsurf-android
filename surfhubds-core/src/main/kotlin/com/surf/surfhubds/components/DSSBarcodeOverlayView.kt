@@ -50,7 +50,8 @@ class DSSBarcodeOverlayView @JvmOverloads constructor(
 
         strokePaint.strokeWidth = lineWidth
 
-        // Linha central horizontal
+        // Linha central horizontal — no iOS é desenhada via CGContext com lineCap = .round
+        strokePaint.strokeCap = Paint.Cap.ROUND
         canvas.drawLine(rect.left, rect.centerY(), rect.right, rect.centerY(), strokePaint)
 
         val path = Path()
@@ -107,6 +108,9 @@ class DSSBarcodeOverlayView @JvmOverloads constructor(
         )
         path.lineTo(rect.right - cornerLength, rect.bottom)
 
+        // Os cantos no iOS usam um CAShapeLayer sem definir `lineCap`, que tem
+        // como padrão `kCALineCapButt` (extremidades retas, não arredondadas).
+        strokePaint.strokeCap = Paint.Cap.BUTT
         canvas.drawPath(path, strokePaint)
     }
 }

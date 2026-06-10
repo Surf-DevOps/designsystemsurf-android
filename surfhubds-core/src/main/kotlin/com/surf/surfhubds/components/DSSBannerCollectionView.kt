@@ -27,7 +27,24 @@ class DSSBannerCollectionView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr), ThemeAware {
 
     /** Modelo equivalente ao `BannerItem` do iOS. */
-    data class BannerItem(val id: Int, val url: String, val value: String? = null)
+    data class BannerItem(
+        val id: Int,
+        val url: String,
+        val value: String? = null,
+        /** Caminho/destino retornado pela API; é a string disparada no clique do banner. */
+        val path: String? = null,
+    )
+
+    /**
+     * Modelo agnóstico equivalente ao `PreSignedDownloadListSuccess.PresignedUrl` do iOS
+     * (que vive no SurfAPIKit). Usado pela sobrecarga de [configure] que dispara o `path`.
+     */
+    data class PresignedBanner(
+        val id: Int,
+        val url: String,
+        val value: String? = null,
+        val path: String? = null,
+    )
 
     private val bannerWidthDp = 314f
     private val bannerHeightDp = 106f
@@ -35,6 +52,9 @@ class DSSBannerCollectionView @JvmOverloads constructor(
 
     private val items = mutableListOf<BannerItem>()
     private var tapAction: ((Int) -> Unit)? = null
+
+    /** Handler chamado ao tocar no banner; recebe a string do `path` retornado pela API. */
+    private var pathTapAction: ((String) -> Unit)? = null
 
     private val recyclerView: RecyclerView = RecyclerView(context).apply {
         setBackgroundColor(Color.TRANSPARENT)
@@ -69,7 +89,41 @@ class DSSBannerCollectionView @JvmOverloads constructor(
             items.add(BannerItem(id = index, url = url, value = null))
         }
         this.tapAction = tapAction
+        this.pathTapAction = null
+
+        // Esconde a view quando não há banners (lista vazia / erro).
+        visibility = if (items.isEmpty()) GONE else VISIBLE
+
+        preloadImages(urls)
+
         adapter.notifyDataSetChanged()
+    }
+
+    /**
+     * Configura os banners a partir da lista de [PresignedBanner] (equivalente à sobrecarga
+     * iOS que recebe `[PreSignedDownloadListSuccess.PresignedUrl]`). Exibe quantos banners
+     * vierem na lista. Ao tocar num banner, o [onBannerTap] dispara a string do `path` daquele item.
+     */
+    fun configureBanners(banners: List<PresignedBanner>, onBannerTap: ((String) -> Unit)? = null) {
+        items.clear()
+        banners.forEach {
+            items.add(BannerItem(id = it.id, url = it.url, value = it.value, path = it.path))
+        }
+        this.tapAction = null
+        this.pathTapAction = onBannerTap
+
+        // Esconde a view quando não há banners (lista vazia / erro).
+        visibility = if (items.isEmpty()) GONE else VISIBLE
+
+        preloadImages(items.map { it.url })
+
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun preloadImages(urls: List<String>) {
+        urls.forEach { url ->
+            Glide.with(context).load(url).preload()
+        }
     }
 
     private inner class BannerAdapter : RecyclerView.Adapter<BannerViewHolder>() {
@@ -89,7 +143,17 @@ class DSSBannerCollectionView @JvmOverloads constructor(
             holder.itemView.layoutParams = lp
 
             holder.cell.load(items[position].url)
-            holder.itemView.setOnClickListener { tapAction?.invoke(position) }
+            holder.itemView.setOnClickListener {
+                tapAction?.invoke(position)
+
+                // Dispara a string do path do banner tocado.
+                if (position < items.size) {
+                    val path = items[position].path
+                    if (!path.isNullOrEmpty()) {
+                        pathTapAction?.invoke(path)
+                    }
+                }
+            }
         }
     }
 

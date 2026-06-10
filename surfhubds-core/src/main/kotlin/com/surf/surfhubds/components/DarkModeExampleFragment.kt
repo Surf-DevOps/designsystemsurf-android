@@ -1,16 +1,22 @@
 package com.surf.surfhubds.components
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
+import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -59,33 +65,53 @@ class DarkModeExampleFragment : Fragment() {
 
         val email = DSSLabelTextField(ctx).apply {
             configure(label = "Email", placeholder = "seu@email.com",
-                type = DSSLabelTextField.Type.Text, showsErrorLabel = true)
+                type = DSSLabelTextField.Type.Text,
+                rightIcon = ImageLoader.image(ctx, "envelope"),
+                showsErrorLabel = true)
         }
         addRow(stack, email)
 
-        val validateButton = DSSPrincipalButton(ctx).apply {
+        // iOS: UIButton(type:.system) com backgroundColor=primary, titleColor=.white,
+        // cornerRadius=8, font=DSSFont.medium(16), height=50.
+        val validateButton = AppCompatButton(ctx).apply {
             text = "Validar Campos"
-            onTap = { validateFields() }
+            isAllCaps = false
+            gravity = Gravity.CENTER
+            textSize = 16f
+            typeface = DSSFont.medium(ctx, 16f).typeface
+            setTextColor(Color.WHITE)
+            background = DrawableFactory.rounded(
+                context = ctx,
+                backgroundColor = DSSColors.primary(),
+                cornerRadiusDp = 8f,
+            )
+            setOnClickListener { validateFields() }
         }
         stack.addView(validateButton, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, 50f.dpToPx(ctx),
         ).apply { topMargin = 20f.dpToPx(ctx) })
 
-        val themeToggleButton = DSSPrincipalButton(ctx).apply {
+        // iOS: UIButton(type:.system) padrão (fundo transparente, texto tintado), height=44.
+        val themeToggleButton = AppCompatButton(ctx).apply {
             text = "Alternar Tema (Teste)"
-            onTap = { toggleTheme() }
+            isAllCaps = false
+            gravity = Gravity.CENTER
+            textSize = 16f
+            typeface = DSSFont.regular(ctx, 16f).typeface
+            setTextColor(DSSColors.textLink())
+            background = null
+            setOnClickListener { toggleTheme() }
         }
         stack.addView(themeToggleButton, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, 44f.dpToPx(ctx),
-        ).apply { topMargin = 12f.dpToPx(ctx) })
+        ).apply { topMargin = 20f.dpToPx(ctx) })
 
         textFields.clear()
         textFields.addAll(listOf(name, cpf, phone, password, email))
         for (i in textFields.indices) {
             val prev = if (i > 0) textFields[i - 1] else null
             val next = if (i < textFields.size - 1) textFields[i + 1] else null
-            textFields[i].previousField = prev
-            textFields[i].nextField = next
+            textFields[i].setupNavigation(previous = prev, next = next)
         }
 
         rootContainer.addView(stack, ViewGroup.LayoutParams(

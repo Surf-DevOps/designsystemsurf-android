@@ -1,6 +1,7 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.ViewGroup
@@ -13,8 +14,11 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -29,8 +33,13 @@ class CardsEmptyStateView @JvmOverloads constructor(
 
     var onAddCardTapped: (() -> Unit)? = null
 
-    /** Override para fornecer o ícone do empty-state (no iOS é `no_cards_image`). */
-    var iconResolver: () -> android.graphics.drawable.Drawable? = { null }
+    /**
+     * Override para fornecer o ícone do empty-state.
+     * Default espelha o iOS: `ImageLoader.image(named: "no_cards_image", brand: BrandResolver.current())`.
+     */
+    var iconResolver: () -> android.graphics.drawable.Drawable? = {
+        ImageLoader.image(context, "no_cards_image")
+    }
 
     private val iconView = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
     private val titleView = TextView(context).apply {
@@ -138,22 +147,34 @@ class CardsEmptyStateView @JvmOverloads constructor(
     }
 
     private fun refresh() {
-        setBackgroundColor(DSSColors.backgroundSecondary())
+        val scheme = ThemeManager.colorScheme
+        val isBlack = scheme == ColorScheme.BLACK
+
+        // iOS: colorScheme == .black ? .black : .secondarySystemBackground
+        setBackgroundColor(if (isBlack) Color.BLACK else DSSColors.backgroundSecondary())
         iconView.setImageDrawable(iconResolver())
 
         titleView.setTextColor(DSSColors.textPrimary())
         subtitleView.setTextColor(DSSColors.textSecondary())
 
+        // iOS: colorScheme == .black ? DSSColors.primaryButton : DSSColors.primary
         addCardButton.background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.primary(),
+            backgroundColor = if (isBlack) DSSColors.primaryButton() else DSSColors.primary(),
             cornerRadiusDp = 28f,
         )
-        addCardButton.setTextColor(DSSColors.buttonText())
+        // iOS: .black -> .white ; senão (dark -> .black, light -> .white)
+        val buttonTitleColor = when (scheme) {
+            ColorScheme.BLACK -> Color.WHITE
+            ColorScheme.DARK -> Color.BLACK
+            ColorScheme.LIGHT -> Color.WHITE
+        }
+        addCardButton.setTextColor(buttonTitleColor)
 
-        // tinta os benefícios com primary
+        // iOS: colorScheme == .black ? .systemRed : DSSColors.primary
+        val benefitColor = if (isBlack) Color.RED else DSSColors.primary()
         for (i in 0 until benefitsStack.childCount) {
-            (benefitsStack.getChildAt(i) as? TextView)?.setTextColor(DSSColors.primary())
+            (benefitsStack.getChildAt(i) as? TextView)?.setTextColor(benefitColor)
         }
     }
 }

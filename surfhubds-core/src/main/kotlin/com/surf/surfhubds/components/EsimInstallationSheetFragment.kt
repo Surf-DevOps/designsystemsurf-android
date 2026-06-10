@@ -2,6 +2,7 @@ package com.surf.surfhubds.components
 
 import android.app.Dialog
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +10,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.bottomsheet.BottomSheetDragHandleView
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.dpToPxFloat
 
 /**
  * Port do `EsimInstallationSheetViewController` do iOS.
@@ -36,6 +39,7 @@ class EsimInstallationSheetFragment : BottomSheetDialogFragment() {
 
     private var contentText: String = ""
     private var notifyDismiss: Boolean = true
+    private var didFireDismiss: Boolean = false
 
     fun setContentText(text: String) { contentText = text }
 
@@ -47,9 +51,8 @@ class EsimInstallationSheetFragment : BottomSheetDialogFragment() {
         val ctx = requireContext()
         contentText = arguments?.getString(ARG_TEXT, "") ?: contentText
 
-        val view = BottomSheetEsimInstallationView(ctx).apply {
+        val content = BottomSheetEsimInstallationView(ctx).apply {
             configure(contentText)
-            setBackgroundColor(sheetBackgroundColor())
             onContinueTap = {
                 notifyDismiss = false
                 accepted?.invoke()
@@ -60,7 +63,27 @@ class EsimInstallationSheetFragment : BottomSheetDialogFragment() {
                 dismissAllowingStateLoss()
             }
         }
-        return view
+
+        // iOS: `preferredCornerRadius = 16` -> cantos superiores arredondados em 16dp
+        // (cantos inferiores ficam contra a borda da tela). O background usa o mesmo
+        // esquema de cores do iOS (`setupSheet`).
+        val root = android.widget.FrameLayout(ctx).apply {
+            background = sheetBackground()
+        }
+        root.addView(content, android.widget.FrameLayout.LayoutParams(
+            android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+        ))
+
+        // iOS: `prefersGrabberVisible = true` -> grabber/drag handle visível no topo.
+        val grabber = BottomSheetDragHandleView(ctx)
+        root.addView(grabber, android.widget.FrameLayout.LayoutParams(
+            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+            android.view.Gravity.TOP or android.view.Gravity.CENTER_HORIZONTAL,
+        ))
+
+        return root
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -69,18 +92,31 @@ class EsimInstallationSheetFragment : BottomSheetDialogFragment() {
             val sheet = dialog.findViewById<View>(
                 com.google.android.material.R.id.design_bottom_sheet,
             )
-            sheet?.setBackgroundColor(sheetBackgroundColor())
+            // iOS: `preferredCornerRadius = 16` aplicado ao próprio sheet.
+            sheet?.background = sheetBackground()
         }
         return dialog
     }
 
     override fun onCancel(dialog: android.content.DialogInterface) {
         super.onCancel(dialog)
-        if (notifyDismiss) onDismissed?.invoke()
+        fireDismissOnce()
     }
 
     override fun onDismiss(dialog: android.content.DialogInterface) {
         super.onDismiss(dialog)
+        fireDismissOnce()
+    }
+
+    /**
+     * iOS dispara `onDismiss` exatamente uma vez (em `presentationControllerDidDismiss`
+     * no swipe, ou no `onCancelTap`). No Android, swipe/back chamam `onCancel` E
+     * `onDismiss`, então o guard garante uma única invocação. O fluxo de "Concordar e
+     * continuar" suprime o callback via [notifyDismiss] (iOS não chama `onDismiss` ali).
+     */
+    private fun fireDismissOnce() {
+        if (didFireDismiss) return
+        didFireDismiss = true
         if (notifyDismiss) onDismissed?.invoke()
     }
 
@@ -89,6 +125,21 @@ class EsimInstallationSheetFragment : BottomSheetDialogFragment() {
             ColorScheme.BLACK -> Color.BLACK
             ColorScheme.DARK -> Color.rgb(28, 28, 30)
             ColorScheme.LIGHT -> DSSColors.background()
+        }
+    }
+
+    /**
+     * iOS: `preferredCornerRadius = 16` — arredonda somente os cantos superiores
+     * (os inferiores ficam encostados na borda da tela). Usa a cor de fundo do
+     * esquema atual (`setupSheet` do iOS).
+     */
+    private fun sheetBackground(): GradientDrawable {
+        val ctx = requireContext()
+        val r = 16f.dpToPxFloat(ctx)
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            setColor(sheetBackgroundColor())
+            cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
         }
     }
 

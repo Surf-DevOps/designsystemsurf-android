@@ -1,9 +1,12 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.TextPaint
 import android.text.style.ForegroundColorSpan
+import android.text.style.MetricAffectingSpan
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -139,13 +142,23 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         }
     }
 
-    fun configure(maxDate: Date, daysBack: Int) {
+    /**
+     * Configura o calendário com a data máxima e quantos dias para trás são habilitados.
+     *
+     * @param maxDate Data máxima selecionável (ex: data de renovação).
+     * @param daysBack Quantos dias para trás a partir de [maxDate] são habilitados.
+     * @param startFromMinDate Se `true`, o calendário abre mostrando o mês da data mínima
+     *   em vez da máxima. (iOS: `startFromMinDate`, default `false`.)
+     */
+    @JvmOverloads
+    fun configure(maxDate: Date, daysBack: Int, startFromMinDate: Boolean = false) {
         this.maxDate = maxDate
         val c = Calendar.getInstance().apply { time = maxDate }
         c.add(Calendar.DAY_OF_MONTH, -daysBack)
         this.minDate = c.time
         this.selectedDate = null
-        calendarUtil.time = maxDate
+        val referenceDate = (if (startFromMinDate) this.minDate else null) ?: maxDate
+        calendarUtil.time = referenceDate
         displayedMonth = calendarUtil.get(Calendar.MONTH) + 1
         displayedYear = calendarUtil.get(Calendar.YEAR)
         computeEnabledDays()
@@ -235,10 +248,18 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         val span = SpannableString(full)
         val start = full.indexOf(dateStr)
         if (start >= 0) {
+            val end = start + dateStr.length
             span.setSpan(
                 ForegroundColorSpan(DSSColors.primary()),
                 start,
-                start + dateStr.length,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+            )
+            // iOS aplica DSSFont.regular(18) na porção da data (base é light(18)).
+            span.setSpan(
+                TypefaceSpanCompat(DSSFont.regular(context, 18f).typeface),
+                start,
+                end,
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
             )
         }
@@ -362,6 +383,20 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         if (selectedDate != null) {
             buildDaysGrid()
             updateDescriptionLabel()
+        }
+    }
+
+    /**
+     * Span de typeface compatível com minSdk 24 (o construtor `TypefaceSpan(Typeface)`
+     * só existe a partir da API 28). Aplica a [typeface] preservando o tamanho do texto base.
+     */
+    private class TypefaceSpanCompat(private val typeface: Typeface) : MetricAffectingSpan() {
+        override fun updateDrawState(paint: TextPaint) {
+            paint.typeface = typeface
+        }
+
+        override fun updateMeasureState(paint: TextPaint) {
+            paint.typeface = typeface
         }
     }
 }

@@ -49,14 +49,17 @@ class DoubtsPopupDialogFragment : DialogFragment() {
         sections.addAll(custom)
     }
 
+    /** Referência ao card central para reproduzir a animação de entrada do iOS. */
+    private var cardView: View? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         val ctx = requireContext()
 
-        // Root with dim overlay
+        // Root with dim overlay (iOS: blur de fundo -> token de overlay)
         val root = FrameLayout(ctx).apply {
-            setBackgroundColor(Color.parseColor("#73000000"))
+            setBackgroundColor(DSSColors.overlay())
             isClickable = true
             setOnClickListener { dismiss() }
         }
@@ -74,14 +77,18 @@ class DoubtsPopupDialogFragment : DialogFragment() {
         root.addView(card, FrameLayout.LayoutParams(cardWidth, cardHeight).apply {
             gravity = Gravity.CENTER
         })
+        cardView = card
 
         // Header
         val titleLabel = TextView(ctx).apply {
             text = "Dúvidas"
             gravity = Gravity.CENTER
-            typeface = DSSFont.bold(ctx, 16f).typeface
+            // iOS: .systemFont(ofSize: 16, weight: .semibold) -> medium
+            typeface = DSSFont.medium(ctx, 16f).typeface
             textSize = 16f
-            setTextColor(DSSColors.textLink())
+            maxLines = 1
+            // iOS: .systemBlue (// DSSColors.brandPrimary) -> primary
+            setTextColor(DSSColors.primary())
         }
         card.addView(titleLabel, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -90,7 +97,8 @@ class DoubtsPopupDialogFragment : DialogFragment() {
         val closeButton = ImageButton(ctx).apply {
             setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
             setBackgroundColor(Color.TRANSPARENT)
-            setColorFilter(DSSColors.textLink())
+            // iOS: tintColor = .systemBlue (// DSSColors.brandPrimary) -> primary
+            setColorFilter(DSSColors.primary())
             setOnClickListener { dismiss() }
         }
         card.addView(closeButton, FrameLayout.LayoutParams(
@@ -107,25 +115,30 @@ class DoubtsPopupDialogFragment : DialogFragment() {
             orientation = LinearLayout.VERTICAL
         }
 
-        sections.forEach { section ->
+        // iOS: stackView.spacing = 16 (espaçamento uniforme entre TODAS as subviews;
+        // o primeiro elemento não tem margem superior).
+        val spacing = 16f.dpToPx(ctx)
+        sections.forEachIndexed { index, section ->
             val sectionTitle = TextView(ctx).apply {
                 text = section.title
+                // iOS: .systemFont(ofSize: 16, weight: .bold) ; .black -> textPrimary
                 typeface = DSSFont.bold(ctx, 16f).typeface
                 textSize = 16f
                 setTextColor(DSSColors.textPrimary())
             }
             val sectionBody = TextView(ctx).apply {
                 text = section.body
+                // iOS: .systemFont(ofSize: 14) ; .systemGray -> textSecondary
                 typeface = DSSFont.regular(ctx, 14f).typeface
                 textSize = 14f
                 setTextColor(DSSColors.textSecondary())
             }
             stack.addView(sectionTitle, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-            ).apply { topMargin = 16f.dpToPx(ctx) })
+            ).apply { topMargin = if (index == 0) 0 else spacing })
             stack.addView(sectionBody, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-            ).apply { topMargin = 8f.dpToPx(ctx) })
+            ).apply { topMargin = spacing })
         }
 
         scroll.addView(stack, ViewGroup.LayoutParams(
@@ -152,6 +165,25 @@ class DoubtsPopupDialogFragment : DialogFragment() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
             )
+        }
+        animateIn()
+    }
+
+    /**
+     * Reproduz `animateIn` do iOS: card surge com alpha 0 -> 1 e escala 0.95 -> 1.0
+     * em 0.18s (UIView.animate withDuration: 0.18).
+     */
+    private fun animateIn() {
+        cardView?.let { card ->
+            card.alpha = 0f
+            card.scaleX = 0.95f
+            card.scaleY = 0.95f
+            card.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(180L)
+                .start()
         }
     }
 

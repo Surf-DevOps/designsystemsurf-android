@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
@@ -106,12 +107,21 @@ class DSSDeleteCardScheduleBottomSheet : BottomSheetDialogFragment() {
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = 12f.dpToPx(ctx) })
 
-        val confirmButton = DSSPrincipalButton(ctx).apply {
+        // iOS: confirmButton é um UIButton "cru" com fill = DSSColors.primaryButton
+        // e texto = DSSColors.buttonText (NÃO usa DSSPrincipalButton, que pinta com `primary`).
+        val confirmButton = AppCompatButton(ctx).apply {
             text = "Confirmar"
-            cornerRadiusDp = 28f
+            isAllCaps = false
+            gravity = Gravity.CENTER
             textSize = 18f
             typeface = DSSFont.bold(ctx, 18f).typeface
-            onTap = { confirmTapped() }
+            setTextColor(DSSColors.buttonText())
+            background = DrawableFactory.rounded(
+                ctx,
+                backgroundColor = DSSColors.primaryButton(),
+                cornerRadiusDp = 28f,
+            )
+            setOnClickListener { confirmTapped() }
         }
         root.addView(confirmButton, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, 56f.dpToPx(ctx),

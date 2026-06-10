@@ -36,7 +36,8 @@ class DSSConsumptionChartListView @JvmOverloads constructor(
     /** Estilo comum aos charts. */
     data class Style(
         val progressColor: Int = DSSColors.primary(),
-        val trackColor: Int = Color.argb(77, 200, 200, 200),
+        // iOS default: UIColor.lightGray.withAlphaComponent(0.3) -> lightGray = 170, alpha 0.3 = 77.
+        val trackColor: Int = Color.argb(77, 170, 170, 170),
         val usedFontSizeSp: Float = 28f,
         val totalFontSizeSp: Float = 18f,
         val usedTextColor: Int = Color.BLACK,
@@ -89,7 +90,9 @@ class DSSConsumptionChartListView @JvmOverloads constructor(
             val item = items[position]
             val lp = (holder.itemView.layoutParams as? RecyclerView.LayoutParams)
                 ?: RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT, RecyclerView.LayoutParams.WRAP_CONTENT)
-            if (position < items.size - 1) lp.rightMargin = 50f.dpToPx(context)
+            // iOS: minimumLineSpacing = 50 entre itens (sem espaco apos o ultimo).
+            // Reset explicito p/ evitar margem residual no reuso de holders.
+            lp.rightMargin = if (position < items.size - 1) 50f.dpToPx(context) else 0
             holder.itemView.layoutParams = lp
             holder.configure(
                 used = item.used,

@@ -33,7 +33,7 @@ class DSSConsumptionChartFlaListView @JvmOverloads constructor(
 
     data class Style(
         val progressColor: Int = DSSColors.primary(),
-        val trackColor: Int = Color.argb(77, 200, 200, 200),
+        val trackColor: Int = Color.argb(77, 170, 170, 170),
         val usedTextColor: Int = Color.BLACK,
         val totalTextColor: Int = Color.DKGRAY,
     )
@@ -82,7 +82,7 @@ class DSSConsumptionChartFlaListView @JvmOverloads constructor(
             val item = items[position]
             val lp = (holder.itemView.layoutParams as? RecyclerView.LayoutParams)
                 ?: RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT, RecyclerView.LayoutParams.WRAP_CONTENT)
-            if (position < items.size - 1) lp.rightMargin = 50f.dpToPx(context)
+            lp.rightMargin = if (position < items.size - 1) 50f.dpToPx(context) else 0
             holder.itemView.layoutParams = lp
             holder.configure(
                 used = item.used,

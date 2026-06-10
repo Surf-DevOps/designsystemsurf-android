@@ -26,9 +26,11 @@ object CVVAlertPresenter {
         val ctx = activity
         val editText = AppCompatEditText(ctx).apply {
             hint = "CVV (3 dígitos)"
-            inputType = InputType.TYPE_CLASS_NUMBER
+            // iOS: keyboardType = .numberPad + isSecureTextEntry = true
+            inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             transformationMethod = PasswordTransformationMethod.getInstance()
-            filters = arrayOf<InputFilter>(InputFilter.LengthFilter(3))
+            // iOS limitToThreeDigits: mantém apenas números e limita a 3 caracteres (ao vivo)
+            filters = arrayOf<InputFilter>(digitsOnlyFilter(), InputFilter.LengthFilter(3))
         }
         val container = FrameLayout(ctx).apply {
             val pad = 24f.dpToPx(ctx)
@@ -56,6 +58,20 @@ object CVVAlertPresenter {
                 }
             }
             .show()
+    }
+
+    /**
+     * Replica o filtro `limitToThreeDigits` do iOS: mantém apenas dígitos numéricos
+     * (descarta qualquer caractere não numérico inclusive em colagem).
+     */
+    private fun digitsOnlyFilter(): InputFilter = InputFilter { source, start, end, _, _, _ ->
+        val filtered = StringBuilder()
+        for (i in start until end) {
+            val c = source[i]
+            if (c.isDigit()) filtered.append(c)
+        }
+        // null = aceita o trecho como está; caso contrário substitui pelo filtrado
+        if (filtered.length == end - start) null else filtered.toString()
     }
 
     private fun presentValidationError(

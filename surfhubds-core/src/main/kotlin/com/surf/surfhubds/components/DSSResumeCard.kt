@@ -77,9 +77,23 @@ class DSSResumeCard @JvmOverloads constructor(
         val col1 = makeColumn(numberLabel, numberValue)
         val col2 = makeColumn(offerLabel, offerValue)
         val col3 = makeColumn(priceLabel, priceValue)
-        row.addView(col1, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        row.addView(col2, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        row.addView(col3, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        // iOS: numberLabel/offerLabel width 100, gap 20 entre colunas; priceLabel ocupa o restante.
+        val gap = 20f.dpToPx(context)
+        val colWidth = 100f.dpToPx(context)
+        row.addView(
+            col1,
+            LinearLayout.LayoutParams(colWidth, LinearLayout.LayoutParams.WRAP_CONTENT)
+                .apply { marginEnd = gap },
+        )
+        row.addView(
+            col2,
+            LinearLayout.LayoutParams(colWidth, LinearLayout.LayoutParams.WRAP_CONTENT)
+                .apply { marginEnd = gap },
+        )
+        row.addView(
+            col3,
+            LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f),
+        )
 
         container.addView(
             row,
@@ -118,6 +132,17 @@ class DSSResumeCard @JvmOverloads constructor(
     fun setOffer(offer: String) { offerValue.text = offer }
     fun setPrice(cents: Int) { priceValue.text = formatPrice(cents) }
     fun setTitle(title: String) { titleLabel.text = title }
+
+    /** Configura a cor do título (iOS: setTitleColor). */
+    fun setTitleColor(@ColorInt color: Int) { titleTextColorOverride = color }
+
+    /** Configura o título com fonte e cor (iOS: setTitle(_:font:color:)). */
+    fun setTitle(title: String, font: Typeface, @ColorInt color: Int? = null) {
+        titleLabel.text = title
+        titleFont = font
+        if (color != null) titleTextColorOverride = color
+    }
+
     fun setCategoryLabels(number: String = "Número", offer: String = "Oferta", price: String = "Valor") {
         numberLabel.text = number; offerLabel.text = offer; priceLabel.text = price
     }

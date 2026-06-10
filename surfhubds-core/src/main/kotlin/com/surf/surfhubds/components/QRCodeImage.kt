@@ -27,9 +27,15 @@ object QRCodeImage {
         if (content.isEmpty()) return null
         return runCatching {
             val writer = QRCodeWriter()
+            // iOS `generateQRCode` não define `inputCorrectionLevel`, então o
+            // CIQRCodeGenerator usa o default "M" (Medium). O ZXing, sem hint,
+            // cairia em "L" — então fixamos "M" para reproduzir o iOS.
+            // `.ascii` no iOS -> ISO-8859-1 (superset do ASCII) no ZXing, para
+            // não forçar modo byte/ECI UTF-8 e divergir da matriz gerada.
             val hints = mapOf(
                 EncodeHintType.MARGIN to 1,
-                EncodeHintType.CHARACTER_SET to "UTF-8",
+                EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M,
+                EncodeHintType.CHARACTER_SET to "ISO-8859-1",
             )
             val matrix = writer.encode(content, BarcodeFormat.QR_CODE, sizePx, sizePx, hints)
             val w = matrix.width
@@ -63,10 +69,11 @@ object QRCodeImage {
         if (content.isEmpty()) return null
         return runCatching {
             val writer = QRCodeWriter()
+            // `.ascii` no iOS -> ISO-8859-1 (superset do ASCII) no ZXing.
             val hints = mapOf(
                 EncodeHintType.MARGIN to 1,
                 EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.H,
-                EncodeHintType.CHARACTER_SET to "UTF-8",
+                EncodeHintType.CHARACTER_SET to "ISO-8859-1",
             )
             val matrix = writer.encode(content, BarcodeFormat.QR_CODE, widthPx, heightPx, hints)
             val w = matrix.width

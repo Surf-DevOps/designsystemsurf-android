@@ -3,6 +3,7 @@ package com.surf.surfhubds.components
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
+import com.surf.surfhubds.util.ImageLoader
 
 /**
  * Port da extensão Swift `UIImage+PaymentMethods`.
@@ -16,8 +17,15 @@ import androidx.core.content.ContextCompat
  */
 object PaymentMethodImages {
 
-    /** Ícone do Pix. Carrega `R.drawable.pix` se existir. */
-    fun pixIcon(context: Context): Drawable? = drawableByName(context, "pix")
+    /**
+     * Ícone do Pix.
+     *
+     * Fiel ao iOS (`ImageLoader.image(named: "pix", brand: BrandResolver.current())`):
+     * resolve o asset/recurso `pix` da brand atual via [ImageLoader], em vez de
+     * apenas `R.drawable.pix`. Assim respeita a resolução por brand (assets em
+     * `images/` e drawables com prefixo da brand).
+     */
+    fun pixIcon(context: Context): Drawable? = ImageLoader.image(context, "pix")
 
     /** Ícone genérico de cartão. */
     fun creditCardIcon(context: Context): Drawable? =
@@ -53,19 +61,20 @@ object PaymentMethodImages {
         drawableByName(context, "boleto") ?: creditCardFilledIcon(context)
 
     /**
-     * Devolve o ícone para a bandeira (case-insensitive). Aceita "visa",
-     * "mastercard"/"master", "amex"/"american express", "elo", "hipercard",
-     * "pix", "boleto". Default: cartão genérico.
+     * Devolve o ícone para a bandeira (case-insensitive).
+     *
+     * Fiel ao iOS (`cardBrandIcon(for:)`): só faz `switch` sobre o valor em
+     * minúsculas, tratando "visa", "mastercard"/"master" e
+     * "amex"/"american express"; qualquer outro valor (incluindo "elo",
+     * "hipercard", "pix", "boleto" e vazio) cai no [creditCardFilledIcon].
+     * As funções [eloIcon]/[hipercardIcon]/[boletoIcon] continuam públicas para
+     * uso direto, mas não são acionadas por este resolvedor (espelha o iOS).
      */
     fun cardBrandIcon(context: Context, brand: String): Drawable? {
-        return when (brand.lowercase().trim()) {
+        return when (brand.lowercase()) {
             "visa" -> visaIcon(context)
             "mastercard", "master" -> mastercardIcon(context)
             "amex", "american express" -> amexIcon(context)
-            "elo" -> eloIcon(context)
-            "hipercard" -> hipercardIcon(context)
-            "pix" -> pixIcon(context)
-            "boleto" -> boletoIcon(context)
             else -> creditCardFilledIcon(context)
         }
     }

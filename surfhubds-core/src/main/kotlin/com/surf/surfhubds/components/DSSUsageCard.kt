@@ -168,10 +168,12 @@ class DSSUsageCard @JvmOverloads constructor(
     private fun applyProgress(percent: Int) {
         val clamped = percent.coerceIn(0, 100)
         progressBar.progress = clamped
+        // iOS usa cores de sistema fixas (.systemGreen/.systemYellow/.systemRed),
+        // não tokens semânticos — espelhamos os hex exatos para fidelidade visual.
         val color: Int = when {
-            clamped < 50 -> Color.parseColor("#34C759")
-            clamped < 70 -> Color.parseColor("#FFCC00")
-            else -> DSSColors.error()
+            clamped < 50 -> Color.parseColor("#34C759") // .systemGreen
+            clamped < 70 -> Color.parseColor("#FFCC00") // .systemYellow
+            else -> Color.parseColor("#FF3B30") // .systemRed
         }
         val drawable = progressBar.progressDrawable
         if (drawable != null) {
@@ -181,9 +183,15 @@ class DSSUsageCard @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Port de `Utility.formatMBToGBWithDecimal` (iOS): converte MB para GB usando divisor
+     * 1000.0 (não 1024), arredonda PARA CIMA com 1 casa decimal (`ceil(gb*10)/10`) e
+     * formata sempre com 1 casa.
+     */
     private fun formatMBToGB(mb: Int): String {
-        val gb = mb / 1024.0
-        return String.format(Locale.US, "%.1f", gb)
+        val gb = mb / 1000.0
+        val roundedGb = kotlin.math.ceil(gb * 10.0) / 10.0
+        return String.format(Locale.US, "%.1f", roundedGb)
     }
 
     override fun applyTheme(theme: Theme) { refresh() }
@@ -197,11 +205,13 @@ class DSSUsageCard @JvmOverloads constructor(
             strokeWidthDp = 1f,
         )
         iconView.setColorFilter(DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
+        // iOS usa a MESMA cor (.darkGray claro / .white escuro) para title, available,
+        // total e validUntil. Apenas usedLabel é DSSColors.primary (no claro).
         titleLabel.setTextColor(DSSColors.textPrimary())
         availableLabel.setTextColor(DSSColors.textPrimary())
-        totalLabel.setTextColor(DSSColors.textSecondary())
+        totalLabel.setTextColor(DSSColors.textPrimary())
         usedLabel.setTextColor(DSSColors.primary())
-        validUntilLabel.setTextColor(DSSColors.textSecondary())
+        validUntilLabel.setTextColor(DSSColors.textPrimary())
         divider.setBackgroundColor(DSSColors.divider())
     }
 }

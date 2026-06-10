@@ -18,7 +18,10 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -190,13 +193,23 @@ class DSSCardNoInternetView @JvmOverloads constructor(
     private fun applyAppearance() {
         when (appearanceStyle) {
             AppearanceStyle.DARK -> {
-                backgroundCard.background = DrawableFactory.rounded(
-                    context = context,
-                    backgroundColor = Color.BLACK,
-                    cornerRadiusDp = 12f,
-                    strokeColor = Color.WHITE,
-                    strokeWidthDp = 1f,
-                )
+                val isBlack = ThemeManager.colorScheme == ColorScheme.BLACK
+                if (isBlack) {
+                    backgroundCard.background = DrawableFactory.rounded(
+                        context = context,
+                        backgroundColor = DSSColors.backgroundSecondary(),
+                        cornerRadiusDp = 12f,
+                    )
+                    anticipateSwipeView.thumbnailTintColor = Color.WHITE
+                } else {
+                    backgroundCard.background = DrawableFactory.rounded(
+                        context = context,
+                        backgroundColor = Color.BLACK,
+                        cornerRadiusDp = 12f,
+                        strokeColor = Color.WHITE,
+                        strokeWidthDp = 1f,
+                    )
+                }
                 titleLabel.setTextColor(Color.WHITE)
                 dividerLine.setBackgroundColor(Color.rgb(77, 77, 77))
                 validityLabel.setTextColor(Color.argb(178, 255, 255, 255))
@@ -232,9 +245,11 @@ class DSSCardNoInternetView @JvmOverloads constructor(
     }
 
     private fun buildCollapsedRow(): android.view.View {
+        val pad8 = 8f.dpToPx(context)
         val row = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
+            setPadding(pad8, 0, pad8, 0)
         }
         val icon = ImageView(context).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
@@ -276,9 +291,11 @@ class DSSCardNoInternetView @JvmOverloads constructor(
     }
 
     private fun buildExpandedRow(type: PaymentType, name: String): android.view.View {
+        val pad8 = 8f.dpToPx(context)
         val row = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
+            setPadding(pad8, 0, pad8, 0)
         }
         val icon = ImageView(context).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
@@ -328,7 +345,8 @@ class DSSCardNoInternetView @JvmOverloads constructor(
         anticipateAmount: Double = 50.00,
     ) {
         percentageLabel.text = "${consumedPercentage}% consumida"
-        validityLabel.text = "Vencimento: $expiryDate"
+        val modDate = Utility.formatDateToBrazilianFormat(expiryDate)
+        validityLabel.text = "Vencimento: $modDate"
         currentPaymentType = paymentType
         updatePaymentOptionsUI()
         val formatted = String.format("R$ %.2f", anticipateAmount).replace('.', ',')
@@ -337,5 +355,32 @@ class DSSCardNoInternetView @JvmOverloads constructor(
 
     fun resetSlider() {
         anticipateSwipeView.resetState(animated = true)
+    }
+
+    /**
+     * Espelha o `intrinsicContentSize` do iOS (altura fixa de 236pt, largura sem
+     * métrica intrínseca). Quando o pai não fixa a altura (modo != EXACTLY), a view
+     * assume a altura intrínseca.
+     */
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        if (heightMode == MeasureSpec.EXACTLY) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+            return
+        }
+        val intrinsicHeight = INTRINSIC_HEIGHT_DP.dpToPx(context)
+        val resolvedHeight = if (heightMode == MeasureSpec.AT_MOST) {
+            minOf(intrinsicHeight, MeasureSpec.getSize(heightMeasureSpec))
+        } else {
+            intrinsicHeight
+        }
+        super.onMeasure(
+            widthMeasureSpec,
+            MeasureSpec.makeMeasureSpec(resolvedHeight, MeasureSpec.EXACTLY),
+        )
+    }
+
+    private companion object {
+        const val INTRINSIC_HEIGHT_DP = 236f
     }
 }

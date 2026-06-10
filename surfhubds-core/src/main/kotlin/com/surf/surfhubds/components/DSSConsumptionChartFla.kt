@@ -20,6 +20,7 @@ import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.dpToPx
+import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
@@ -48,7 +49,8 @@ class DSSConsumptionChartFla @JvmOverloads constructor(
         set(value) { field = value; arcView.invalidate(); updateLabels() }
     var progressColor: Int = DSSColors.primary()
         set(value) { field = value; arcView.invalidate() }
-    var trackColor: Int = Color.argb(77, 200, 200, 200)
+    // iOS: UIColor.lightGray.withAlphaComponent(0.3) -> lightGray == rgb(170,170,170)
+    var trackColor: Int = Color.argb(77, 170, 170, 170)
         set(value) { field = value; arcView.invalidate() }
     var usedTextColor: Int = Color.BLACK
         set(value) {
@@ -56,6 +58,8 @@ class DSSConsumptionChartFla @JvmOverloads constructor(
             titleLabel.setTextColor(value)
             usedLabel.setTextColor(value)
         }
+    // iOS: default .darkGray. totalLabel fica oculto no iOS; mantido para paridade de API.
+    var totalTextColor: Int = Color.rgb(85, 85, 85)
     var chartAction: (() -> Unit)? = null
 
     private val arcView = ArcView(context)
@@ -89,6 +93,9 @@ class DSSConsumptionChartFla @JvmOverloads constructor(
             topMargin = -30f.dpToPx(context)
         }
         addView(stack, lp)
+        // iOS: titleLabel.textColor = usedTextColor ; usedLabel.textColor = usedTextColor
+        titleLabel.setTextColor(usedTextColor)
+        usedLabel.setTextColor(usedTextColor)
         setOnClickListener { chartAction?.invoke() }
         updateLabels()
         setupThemeObserver()
@@ -100,22 +107,27 @@ class DSSConsumptionChartFla @JvmOverloads constructor(
         when (type) {
             TypeChart.GB -> {
                 titleLabel.text = "Internet"
-                val usedGB = (used / 1000.0).toInt()
-                val totalGB = (total / 1000.0).toInt()
-                usedLabel.text = makeColoredAfterSlash("${usedGB}GB / ${totalGB}GB", DSSColors.primary())
+                // iOS: used/1000 e total/1000 como Double, formatados com %.0f (arredonda, nao trunca).
+                val usedText = String.format(Locale.US, "%.0f", used / 1000.0)
+                val totalText = String.format(Locale.US, "%.0f", total / 1000.0)
+                usedLabel.text = makeColoredAfterSlash("${usedText}GB / ${totalText}GB", DSSColors.primary())
             }
             TypeChart.SMS -> {
                 titleLabel.text = "SMS"
-                val u = if (isInverted) max(0.0, total - used) else used
-                usedLabel.text = makeColoredAfterSlash("${u.toInt()} / ${total.toInt()}", DSSColors.primary())
+                val usedValue = if (isInverted) max(0.0, total - used) else used
+                val usedText = String.format(Locale.US, "%.0f", usedValue)
+                val totalText = String.format(Locale.US, "%.0f", total)
+                usedLabel.text = makeColoredAfterSlash("$usedText / $totalText", DSSColors.primary())
             }
             TypeChart.MIN -> {
                 titleLabel.text = "Minutos"
                 if (total > 900) {
                     usedLabel.text = "Ilimitado"
                 } else {
-                    val u = if (isInverted) max(0.0, total - used) else used
-                    usedLabel.text = makeColoredAfterSlash("${u.toInt()}min / ${total.toInt()}min", DSSColors.primary())
+                    val usedValue = if (isInverted) max(0.0, total - used) else used
+                    val usedText = String.format(Locale.US, "%.0f", usedValue)
+                    val totalText = String.format(Locale.US, "%.0f", total)
+                    usedLabel.text = makeColoredAfterSlash("${usedText}min / ${totalText}min", DSSColors.primary())
                 }
             }
         }
@@ -155,17 +167,22 @@ class DSSConsumptionChartFla @JvmOverloads constructor(
             trackPaint.color = trackColor
             canvas.drawArc(rect, startDeg, sweepDeg, false, trackPaint)
 
-            val percent = if (usedLabel.text == "Ilimitado") {
+            // iOS: percent = used / max(total, 1) (SEM clamp superior);
+            //      effectivePercent = isInverted ? max(0, 1 - percent) : percent
+            val effectivePercent = if (usedLabel.text == "Ilimitado") {
                 0f
             } else {
-                val p = (used / max(total, 1.0)).toFloat().coerceIn(0f, 1f)
-                if (isInverted) (1f - p) else p
+                val percent = (used / max(total, 1.0)).toFloat()
+                if (isInverted) max(0f, 1f - percent) else percent
             }
 
+            // iOS: progressLayer.strokeEnd e clampado em [0,1] pelo CAShapeLayer -> arco limitado.
+            val arcPercent = effectivePercent.coerceIn(0f, 1f)
             progressPaint.color = progressColor
-            canvas.drawArc(rect, startDeg, sweepDeg * percent, false, progressPaint)
+            canvas.drawArc(rect, startDeg, sweepDeg * arcPercent, false, progressPaint)
 
-            val rad = Math.toRadians((startDeg + sweepDeg * percent).toDouble())
+            // iOS: o pointer usa o effectivePercent BRUTO (sem clamp) no calculo do angulo.
+            val rad = Math.toRadians((startDeg + sweepDeg * effectivePercent).toDouble())
             val px = cx + radius * cos(rad).toFloat()
             val py = cy + radius * sin(rad).toFloat()
             pointerFill.color = Color.WHITE

@@ -14,6 +14,9 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
+import com.surf.surfhubds.theme.ThemeManager
+import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -56,35 +59,60 @@ class DSSScheduleCancelledBottomSheet : BottomSheetDialogFragment() {
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ))
 
+        // iOS carrega `cancel_schedule` via ImageLoader; aqui o param público
+        // [illustration] permanece como override opcional.
         val illustrationImageView = ImageView(ctx).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
-            setImageDrawable(illustration)
+            setImageDrawable(illustration ?: ImageLoader.image(ctx, "cancel_schedule"))
         }
         root.addView(illustrationImageView, LinearLayout.LayoutParams(
             120f.dpToPx(ctx), 100f.dpToPx(ctx),
         ).apply { topMargin = 24f.dpToPx(ctx) })
 
+        // iOS: stack vertical com linhas [ícone x.circle 18x18 systemGray] + [label systemFont 15 systemGray],
+        // spacing 12 entre linhas, alinhamento .leading, bloco centralizado horizontalmente.
         val benefits = listOf("GB bônus", "Renovações automáticas", "Mais praticidade")
         val benefitsContainer = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
+            gravity = Gravity.START
         }
-        benefits.forEach { text ->
+        benefits.forEachIndexed { index, text ->
+            val row = LinearLayout(ctx).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            val iconView = ImageView(ctx).apply {
+                setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+                setColorFilter(DSSColors.textSecondary())
+                scaleType = ImageView.ScaleType.FIT_CENTER
+            }
+            row.addView(iconView, LinearLayout.LayoutParams(18f.dpToPx(ctx), 18f.dpToPx(ctx)))
             val label = TextView(ctx).apply {
-                this.text = "✕ $text"
+                this.text = text
                 typeface = DSSFont.regular(ctx, 15f).typeface
                 textSize = 15f
                 setTextColor(DSSColors.textSecondary())
             }
-            benefitsContainer.addView(label, LinearLayout.LayoutParams(
+            row.addView(label, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-            ).apply { topMargin = 12f.dpToPx(ctx) })
+            ).apply { leftMargin = 8f.dpToPx(ctx) })
+            benefitsContainer.addView(row, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply { if (index > 0) topMargin = 12f.dpToPx(ctx) })
         }
         root.addView(benefitsContainer, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = 24f.dpToPx(ctx) })
 
+        // iOS: DSSPrincipalButton(title:"Finalizar", backgroundColor: isBlack ? primaryButton : primary,
+        // textColor:.white, font: DSSFont.regular(16)).
+        val isBlack = ThemeManager.colorScheme == ColorScheme.BLACK
         val finishButton = DSSPrincipalButton(ctx).apply {
             text = "Finalizar"
+            typeface = DSSFont.regular(ctx, 16f).typeface
+            textSize = 16f
+            customBackgroundColor = if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
+            customTextColor = DSSColors.buttonText()
             onTap = { finishTapped() }
         }
         root.addView(finishButton, LinearLayout.LayoutParams(

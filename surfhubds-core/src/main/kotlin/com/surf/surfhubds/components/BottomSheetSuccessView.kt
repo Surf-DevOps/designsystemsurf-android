@@ -26,7 +26,7 @@ class BottomSheetSuccessView(context: Context) : FrameLayout(context), ThemeAwar
 
     private val titleLabel = TextView(context).apply {
         gravity = Gravity.CENTER
-        typeface = DSSFont.bold(context, 20f).typeface
+        typeface = DSSFont.medium(context, 20f).typeface
         textSize = 20f
     }
 

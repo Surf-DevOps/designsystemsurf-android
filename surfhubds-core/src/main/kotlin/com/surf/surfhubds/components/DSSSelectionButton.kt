@@ -44,7 +44,8 @@ class DSSSelectionButton @JvmOverloads constructor(
             isSelected = !isSelected
             onSelectedChange?.invoke(isSelected)
         }
-        refresh()
+        // Espelha `setupButton` do iOS (aparência inicial, antes de qualquer toggle).
+        setupAppearance()
         setupThemeObserver()
     }
 
@@ -58,19 +59,56 @@ class DSSSelectionButton @JvmOverloads constructor(
         this.selectedTitleColor = selectedTitleColor
         this.unselectedTitleColor = unselectedTitleColor
         this.borderColorOverride = borderColor
-        refresh()
+        setupAppearance()
     }
 
     override fun setSelected(selected: Boolean) {
         super.setSelected(selected)
-        refresh()
+        // Espelha o `didSet` de `isSelected` no iOS -> `updateAppearance()`.
+        updateAppearance()
     }
 
     override fun applyTheme(theme: Theme) {
-        refresh()
+        // Reaplicar a aparência preservando o estado atual de seleção.
+        if (isSelected) updateAppearance() else setupAppearance()
     }
 
-    private fun refresh() {
+    /**
+     * Espelha `setupButton` do iOS: aparência de repouso inicial.
+     * Light: bg branco e borda = [borderColorOverride] (default `DSSColors.primary`).
+     */
+    private fun setupAppearance() {
+        val isDarkOrBlack = ThemeManager.colorScheme == ColorScheme.DARK ||
+            ThemeManager.colorScheme == ColorScheme.BLACK
+        if (isDarkOrBlack) {
+            // No iOS init `isSelected` é false: bg = base, título normal = branco.
+            val baseBackground = Color.rgb(28, 28, 30)
+            val border = Color.argb((0.4f * 255).toInt(), 255, 255, 255)
+            background = DrawableFactory.rounded(
+                context = context,
+                backgroundColor = if (isSelected) Color.WHITE else baseBackground,
+                cornerRadiusDp = 20f,
+                strokeColor = border,
+                strokeWidthDp = 1f,
+            )
+            setTextColor(if (isSelected) Color.BLACK else Color.WHITE)
+        } else {
+            background = DrawableFactory.rounded(
+                context = context,
+                backgroundColor = if (isSelected) DSSColors.primary() else Color.WHITE,
+                cornerRadiusDp = 20f,
+                strokeColor = borderColorOverride,
+                strokeWidthDp = 1f,
+            )
+            setTextColor(if (isSelected) selectedTitleColor else unselectedTitleColor)
+        }
+    }
+
+    /**
+     * Espelha `updateAppearance` do iOS: reação à mudança de seleção.
+     * Light: selecionado = primary; não-selecionado = transparente com borda darkGray.
+     */
+    private fun updateAppearance() {
         val isDarkOrBlack = ThemeManager.colorScheme == ColorScheme.DARK ||
             ThemeManager.colorScheme == ColorScheme.BLACK
         if (isDarkOrBlack) {
@@ -86,7 +124,7 @@ class DSSSelectionButton @JvmOverloads constructor(
             )
             setTextColor(if (isSelected) Color.BLACK else Color.WHITE)
         } else {
-            val bg = if (isSelected) DSSColors.primary() else Color.WHITE
+            val bg = if (isSelected) DSSColors.primary() else Color.TRANSPARENT
             val border = if (isSelected) DSSColors.primary() else Color.DKGRAY
             background = DrawableFactory.rounded(
                 context = context,

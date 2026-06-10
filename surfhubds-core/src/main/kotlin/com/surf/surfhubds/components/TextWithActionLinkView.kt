@@ -34,6 +34,13 @@ class TextWithActionLinkView @JvmOverloads constructor(
     /** Callback acionada ao tocar no link. */
     var onLinkTap: (() -> Unit)? = null
 
+    /**
+     * Fonte padrão do componente, equivalente ao `resolvedFont` do iOS
+     * (`DSSFont.light(14)`). Usada quando [configure] é chamado sem `typeface`.
+     */
+    val resolvedFont: Typeface
+        get() = DSSFont.light(context, 14f).typeface
+
     private var fullText: String = ""
     private var linkText: String = ""
     @ColorInt private var customTextColor: Int? = null
@@ -74,6 +81,8 @@ class TextWithActionLinkView @JvmOverloads constructor(
 
         textSize = sizeSp
         setTypeface(typeface ?: DSSFont.light(context, sizeSp).typeface)
+        // iOS força múltiplas linhas (textContainer.maximumNumberOfLines = 0).
+        maxLines = Int.MAX_VALUE
         refresh()
     }
 

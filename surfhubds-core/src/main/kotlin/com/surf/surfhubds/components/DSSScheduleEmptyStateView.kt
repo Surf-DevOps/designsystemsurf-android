@@ -11,8 +11,10 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
-import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -26,14 +28,21 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
 
     var onScheduleRechargeTapped: (() -> Unit)? = null
 
+    /** Override opcional do ícone. null => usa o asset `empty_recurrency` da brand (como o iOS). */
     var iconDrawable: android.graphics.drawable.Drawable? = null
-        set(value) { field = value; iconImage.setImageDrawable(value) }
+        set(value) {
+            field = value
+            iconImage.setImageDrawable(value ?: ImageLoader.image(context, "empty_recurrency"))
+        }
 
     private val column = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER_HORIZONTAL
     }
-    private val iconImage = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
+    private val iconImage = ImageView(context).apply {
+        scaleType = ImageView.ScaleType.FIT_CENTER
+        setImageDrawable(ImageLoader.image(context, "empty_recurrency"))
+    }
     private val titleLabel = TextView(context).apply {
         text = "Você não possui uma recarga \nprogramada na sua linha.\nPrograme agora e aproveite!"
         textSize = 16f
@@ -47,6 +56,9 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
     private val scheduleButton = DSSPrincipalButton(context).apply {
         text = "Programar recarga"
         textSize = 17f
+        // iOS: `.boldSystemFont(ofSize: 17)` e `cornerRadius = 28`.
+        typeface = DSSFont.bold(context, 17f).typeface
+        cornerRadiusDp = 28f
     }
 
     init {
@@ -62,27 +74,36 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
                 gravity = Gravity.CENTER_HORIZONTAL
             },
         )
+        // iOS pina leading/trailing do título ao botão (largura 320).
         column.addView(
             titleLabel,
             LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
+                320f.dpToPx(context),
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-            ).apply { topMargin = 24f.dpToPx(context) },
+            ).apply {
+                topMargin = 24f.dpToPx(context)
+                gravity = Gravity.CENTER_HORIZONTAL
+            },
         )
 
         for (text in listOf("GB bônus", "Renovações automáticas", "Mais praticidade")) {
             val l = TextView(context).apply {
                 this.text = "✓ $text"
                 textSize = 18f
+                typeface = DSSFont.regular(context, 18f).typeface
             }
             benefitsStack.addView(l)
         }
+        // iOS: stack centralizado horizontalmente, labels alinhadas à esquerda (wrap content).
         column.addView(
             benefitsStack,
             LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-            ).apply { topMargin = 24f.dpToPx(context) },
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply {
+                topMargin = 24f.dpToPx(context)
+                gravity = Gravity.CENTER_HORIZONTAL
+            },
         )
         scheduleButton.onTap = { onScheduleRechargeTapped?.invoke() }
         column.addView(
@@ -104,10 +125,22 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
-        setBackgroundColor(DSSColors.background())
+        val isBlack = ThemeManager.colorScheme == ColorScheme.BLACK
+
+        // iOS: `.black ? .black : .secondarySystemBackground`.
+        setBackgroundColor(DSSColors.backgroundSecondary())
+
         titleLabel.setTextColor(DSSColors.textPrimary())
+
+        // iOS: `.black ? .systemRed : DSSColors.primary`.
+        val benefitsColor = if (isBlack) DSSColors.error() else DSSColors.primary()
         for (i in 0 until benefitsStack.childCount) {
-            (benefitsStack.getChildAt(i) as? TextView)?.setTextColor(DSSColors.primary())
+            (benefitsStack.getChildAt(i) as? TextView)?.setTextColor(benefitsColor)
         }
+
+        // iOS: background `.black ? primaryButton : primary`; texto `.black ? .white : (dark? .black : .white)`.
+        scheduleButton.customBackgroundColor =
+            if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
+        scheduleButton.customTextColor = DSSColors.buttonText()
     }
 }

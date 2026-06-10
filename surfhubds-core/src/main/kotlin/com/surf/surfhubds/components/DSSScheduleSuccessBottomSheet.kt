@@ -2,6 +2,7 @@ package com.surf.surfhubds.components
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Base64
@@ -18,7 +19,10 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
+import com.surf.surfhubds.theme.ThemeManager
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -57,6 +61,11 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
         val ratingGroups: List<IconItem>,
         val svaText: String?,
         val svaImageName: String?,
+        /**
+         * Equivalente ao `includeUnlimitedCalls` do iOS (derivado de `qtVoz.contains("ilimitad")`).
+         * Quando `true`, renderiza a linha "Ligações ilimitadas (código 41)" na seção Ilimitados.
+         */
+        val includeUnlimitedCalls: Boolean = false,
         val iconResolver: ((String) -> Drawable?)? = null,
     )
 
@@ -87,7 +96,8 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
         }
         val icon = ImageView(ctx).apply {
             setImageResource(android.R.drawable.checkbox_on_background)
-            setColorFilter(android.graphics.Color.parseColor("#34C759"))
+            setColorFilter(DSSColors.success(), PorterDuff.Mode.SRC_IN)
+            scaleType = ImageView.ScaleType.FIT_CENTER
         }
         headerRow.addView(icon, LinearLayout.LayoutParams(32f.dpToPx(ctx), 32f.dpToPx(ctx)))
         val title = TextView(ctx).apply {
@@ -122,7 +132,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
         val card = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             background = DrawableFactory.rounded(
-                context = ctx, backgroundColor = Color.WHITE, cornerRadiusDp = 16f,
+                context = ctx, backgroundColor = DSSColors.backgroundSecondary(), cornerRadiusDp = 16f,
             )
             setPadding(20f.dpToPx(ctx), 20f.dpToPx(ctx), 20f.dpToPx(ctx), 20f.dpToPx(ctx))
         }
@@ -131,7 +141,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             text = "Nova oferta"
             typeface = DSSFont.bold(ctx, 18f).typeface
             textSize = 18f
-            setTextColor(Color.parseColor("#34C759"))
+            setTextColor(DSSColors.success())
         }
         card.addView(novaOfertaLabel, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -215,7 +225,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             ).apply { bottomMargin = 8f.dpToPx(ctx) })
         }
 
-        if (c.ratingGroups.isNotEmpty()) {
+        if (c.ratingGroups.isNotEmpty() || c.includeUnlimitedCalls) {
             val ilimitadosLabel = TextView(ctx).apply {
                 text = "Ilimitados"
                 typeface = DSSFont.bold(ctx, 15f).typeface
@@ -233,6 +243,16 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
                 card.addView(makeIconRow(ctx, rg.name, rg.imageNameOrUrl, c.iconResolver), LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
                 ).apply { bottomMargin = 8f.dpToPx(ctx) })
+            }
+
+            // Ligações ilimitadas (código 41) quando a voz é ilimitada
+            if (c.includeUnlimitedCalls) {
+                card.addView(
+                    makeIconRow(ctx, "Ligações usando o código 41", null, c.iconResolver, systemPhone = true),
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
+                    ).apply { bottomMargin = 8f.dpToPx(ctx) },
+                )
             }
         }
 
@@ -264,16 +284,22 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
+        val checkTint = if (ThemeManager.colorScheme == ColorScheme.BLACK) {
+            DSSColors.primaryButton()
+        } else {
+            DSSColors.primary()
+        }
         val check = ImageView(ctx).apply {
             setImageResource(android.R.drawable.checkbox_on_background)
-            setColorFilter(Color.parseColor("#34C759"))
+            setColorFilter(checkTint, PorterDuff.Mode.SRC_IN)
+            scaleType = ImageView.ScaleType.FIT_CENTER
         }
         row.addView(check, LinearLayout.LayoutParams(20f.dpToPx(ctx), 20f.dpToPx(ctx)))
         val label = TextView(ctx).apply {
             this.text = text
             typeface = DSSFont.regular(ctx, 14f).typeface
             textSize = 14f
-            setTextColor(DSSColors.textPrimary())
+            setTextColor(DSSColors.textSecondary())
         }
         row.addView(label, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -281,7 +307,13 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
         return row
     }
 
-    private fun makeIconRow(ctx: Context, text: String, imageNameOrUrl: String?, resolver: ((String) -> Drawable?)?): View {
+    private fun makeIconRow(
+        ctx: Context,
+        text: String,
+        imageNameOrUrl: String?,
+        resolver: ((String) -> Drawable?)?,
+        systemPhone: Boolean = false,
+    ): View {
         val row = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -289,38 +321,53 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
         val icon = ImageView(ctx).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
         row.addView(icon, LinearLayout.LayoutParams(24f.dpToPx(ctx), 24f.dpToPx(ctx)))
 
-        if (imageNameOrUrl != null) {
-            when {
-                imageNameOrUrl.startsWith("data:image") -> {
-                    val base64 = imageNameOrUrl
-                        .removePrefix("data:image/png;base64,")
-                        .removePrefix("data:image/jpeg;base64,")
-                        .removePrefix("data:image/jpg;base64,")
-                    try {
-                        val bytes = Base64.decode(base64, Base64.DEFAULT)
-                        val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        var resolved = false
+        when {
+            systemPhone -> {
+                // iOS: SF Symbol "phone.fill" tingido com .systemBlue (#007AFF).
+                icon.setImageResource(android.R.drawable.sym_action_call)
+                icon.setColorFilter(SYSTEM_BLUE, PorterDuff.Mode.SRC_IN)
+                resolved = true
+            }
+            imageNameOrUrl != null && imageNameOrUrl.startsWith("data:image") -> {
+                val base64 = imageNameOrUrl
+                    .removePrefix("data:image/png;base64,")
+                    .removePrefix("data:image/jpeg;base64,")
+                    .removePrefix("data:image/jpg;base64,")
+                try {
+                    val bytes = Base64.decode(base64, Base64.DEFAULT)
+                    val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                    if (bmp != null) {
                         icon.setImageBitmap(bmp)
-                    } catch (_: Exception) {}
-                }
-                imageNameOrUrl.startsWith("http") -> {
-                    Glide.with(ctx).load(imageNameOrUrl).into(icon)
-                }
-                else -> {
-                    val drawable = resolver?.invoke(imageNameOrUrl)
-                    if (drawable != null) icon.setImageDrawable(drawable)
-                    else {
-                        icon.setImageResource(android.R.drawable.ic_menu_compass)
-                        icon.setColorFilter(DSSColors.primary())
+                        resolved = true
                     }
+                } catch (_: Exception) {}
+            }
+            imageNameOrUrl != null && imageNameOrUrl.startsWith("http") -> {
+                Glide.with(ctx).load(imageNameOrUrl).into(icon)
+                resolved = true
+            }
+            imageNameOrUrl != null -> {
+                // iOS resolve nomes locais via ImageLoader.image(named:brand:).
+                val drawable = resolver?.invoke(imageNameOrUrl) ?: ImageLoader.image(ctx, imageNameOrUrl)
+                if (drawable != null) {
+                    icon.setImageDrawable(drawable)
+                    resolved = true
                 }
             }
+        }
+
+        // iOS: se nenhuma imagem resolveu, cai para SF Symbol "app.fill" tingido com primary.
+        if (!resolved) {
+            icon.setImageResource(android.R.drawable.ic_menu_compass)
+            icon.setColorFilter(DSSColors.primary(), PorterDuff.Mode.SRC_IN)
         }
 
         val label = TextView(ctx).apply {
             this.text = text
             typeface = DSSFont.regular(ctx, 14f).typeface
             textSize = 14f
-            setTextColor(DSSColors.textPrimary())
+            setTextColor(DSSColors.textSecondary())
         }
         row.addView(label, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -337,6 +384,9 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
+        // iOS: SF Symbol "phone.fill" usa tint .systemBlue (#007AFF) na linha de ligações.
+        private val SYSTEM_BLUE = Color.parseColor("#007AFF")
+
         private val displayFormatter: SimpleDateFormat by lazy {
             SimpleDateFormat("dd MMM. yyyy", Locale("pt", "BR"))
         }
@@ -345,14 +395,21 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
         }
+        private val isoFormatterNoFraction: SimpleDateFormat by lazy {
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        }
 
         /** Conveniência: converte uma string ISO 8601 para o formato exibido "dd MMM. yyyy". */
         fun displayDate(iso: String): String {
-            return try {
-                val d: Date? = isoFormatter.parse(iso)
-                if (d != null) displayFormatter.format(d) else iso
-            } catch (_: Exception) { iso }
+            // iOS tenta primeiro com segundos fracionados (isoFormatter) e depois sem (isoFormatterNoFraction).
+            val parsed: Date? = parseOrNull(isoFormatter, iso) ?: parseOrNull(isoFormatterNoFraction, iso)
+            return if (parsed != null) displayFormatter.format(parsed) else iso
         }
+
+        private fun parseOrNull(formatter: SimpleDateFormat, iso: String): Date? =
+            try { formatter.parse(iso) } catch (_: Exception) { null }
 
         fun present(
             activity: FragmentActivity,

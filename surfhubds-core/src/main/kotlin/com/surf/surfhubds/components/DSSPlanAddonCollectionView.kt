@@ -132,16 +132,35 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
             holder.cell.setSelectedStyle(isExpanded || isSelectedOnly)
 
             holder.cell.setOnClickListener {
+                val previouslyExpanded = expandedIndex
+
+                // ratingGroups == nil (hasRatingGroups == false): apenas seleciona, sem expandir.
                 if (!plan.hasRatingGroups) {
-                    // Toggle simple selection
-                    val previous = selectedIndex
+                    val previousSelected = selectedIndex
+
+                    // Deseleciona card simples anterior (notifica deselect se for diferente).
+                    if (previousSelected >= 0) {
+                        if (previousSelected != position) {
+                            adapter.itemAt(previousSelected)?.let {
+                                delegate?.onDeselectPlan(this@DSSPlanAddonCollectionView, it, previousSelected)
+                            }
+                        }
+                        notifyItemChanged(previousSelected)
+                    }
+
+                    // Colapsa o card expandido anterior, se houver e for diferente do simples selecionado.
+                    if (previouslyExpanded >= 0 && previouslyExpanded != previousSelected) {
+                        notifyItemChanged(previouslyExpanded)
+                    }
+
                     selectedIndex = position
-                    if (previous >= 0 && previous != position) notifyItemChanged(previous)
+                    expandedIndex = -1
                     notifyItemChanged(position)
                     delegate?.onSelectPlan(this@DSSPlanAddonCollectionView, plan, position)
                     return@setOnClickListener
                 }
-                val previouslyExpanded = expandedIndex
+
+                // ratingGroups != nil: comportamento normal de expandir/colapsar.
                 val expanding = position != expandedIndex
                 selectedIndex = -1
                 expandedIndex = if (expanding) position else -1
@@ -307,7 +326,8 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
             validityLabel.text = plan.validityText
             val displayPrice = if (plan.parcelas > 1) plan.priceCents / plan.parcelas else plan.priceCents
             priceLabel.text = if (plan.parcelas > 1) {
-                "${plan.parcelas}x R$ ${DSSPlanCollectionView.formatPrice(displayPrice)}"
+                // iOS: "\(parcelas)x R$\(formatPrice(price))" — sem espaço após "R$"
+                "${plan.parcelas}x R$${DSSPlanCollectionView.formatPrice(displayPrice)}"
             } else {
                 "R$ ${DSSPlanCollectionView.formatPrice(displayPrice)}"
             }

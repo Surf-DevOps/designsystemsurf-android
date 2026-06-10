@@ -95,8 +95,12 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
             )
         }
         numberErrorLabel = makeErrorLabel(ctx)
-        root.addView(numberField, defaultFieldLp(ctx))
-        root.addView(numberErrorLabel, errorLp(ctx))
+        // Primeiro campo: iOS posiciona o stack a 24 do título (sem spacing antes do 1º elemento),
+        // então este campo não soma margem extra ao bottomMargin de 24 do título.
+        root.addView(numberField, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
+        ))
+        root.addView(numberErrorLabel, fullWidthErrorLp(ctx))
 
         // Expiry + CVV row
         expiryField = DSSLabelTextField(ctx).apply {
@@ -113,17 +117,13 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
         leftCol.addView(expiryField, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ))
-        leftCol.addView(expiryErrorLabel, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-        ).apply { topMargin = 4f.dpToPx(ctx) })
+        leftCol.addView(expiryErrorLabel, errorLp(ctx))
 
         val rightCol = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL }
         rightCol.addView(cvvField, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ))
-        rightCol.addView(cvvErrorLabel, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-        ).apply { topMargin = 4f.dpToPx(ctx) })
+        rightCol.addView(cvvErrorLabel, errorLp(ctx))
 
         row.addView(leftCol, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
             rightMargin = 6f.dpToPx(ctx)
@@ -140,14 +140,14 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
         }
         holderErrorLabel = makeErrorLabel(ctx)
         root.addView(holderField, defaultFieldLp(ctx))
-        root.addView(holderErrorLabel, errorLp(ctx))
+        root.addView(holderErrorLabel, fullWidthErrorLp(ctx))
 
         documentField = DSSLabelTextField(ctx).apply {
             configure(placeholder = "CPF / CNPJ", type = DSSLabelTextField.Type.CpfOrCnpj)
         }
         documentErrorLabel = makeErrorLabel(ctx)
         root.addView(documentField, defaultFieldLp(ctx))
-        root.addView(documentErrorLabel, errorLp(ctx))
+        root.addView(documentErrorLabel, fullWidthErrorLp(ctx))
 
         // Bandeiras (opcional via brand)
         if (brandsImage != null) {
@@ -169,7 +169,7 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
         }
         root.addView(addButton, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, 56f.dpToPx(ctx),
-        ).apply { topMargin = 16f.dpToPx(ctx) })
+        ).apply { topMargin = 12f.dpToPx(ctx) })
 
         // Formatadores
         attachCardNumberFormatter(numberField)
@@ -192,13 +192,20 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
     ).apply { topMargin = 12f.dpToPx(ctx) }
 
+    /** Gap field->error dos campos dentro da row expiry/cvv (iOS: inner stack spacing = 4). */
     private fun errorLp(ctx: android.content.Context) = LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
     ).apply { topMargin = 4f.dpToPx(ctx) }
 
+    /** Gap field->error dos campos full-width (iOS: formStack spacing = 12). */
+    private fun fullWidthErrorLp(ctx: android.content.Context) = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
+    ).apply { topMargin = 12f.dpToPx(ctx) }
+
     private fun makeErrorLabel(ctx: android.content.Context): TextView = TextView(ctx).apply {
         textSize = 12f
-        setTextColor(DSSColors.error())
+        // iOS usa DSSColors.primary (cor da brand) nos labels de erro deste sheet, não o token de erro.
+        setTextColor(DSSColors.primary())
         visibility = View.GONE
     }
 

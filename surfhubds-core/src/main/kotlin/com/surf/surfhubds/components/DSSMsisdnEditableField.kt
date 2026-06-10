@@ -67,6 +67,13 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
     private var defaultMsisdn: String = ""
     private var isEditing: Boolean = false
 
+    /**
+     * Identifica a validação corrente. Incrementa a cada nova validação ou
+     * cancelamento; callbacks de tokens antigos são ignorados — equivale ao
+     * `validationTask?.cancel()` do iOS.
+     */
+    private var validationToken: Int = 0
+
     var confirmButtonTitle: String = "Confirmar"
         set(value) { field = value; confirmButton.text = value }
 
@@ -120,8 +127,10 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
     fun setMsisdn(value: String) {
         val normalized = normalizeBrazilianPhone(value)
         if (normalized != null) {
-            msisdnLabel.text = formatBrazilianPhone(normalized)
-            msisdnTextfield.setText(formatBrazilianPhoneNumbersOnly(stripDDI(normalized)))
+            // iOS atribui o mesmo `formatPhoneNumber()` ao label e ao textfield.
+            val formatted = formatBrazilianPhone(normalized)
+            msisdnLabel.text = formatted
+            msisdnTextfield.setText(formatted)
             defaultMsisdn = normalized
         } else {
             msisdnLabel.text = value
@@ -153,6 +162,17 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
     fun validateDefaultMsisdn() {
         if (defaultMsisdn.isEmpty()) return
         runValidation(defaultMsisdn)
+    }
+
+    /**
+     * Cancela qualquer validação em andamento (espelha `cancelValidation()` do
+     * iOS). Marca o resultado pendente como obsoleto e reabilita o botão
+     * Confirmar.
+     */
+    fun cancelValidation() {
+        validationToken++
+        confirmButton.isEnabled = true
+        confirmButton.alpha = 1.0f
     }
 
     private fun setupViews() {
@@ -239,11 +259,17 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
             return
         }
 
+        // Cancela requisição anterior se existir (espelha validationTask?.cancel()).
+        val token = ++validationToken
+
         confirmButton.isEnabled = false
         confirmButton.alpha = 0.6f
 
         v(normalized) { result ->
             post {
+                // Ignora callbacks de validações canceladas/substituídas.
+                if (token != validationToken) return@post
+
                 confirmButton.isEnabled = true
                 confirmButton.alpha = 1.0f
 
@@ -317,7 +343,7 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
             context = context,
             backgroundColor = Color.WHITE,
             cornerRadiusDp = 18f,
-            strokeColor = Color.argb(255, 230, 230, 235),
+            strokeColor = Color.argb(255, 229, 229, 234), // iOS systemGray5 (light)
             strokeWidthDp = 1f,
         )
         msisdnTextfield.setTextColor(Color.BLACK)
@@ -350,27 +376,49 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
     // ---------- Phone normalization helpers ----------
 
     /**
-     * Converte um telefone brasileiro em E.164 (5511989795250). Retorna null se
-     * o número não tem 10/11 dígitos locais ou já está em formato inválido.
+     * Converte um telefone brasileiro em E.164 (5511989795250). Espelha
+     * `String.normalizeBrazilianPhone` do iOS: remove não-dígitos, descarta
+     * prefixo internacional com zeros (`00`/`000`) e zeros à esquerda, garante o
+     * prefixo `55` e só aceita se o resultado tiver 12 ou 13 dígitos.
      */
     private fun normalizeBrazilianPhone(raw: String): String? {
-        val digits = raw.filter(Char::isDigit)
-        return when {
-            digits.length == 13 && digits.startsWith("55") -> digits
-            digits.length == 12 && digits.startsWith("55") -> digits
-            digits.length == 11 -> "55$digits"
-            digits.length == 10 -> "55$digits"
-            else -> null
+        val digits = raw.trim().filter(Char::isDigit)
+        if (digits.isEmpty()) return null
+
+        var cleaned = digits
+        // Remove prefixo internacional com zeros (ex.: 0055..., 00055...)
+        if (cleaned.startsWith("00")) {
+            cleaned = cleaned.dropWhile { it == '0' }
         }
+        // Remove zeros à esquerda restantes
+        while (cleaned.startsWith("0")) {
+            cleaned = cleaned.drop(1)
+        }
+        // Garante prefixo do Brasil
+        if (!cleaned.startsWith("55")) {
+            cleaned = "55$cleaned"
+        }
+        // E.164 BR: 55 + DDD(2) + número(8 ou 9) => 12 ou 13 dígitos
+        return if (cleaned.length == 12 || cleaned.length == 13) cleaned else null
     }
 
     private fun stripDDI(e164: String): String {
         return if (e164.startsWith("55") && e164.length > 11) e164.removePrefix("55") else e164
     }
 
+    /**
+     * Espelha `String.formatPhoneNumber()` do iOS (usado no label): só formata
+     * quando o número tem prefixo `55` e exatamente 11 dígitos locais
+     * (`(DD) 9XXXX-XXXX`); caso contrário devolve a string inalterada.
+     */
     private fun formatBrazilianPhone(e164: String): String {
-        val local = stripDDI(e164)
-        return formatBrazilianPhoneNumbersOnly(local)
+        if (!e164.startsWith("55")) return e164
+        val trimmed = e164.drop(2)
+        if (trimmed.length != 11) return e164
+        val ddd = trimmed.take(2)
+        val prefix = trimmed.drop(2).take(5)
+        val suffix = trimmed.takeLast(4)
+        return "($ddd) $prefix-$suffix"
     }
 
     private fun formatBrazilianPhoneNumbersOnly(numbers: String): String {

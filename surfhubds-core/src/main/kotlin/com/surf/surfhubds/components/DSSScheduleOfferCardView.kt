@@ -33,23 +33,38 @@ class DSSScheduleOfferCardView @JvmOverloads constructor(
         text = "Sua oferta"
         textSize = 16f
         typeface = DSSFont.light(context, 16f).typeface
+        // iOS: numberOfLines padrão = 1
+        maxLines = 1
     }
-    private val planNameLabel = TextView(context).apply { textSize = 20f; typeface = DSSFont.bold(context, 20f).typeface }
-    private val priceLabel = TextView(context).apply { gravity = Gravity.END }
+    private val planNameLabel = TextView(context).apply {
+        textSize = 20f
+        typeface = DSSFont.bold(context, 20f).typeface
+        // iOS: numberOfLines padrão = 1 (priceLabel é compression-resistant) -> trunca no fim
+        maxLines = 1
+        ellipsize = android.text.TextUtils.TruncateAt.END
+    }
+    private val priceLabel = TextView(context).apply { gravity = Gravity.END; maxLines = 1 }
     private val badge = TextView(context).apply {
         textSize = 13f
         typeface = DSSFont.light(context, 13f).typeface
         gravity = Gravity.CENTER
+        // iOS: badgeLabel numberOfLines padrão = 1
+        maxLines = 1
         setPadding(16f.dpToPx(context), 4f.dpToPx(context), 16f.dpToPx(context), 4f.dpToPx(context))
     }
     private val dateLabel = TextView(context).apply {
         textSize = 14f
         typeface = DSSFont.light(context, 14f).typeface
+        // iOS: numberOfLines padrão = 1
+        maxLines = 1
         visibility = View.GONE
     }
     private val descriptionLabel = TextView(context).apply {
         textSize = 15f
         typeface = DSSFont.light(context, 15f).typeface
+        // iOS: numberOfLines = 0 (sem limite)
+        setSingleLine(false)
+        maxLines = Int.MAX_VALUE
     }
 
     init {

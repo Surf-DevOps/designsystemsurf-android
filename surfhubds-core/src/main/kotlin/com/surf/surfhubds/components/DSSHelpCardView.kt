@@ -43,7 +43,9 @@ class DSSHelpCardView @JvmOverloads constructor(
     private val descriptionLabel = TextView(context).apply {
         typeface = DSSFont.light(context, 14f).typeface
         textSize = 14f
+        // iOS: numberOfLines = 0 (sem limite)
         setSingleLine(false)
+        maxLines = Int.MAX_VALUE
     }
     private val arrowImageView = ImageView(context).apply {
         scaleType = ImageView.ScaleType.FIT_CENTER
@@ -82,7 +84,9 @@ class DSSHelpCardView @JvmOverloads constructor(
             LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT,
         ).apply {
-            gravity = Gravity.CENTER_VERTICAL
+            // iOS: titleLabel pino no topo (topAnchor + 16). O padding superior de 16
+            // já cobre a constante; aqui alinhamos o bloco de texto ao topo (não centro).
+            gravity = Gravity.START or Gravity.TOP
             leftMargin = 35f.dpToPx(context) + 16f.dpToPx(context)
             rightMargin = 15f.dpToPx(context) + 16f.dpToPx(context)
         }

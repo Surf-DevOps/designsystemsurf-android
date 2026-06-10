@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.GestureDetector
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
+import kotlin.math.roundToInt
 
 /**
  * Port do `DSSCardCollectionView` do iOS — collection horizontal/vertical
@@ -33,10 +35,20 @@ class DSSCardCollectionView @JvmOverloads constructor(
     /** Tipos de bandeira suportados. */
     enum class CardType { VISA, MASTER, ELO }
 
+    /**
+     * Recorrência ativa de um cartão (espelha `Card.recurrence` do iOS).
+     * `planValue` vem em CENTAVOS, como no iOS.
+     */
+    data class Recurrence(
+        val planValue: Double,
+    )
+
     /** Modelo de cartão. */
     data class Card(
         val flag: String?,
         val lastFour: String?,
+        /** Quando não-nulo, o cartão é "da programada" (possui recorrência ativa). */
+        val recurrence: Recurrence? = null,
     )
 
     interface Delegate {
@@ -68,6 +80,10 @@ class DSSCardCollectionView @JvmOverloads constructor(
     private val cards = mutableListOf<Card>()
     private var selectedIndex: Int? = null
 
+    /** Verdadeiro quando ao menos um cartão possui recorrência ativa. */
+    private val hasAnyProgramada: Boolean
+        get() = cards.any { it.recurrence != null }
+
     private val recyclerView: RecyclerView = RecyclerView(context).apply {
         setBackgroundColor(Color.TRANSPARENT)
         clipToPadding = false
@@ -93,12 +109,28 @@ class DSSCardCollectionView @JvmOverloads constructor(
     }
 
     fun setCards(cards: List<Card>) {
+        // Cartão(ões) com recorrência sempre primeiro, mantendo a ordem original dos demais.
         this.cards.clear()
-        this.cards.addAll(cards)
+        this.cards.addAll(cards.filter { it.recurrence != null } + cards.filter { it.recurrence == null })
         adapter.notifyDataSetChanged()
     }
 
     fun getSelectedCard(): Card? = selectedIndex?.let { cards.getOrNull(it) }
+
+    /**
+     * Texto da faixa de programada quando o cartão tem recorrência ativa.
+     * `planValue` vem em centavos, então é convertido para reais.
+     */
+    private fun programadaText(card: Card): String? {
+        val recurrence = card.recurrence ?: return null
+        val reais = recurrence.planValue / 100.0
+        val valueStr = if (reais == reais.roundToInt().toDouble()) {
+            "R$${reais.toInt()}"
+        } else {
+            String.format(java.util.Locale.US, "R$%.2f", reais).replace(".", ",")
+        }
+        return "Cartão com programada de $valueStr"
+    }
 
     fun clearSelection() {
         selectedIndex = null
@@ -149,33 +181,60 @@ class DSSCardCollectionView @JvmOverloads constructor(
                 finalDigits = card.lastFour ?: "",
                 type = type,
             )
+            // Faixa "Cartão com programada de R$XX". Quando há programada, TODAS as células
+            // reservam o espaço do topo para manter os cards alinhados.
+            holder.cell.setProgramada(programadaText(card), reserveTopSpace = hasAnyProgramada)
+
             val lp = (holder.itemView.layoutParams as? RecyclerView.LayoutParams)
                 ?: RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT, RecyclerView.LayoutParams.WRAP_CONTENT)
             lp.width = cardWidthDp.dpToPx(context)
-            lp.height = cardHeightDp.dpToPx(context)
+            // Card mantém o tamanho original; quando há programada, reserva a altura extra da faixa.
+            val extra = if (hasAnyProgramada) CardCellView.PROGRAMADA_REVEAL_DP else 0f
+            lp.height = (cardHeightDp + extra).dpToPx(context)
             if (scrollDirection == RecyclerView.HORIZONTAL) {
                 lp.rightMargin = 16f.dpToPx(context)
+                lp.bottomMargin = 0
             } else {
                 lp.bottomMargin = 16f.dpToPx(context)
+                lp.rightMargin = 0
             }
             holder.itemView.layoutParams = lp
 
-            val selected = (showSelectionBorder && position == selectedIndex)
+            // showSelectionBorder controla apenas a exibição da borda (como no iOS),
+            // não o comportamento de seleção/toggle.
             holder.cell.setSelectionBorder(
-                show = selected,
+                show = showSelectionBorder && position == selectedIndex,
                 colorInt = selectionBorderColor,
                 widthDp = selectionBorderWidthDp,
             )
-            holder.itemView.setOnClickListener {
-                delegate?.didSelectCard(this@DSSCardCollectionView, position)
-            }
+            holder.itemView.setOnClickListener { handleTap(position) }
         }
+    }
+
+    /**
+     * Toque no card: toca no já selecionado -> deseleciona (sem disparar callback).
+     * Toca em outro -> seleciona e dispara [Delegate.didSelectCard].
+     * Espelha o `didSelectItemAt` do iOS.
+     */
+    private fun handleTap(position: Int) {
+        if (selectedIndex == position) {
+            selectedIndex = null
+            adapter.notifyDataSetChanged()
+            return
+        }
+        selectedIndex = position
+        adapter.notifyDataSetChanged()
+        delegate?.didSelectCard(this@DSSCardCollectionView, position)
     }
 
     private class CardViewHolder(val cell: CardCellView) : RecyclerView.ViewHolder(cell)
 
-    /** Célula que mostra a bandeira + "Final XXXX". */
+    /** Célula que mostra a faixa de programada (acima) + a bandeira + "Final XXXX". */
     private class CardCellView(context: Context) : FrameLayout(context) {
+
+        /** Container do card propriamente dito (imagem + dígitos); recebe a borda de seleção. */
+        private val cardContainer = FrameLayout(context).apply { clipToOutline = true }
+
         private val imageView = ImageView(context).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
         }
@@ -185,11 +244,40 @@ class DSSCardCollectionView @JvmOverloads constructor(
             setTextColor(Color.WHITE)
         }
 
+        // Faixa "Cartão com programada de R$XX" (fica acima do card).
+        private val programadaBadge = TextView(context).apply {
+            textSize = 13f
+            typeface = DSSFont.medium(context, 13f).typeface
+            setTextColor(DSSColors.success())
+            gravity = Gravity.CENTER
+            maxLines = 1
+            setPadding(
+                12f.dpToPx(context), 6f.dpToPx(context),
+                12f.dpToPx(context), 18f.dpToPx(context),
+            )
+            background = DrawableFactory.rounded(
+                context = context,
+                backgroundColor = DSSColors.surface(),
+                cornerRadiusDp = 10f,
+                strokeColor = DSSColors.borderDefault(),
+                strokeWidthDp = 1f,
+            )
+            visibility = View.GONE
+        }
+
         init {
-            addView(imageView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
-            val lblLp = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-            addView(lastDigitsLabel, lblLp)
-            clipToOutline = true
+            // Ordem (z): faixa atrás, card por cima (deslocado pra baixo quando há reserva).
+            addView(
+                programadaBadge,
+                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                    gravity = Gravity.TOP
+                    leftMargin = 8f.dpToPx(context)
+                    rightMargin = 8f.dpToPx(context)
+                },
+            )
+            cardContainer.addView(imageView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+            cardContainer.addView(lastDigitsLabel, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
+            addView(cardContainer, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         }
 
         fun configure(image: android.graphics.drawable.Drawable?, finalDigits: String, type: CardType) {
@@ -202,14 +290,36 @@ class DSSCardCollectionView @JvmOverloads constructor(
                 CardType.MASTER -> 60f to 20f
             }
             val lp = lastDigitsLabel.layoutParams as LayoutParams
-            lp.gravity = android.view.Gravity.BOTTOM or android.view.Gravity.START
+            lp.gravity = Gravity.BOTTOM or Gravity.START
             lp.leftMargin = leadDp.dpToPx(context)
             lp.bottomMargin = bottomDp.dpToPx(context)
             lastDigitsLabel.layoutParams = lp
         }
 
+        /**
+         * Mostra/esconde a faixa de programada acima do card.
+         * @param text texto da faixa; null/vazio esconde a faixa.
+         * @param reserveTopSpace quando true, reserva o espaço do topo (mantém os cards
+         *   alinhados) mesmo que este card não tenha a faixa.
+         */
+        fun setProgramada(text: String?, reserveTopSpace: Boolean) {
+            val reveal = if (reserveTopSpace) PROGRAMADA_REVEAL_DP.dpToPx(context) else 0
+            (cardContainer.layoutParams as? LayoutParams)?.let {
+                if (it.topMargin != reveal) {
+                    it.topMargin = reveal
+                    cardContainer.layoutParams = it
+                }
+            }
+            if (!text.isNullOrEmpty()) {
+                programadaBadge.text = text
+                programadaBadge.visibility = View.VISIBLE
+            } else {
+                programadaBadge.visibility = View.GONE
+            }
+        }
+
         fun setSelectionBorder(show: Boolean, colorInt: Int, widthDp: Float) {
-            background = if (show) {
+            cardContainer.background = if (show) {
                 DrawableFactory.rounded(
                     context = context,
                     backgroundColor = Color.TRANSPARENT,
@@ -218,6 +328,11 @@ class DSSCardCollectionView @JvmOverloads constructor(
                     strokeWidthDp = widthDp,
                 )
             } else null
+        }
+
+        companion object {
+            /** Espaço reservado acima do card para a faixa de programada (pt -> dp). */
+            const val PROGRAMADA_REVEAL_DP = 24f
         }
     }
 }

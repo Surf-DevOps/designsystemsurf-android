@@ -101,7 +101,7 @@ class ExpandablePlanCardView @JvmOverloads constructor(
 
         contentColumn.addView(currentOfferLabel)
         contentColumn.addView(headerRow, marginTop(8))
-        contentColumn.addView(validityRow, marginTop(12))
+        contentColumn.addView(validityRow, marginTop(16))
         contentColumn.addView(benefitsStack, marginTop(16))
         contentColumn.addView(ilimitadosTitle, marginTop(16))
         contentColumn.addView(ilimitadosStack, marginTop(8))
@@ -115,7 +115,6 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             toggleButton,
             LinearLayout.LayoutParams(140f.dpToPx(context), 40f.dpToPx(context)).apply {
                 gravity = Gravity.CENTER_HORIZONTAL
-                topMargin = 8f.dpToPx(context)
                 bottomMargin = 16f.dpToPx(context)
             },
         )
@@ -165,8 +164,11 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         scheduleBonusMB: Int = 0,
         portabilityBonusMB: Int = 0,
         mvnoName: String = "",
+        scheduleEligible: Boolean = false,
     ) {
-        currentOfferLabel.text = if (hasScheduledRechargeBonus) {
+        // iOS: o texto "Recarga programada Ativa/Inativa" depende de `brandInfo.scheduleEligible`,
+        // não de `hasScheduledRechargeBonus` (que controla apenas a feature na seção expandida).
+        currentOfferLabel.text = if (scheduleEligible) {
             val status = if (isScheduledRechargeActive) "Ativa" else "Inativa"
             "Oferta atual | Recarga \nprogramada $status"
         } else {
@@ -192,9 +194,10 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             plan.voz.lowercase().contains("ilimitad")
         ilimitadosTitle.visibility = if (hasUnlimited) View.VISIBLE else View.GONE
         ilimitadosStack.visibility = if (hasUnlimited) View.VISIBLE else View.GONE
-        for (item in plan.unlimitedItems) ilimitadosStack.addView(iconRow(item))
+        // iOS: ilimitadosStackView.spacing = 16
+        for (item in plan.unlimitedItems) ilimitadosStack.addView(iconRow(item, itemSpacingDp = 16))
         if (plan.voz.lowercase().contains("ilimitad")) {
-            ilimitadosStack.addView(iconRow(DSSPlanCollectionView.CheckListItem("Ligações usando o código 41", null)))
+            ilimitadosStack.addView(iconRow(DSSPlanCollectionView.CheckListItem("Ligações usando o código 41", null), itemSpacingDp = 16))
         }
 
         // Subscriptions
@@ -202,7 +205,8 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         val hasSubs = plan.subscriptionItems.isNotEmpty()
         subscriptionsTitle.visibility = if (hasSubs) View.VISIBLE else View.GONE
         subscriptionsStack.visibility = if (hasSubs) View.VISIBLE else View.GONE
-        for (item in plan.subscriptionItems) subscriptionsStack.addView(iconRow(item))
+        // iOS: subscriptionsStackView.spacing = 8
+        for (item in plan.subscriptionItems) subscriptionsStack.addView(iconRow(item, itemSpacingDp = 8))
 
         // Features
         featuresStack.removeAllViews()
@@ -228,7 +232,8 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             text = feature.title
             textSize = 16f
             typeface = DSSFont.bold(context, 16f).typeface
-            setTextColor(DSSColors.textPrimary())
+            // iOS: PlanFeatureView titleLabel usa .gray (não textPrimary como os labels de seção)
+            setTextColor(DSSColors.textSecondary())
         }
         block.addView(title)
         if (feature.description.isNotEmpty()) {
@@ -243,7 +248,7 @@ class ExpandablePlanCardView @JvmOverloads constructor(
                 LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT,
-                ).apply { topMargin = 8f.dpToPx(context) },
+                ).apply { topMargin = 16f.dpToPx(context) },
             )
         }
         val lp = LinearLayout.LayoutParams(
@@ -282,7 +287,7 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         return row
     }
 
-    private fun iconRow(item: DSSPlanCollectionView.CheckListItem): View {
+    private fun iconRow(item: DSSPlanCollectionView.CheckListItem, itemSpacingDp: Int = 8): View {
         val row = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         val size = if (item.imageUrl != null) 28 else 24
         val iv = ImageView(context).apply {
@@ -304,10 +309,11 @@ class ExpandablePlanCardView @JvmOverloads constructor(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply { leftMargin = 12f.dpToPx(context) },
         )
+        val half = (itemSpacingDp / 2f)
         row.layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
-        ).apply { topMargin = 4f.dpToPx(context); bottomMargin = 4f.dpToPx(context) }
+        ).apply { topMargin = half.dpToPx(context); bottomMargin = half.dpToPx(context) }
         return row
     }
 

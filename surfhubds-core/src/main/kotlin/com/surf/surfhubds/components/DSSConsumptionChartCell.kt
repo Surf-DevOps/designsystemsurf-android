@@ -30,9 +30,11 @@ class DSSConsumptionChartCell(parent: Context) : RecyclerView.ViewHolder(FrameLa
         type: DSSConsumptionChart.TypeChart,
         isInverted: Boolean,
         progressColor: Int = com.surf.surfhubds.theme.DSSColors.primary(),
-        trackColor: Int = Color.argb(77, 200, 200, 200),
-        usedFontSizeSp: Float = 28f,
-        totalFontSizeSp: Float = 18f,
+        // iOS default: UIColor.lightGray.withAlphaComponent(0.3) -> ~170,170,170 @ alpha 77.
+        trackColor: Int = Color.argb(77, 170, 170, 170),
+        // iOS defaults: usedFont = .boldSystemFont(ofSize: 26), totalFont = .systemFont(ofSize: 14).
+        usedFontSizeSp: Float = 26f,
+        totalFontSizeSp: Float = 14f,
         usedTextColor: Int = Color.BLACK,
         totalTextColor: Int = Color.DKGRAY,
         usedTypeface: Typeface? = null,

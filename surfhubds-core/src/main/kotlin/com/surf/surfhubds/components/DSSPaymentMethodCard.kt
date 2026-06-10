@@ -15,7 +15,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -117,7 +119,12 @@ class DSSPaymentMethodCard @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
-        val accent = DSSColors.primary()
+        // iOS: colorScheme == .black ? DSSColors.primaryButton : DSSColors.primary
+        val accent = if (ThemeManager.colorScheme == ColorScheme.BLACK) {
+            DSSColors.primaryButton()
+        } else {
+            DSSColors.primary()
+        }
         if (_selected) {
             background = DrawableFactory.rounded(
                 context = context,
@@ -142,5 +149,43 @@ class DSSPaymentMethodCard @JvmOverloads constructor(
     private fun withAlpha(@ColorInt color: Int, alpha: Int): Int {
         val a = alpha and 0xFF
         return (color and 0x00FFFFFF) or (a shl 24)
+    }
+
+    /**
+     * Fábricas de conveniência espelhando a extensão Swift `DSSPaymentMethodCard`.
+     * No iOS as funções não recebem contexto (UIKit); aqui o [Context] é obrigatório
+     * para resolver ícones/recursos.
+     */
+    companion object {
+
+        /** Cria um card Pix. */
+        @JvmStatic
+        fun pixCard(context: Context): DSSPaymentMethodCard =
+            DSSPaymentMethodCard(context, PaymentMethodImages.pixIcon(context), "Pix")
+
+        /** Cria um card para novo cartão. */
+        @JvmStatic
+        fun newCardCard(context: Context): DSSPaymentMethodCard =
+            DSSPaymentMethodCard(
+                context,
+                PaymentMethodImages.addCardIcon(context),
+                "Novo Cartão de Crédito",
+            )
+
+        /** Cria um card para cartão existente. */
+        @JvmStatic
+        fun creditCard(
+            context: Context,
+            lastFourDigits: String,
+            cardBrand: String = "",
+        ): DSSPaymentMethodCard {
+            val cardIcon = PaymentMethodImages.cardBrandIcon(context, cardBrand)
+            val title = if (cardBrand.isEmpty()) {
+                "**** $lastFourDigits"
+            } else {
+                "$cardBrand **** $lastFourDigits"
+            }
+            return DSSPaymentMethodCard(context, cardIcon, title)
+        }
     }
 }

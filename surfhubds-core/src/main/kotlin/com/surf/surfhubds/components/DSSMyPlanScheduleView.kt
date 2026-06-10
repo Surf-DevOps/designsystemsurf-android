@@ -16,6 +16,7 @@ import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -101,7 +102,7 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
         orientation = LinearLayout.VERTICAL
         visibility = View.GONE
     }
-    private val calendarGrid = DSSFixedCalendarView(context)
+    private val calendarGrid = DSSScheduleCalendarView(context)
     private val saveButton = DSSPrincipalButton(context).apply { text = "Salvar data" }
 
     init {
@@ -247,7 +248,12 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
         if (date != null) {
             backendDate = date
             dateLabel.text = displayFormatter.format(date)
-            calendarGrid.configure(maxDate = date, daysBack = 13)
+            // iOS: daysBack = max(0, dias entre o início de hoje e o início do dia da renovação).
+            val today = startOfDay(Date())
+            val renewalDay = startOfDay(date)
+            val diffMs = renewalDay.time - today.time
+            val daysBack = maxOf(0L, diffMs / MILLIS_PER_DAY).toInt()
+            calendarGrid.configure(maxDate = date, daysBack = daysBack)
         } else {
             dateLabel.text = renewalDateIso
         }
@@ -291,5 +297,21 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
         trocarPlanoButton.setTextColor(DSSColors.textPrimary())
         alterarCartaoButton.setTextColor(DSSColors.textPrimary())
         cancelarButton.setTextColor(DSSColors.error())
+    }
+
+    /** Zera hora/minuto/segundo/ms — equivalente a `Calendar.startOfDay` do iOS. */
+    private fun startOfDay(date: Date): Date {
+        val c = Calendar.getInstance().apply {
+            time = date
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        return c.time
+    }
+
+    private companion object {
+        private const val MILLIS_PER_DAY = 24L * 60L * 60L * 1000L
     }
 }

@@ -19,6 +19,7 @@ import com.surf.surfhubds.theme.brands.MatizConectaTheme
 import com.surf.surfhubds.theme.brands.MegaTheme
 import com.surf.surfhubds.theme.brands.PaferTheme
 import com.surf.surfhubds.theme.brands.PagueMenosTheme
+import com.surf.surfhubds.theme.brands.PernambucanasChipTheme
 import com.surf.surfhubds.theme.brands.UberTheme
 import com.surf.surfhubds.tokens.ColorScheme
 
@@ -92,6 +93,7 @@ object SurfHubDS {
         Brand.PAGUEMENOS -> PagueMenosTheme()
         Brand.CARREFOURCHIP -> CarrefourChipTheme()
         Brand.CORREIOSCELULAR -> CorreiosCelularTheme()
+        Brand.PERNAMBUCANASCHIP -> PernambucanasChipTheme()
         Brand.DEFAULT -> DefaultTheme()
     }
 }

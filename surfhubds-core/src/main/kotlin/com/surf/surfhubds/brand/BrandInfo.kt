@@ -211,6 +211,22 @@ data class BrandInfo(
                 scheduleEligible = true,
                 recurrenceEligible = true,
             )
+            Brand.PERNAMBUCANASCHIP -> BrandInfo(
+                carouselText1 = "A sua operadora de celular.",
+                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                termsAdesaoURL = "https://pernambucanas.surf.com.br/termo-de-adesao-novo/",
+                termsOfertaURL = "",
+                termsPrivacidadeURL = "https://pernambucanas.surf.com.br/termo-de-privacidade-novo/",
+                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=pernambucanaschipapp&params=mtq5otc1ntq3ntu%3D",
+                whatsApp = "5511933003030",
+                forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.pernambucanaschip",
+                coMvno = "100",
+                mvnoName = "Pernambucanas chip",
+                noMvno = "PERNAMBUCANAS",
+                scheduleEligible = true,
+                recurrenceEligible = true,
+            )
             Brand.DEFAULT -> BrandInfo(
                 carouselText1 = "Aproveite os melhores planos com internet e ligações ilimitadas",
                 carouselText2 = "Programe suas recargas e fique sempre conectado",

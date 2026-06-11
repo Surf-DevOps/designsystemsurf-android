@@ -186,7 +186,9 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             background = DrawableFactory.rounded(
                 context = ctx, backgroundColor = DSSColors.primary(), cornerRadiusDp = 14f,
             )
-            setPadding(14f.dpToPx(ctx), 4f.dpToPx(ctx), 14f.dpToPx(ctx), 4f.dpToPx(ctx))
+            // iOS: badge tem altura fixa de 28pt e padding horizontal de 14pt (vertical preenche os 28).
+            gravity = Gravity.CENTER
+            setPadding(14f.dpToPx(ctx), 0, 14f.dpToPx(ctx), 0)
         }
         val dateLabel = TextView(ctx).apply {
             text = c.dateText
@@ -196,7 +198,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             gravity = Gravity.END
         }
         badgeRow.addView(badge, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT, 28f.dpToPx(ctx),
         ))
         // spacer
         badgeRow.addView(View(ctx), LinearLayout.LayoutParams(0, 1, 1f))
@@ -209,8 +211,9 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
 
         // Separator
         val sep = View(ctx).apply { setBackgroundColor(DSSColors.divider()) }
+        // iOS: separador com 0.5pt de altura.
         card.addView(sep, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, 1,
+            LinearLayout.LayoutParams.MATCH_PARENT, 0.5f.dpToPx(ctx),
         ).apply { bottomMargin = 16f.dpToPx(ctx) })
 
         if (c.internetSemCortes.isNotEmpty()) {

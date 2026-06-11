@@ -44,9 +44,22 @@ class DSSScheduleCancelledBottomSheet : BottomSheetDialogFragment() {
 
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(24f.dpToPx(ctx), 24f.dpToPx(ctx), 24f.dpToPx(ctx), 20f.dpToPx(ctx))
+            // iOS: handle top 12, title 24 abaixo do handle, conteudo lateral 24, bottom 20 (safe area).
+            setPadding(24f.dpToPx(ctx), 12f.dpToPx(ctx), 24f.dpToPx(ctx), 20f.dpToPx(ctx))
             gravity = Gravity.CENTER_HORIZONTAL
         }
+
+        // iOS: handleView 40x5, cornerRadius 2.5, systemGray4, top 12, centralizado.
+        val handleView = View(ctx).apply {
+            background = com.surf.surfhubds.util.DrawableFactory.rounded(
+                context = ctx,
+                backgroundColor = 0xFFD1D1D6.toInt(), // systemGray4
+                cornerRadiusDp = 2.5f,
+            )
+        }
+        root.addView(handleView, LinearLayout.LayoutParams(
+            40f.dpToPx(ctx), 5f.dpToPx(ctx),
+        ).apply { gravity = Gravity.CENTER_HORIZONTAL })
 
         val titleLabel = TextView(ctx).apply {
             text = "Programada cancelada!"
@@ -57,7 +70,7 @@ class DSSScheduleCancelledBottomSheet : BottomSheetDialogFragment() {
         }
         root.addView(titleLabel, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
-        ))
+        ).apply { topMargin = 24f.dpToPx(ctx) }) // iOS: titleLabel.top = handleView.bottom + 24
 
         // iOS carrega `cancel_schedule` via ImageLoader; aqui o param público
         // [illustration] permanece como override opcional.
@@ -112,7 +125,7 @@ class DSSScheduleCancelledBottomSheet : BottomSheetDialogFragment() {
             typeface = DSSFont.regular(ctx, 16f).typeface
             textSize = 16f
             customBackgroundColor = if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
-            customTextColor = DSSColors.buttonText()
+            customTextColor = android.graphics.Color.WHITE // iOS: textColor: .white (literal)
             onTap = { finishTapped() }
         }
         root.addView(finishButton, LinearLayout.LayoutParams(

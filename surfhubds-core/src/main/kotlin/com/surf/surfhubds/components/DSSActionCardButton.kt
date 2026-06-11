@@ -2,6 +2,7 @@ package com.surf.surfhubds.components
 
 import android.content.Context
 import android.graphics.Color
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
 import androidx.appcompat.widget.AppCompatButton
@@ -49,6 +50,7 @@ class DSSActionCardButton @JvmOverloads constructor(
         gravity = Gravity.BOTTOM or Gravity.START
         textAlignment = TEXT_ALIGNMENT_TEXT_START
         maxLines = 2
+        ellipsize = TextUtils.TruncateAt.END
         textSize = 15f
         typeface = DSSFont.regular(context, 15f).typeface
         // contentInsets iOS: top 18, leading 14, bottom 18, trailing 14

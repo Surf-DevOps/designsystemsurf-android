@@ -203,7 +203,8 @@ class DSSCardCollectionView @JvmOverloads constructor(
             // showSelectionBorder controla apenas a exibição da borda (como no iOS),
             // não o comportamento de seleção/toggle.
             holder.cell.setSelectionBorder(
-                show = showSelectionBorder && position == selectedIndex,
+                borderEnabled = showSelectionBorder,
+                isSelected = position == selectedIndex,
                 colorInt = selectionBorderColor,
                 widthDp = selectionBorderWidthDp,
             )
@@ -251,6 +252,10 @@ class DSSCardCollectionView @JvmOverloads constructor(
             setTextColor(DSSColors.success())
             gravity = Gravity.CENTER
             maxLines = 1
+            // iOS: adjustsFontSizeToFitWidth = true, minimumScaleFactor = 0.8 (13 * 0.8 ≈ 10).
+            androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                this, 10, 13, 1, android.util.TypedValue.COMPLEX_UNIT_SP,
+            )
             setPadding(
                 12f.dpToPx(context), 6f.dpToPx(context),
                 12f.dpToPx(context), 18f.dpToPx(context),
@@ -318,14 +323,16 @@ class DSSCardCollectionView @JvmOverloads constructor(
             }
         }
 
-        fun setSelectionBorder(show: Boolean, colorInt: Int, widthDp: Float) {
-            cardContainer.background = if (show) {
+        fun setSelectionBorder(borderEnabled: Boolean, isSelected: Boolean, colorInt: Int, widthDp: Float) {
+            // iOS aplica cornerRadius 8 + clipsToBounds sempre que a borda está habilitada
+            // (applySelectionBorder); a largura da borda é 0 quando não selecionado.
+            cardContainer.background = if (borderEnabled) {
                 DrawableFactory.rounded(
                     context = context,
                     backgroundColor = Color.TRANSPARENT,
                     cornerRadiusDp = 8f,
                     strokeColor = colorInt,
-                    strokeWidthDp = widthDp,
+                    strokeWidthDp = if (isSelected) widthDp else 0f,
                 )
             } else null
         }

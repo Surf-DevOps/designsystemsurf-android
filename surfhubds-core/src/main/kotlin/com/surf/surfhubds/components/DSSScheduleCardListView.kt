@@ -197,6 +197,13 @@ class DSSScheduleCardListView @JvmOverloads constructor(
         private val defaultDot = View(context)
         private val cardImage = ImageView(context).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
+            // iOS: cardImageView.layer.cornerRadius = 6 + clipsToBounds
+            clipToOutline = true
+            outlineProvider = object : android.view.ViewOutlineProvider() {
+                override fun getOutline(view: View, outline: android.graphics.Outline) {
+                    outline.setRoundRect(0, 0, view.width, view.height, 6f.dpToPx(context).toFloat())
+                }
+            }
         }
         private val labelsStack = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
         private val titleLabel = TextView(context).apply {
@@ -213,9 +220,8 @@ class DSSScheduleCardListView @JvmOverloads constructor(
         private var isSelected = false
 
         init {
-            val hPad = 12f.dpToPx(context); val vPad = 12f.dpToPx(context)
-            container.setPadding(hPad, vPad, hPad, vPad)
-            container.minimumHeight = 80f.dpToPx(context)
+            // iOS: containerView sem padding, leading do dot = 12 (constraint), altura FIXA 80.
+            container.setPadding(12f.dpToPx(context), 0, 0, 0)
 
             container.addView(
                 defaultDot,
@@ -239,10 +245,11 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             container.addView(
                 labelsStack,
                 LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
-                    leftMargin = 12f.dpToPx(context); rightMargin = 36f.dpToPx(context)
+                    rightMargin = 36f.dpToPx(context)
                 },
             )
-            addView(container, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
+            // iOS: containerView.heightAnchor == 80 (altura fixa, não mínima).
+            addView(container, LayoutParams(LayoutParams.MATCH_PARENT, 80f.dpToPx(context)))
             refresh()
             setupThemeObserver()
         }

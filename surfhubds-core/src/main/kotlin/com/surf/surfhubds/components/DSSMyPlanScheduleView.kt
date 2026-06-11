@@ -103,7 +103,11 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
         visibility = View.GONE
     }
     private val calendarGrid = DSSScheduleCalendarView(context)
-    private val saveButton = DSSPrincipalButton(context).apply { text = "Salvar data" }
+    private val saveButton = DSSPrincipalButton(context).apply {
+        text = "Salvar data"
+        // iOS: DSSFont.regular(16) (o default do botão é light).
+        typeface = DSSFont.regular(context, 16f).typeface
+    }
 
     init {
         column.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
@@ -253,7 +257,7 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
             val renewalDay = startOfDay(date)
             val diffMs = renewalDay.time - today.time
             val daysBack = maxOf(0L, diffMs / MILLIS_PER_DAY).toInt()
-            calendarGrid.configure(maxDate = date, daysBack = daysBack)
+            calendarGrid.configure(maxDate = date, daysBack = daysBack, startFromMinDate = true)
         } else {
             dateLabel.text = renewalDateIso
         }

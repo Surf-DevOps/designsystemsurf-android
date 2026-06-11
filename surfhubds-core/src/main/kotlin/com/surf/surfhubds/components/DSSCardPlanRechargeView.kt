@@ -212,12 +212,15 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     }
 
     private fun configureRenewButton(data: CardData) {
-        // Valor vem em centavos (3000 → "30,00"). Espelha `Utility.formatPrice` do iOS.
-        val cents = when {
-            data.mvno == "iFood" -> 2500
-            else -> data.price.toIntOrNull() ?: 0
+        // iOS: bail-out se price não for Int (guard let Int(data.price) else { return }).
+        val formattedPrice = data.price.toIntOrNull() ?: return
+        // iOS: iFood usa o literal fixo "R$ 25,00"; demais usam Utility.formatPrice
+        // (que NÃO inclui o prefixo "R$"). Espaços iguais ao iOS ("  ...  ").
+        renewButtonSlider.labelText = if (data.mvno == "iFood") {
+            "  Repetir recarga  R$ 25,00"
+        } else {
+            "  Repetir recarga  ${Utility.formatPrice(formattedPrice)}"
         }
-        renewButtonSlider.labelText = "Repetir recarga  ${Utility.formatPrice(cents)}"
     }
 
     private fun progressColorForDays(days: Int): Int = when {

@@ -41,7 +41,8 @@ class BottomSheetEsimInstallationView @JvmOverloads constructor(
         textSize = 16f
         typeface = DSSFont.regular(context, 16f).typeface
         gravity = Gravity.CENTER
-        maxLines = Int.MAX_VALUE
+        // iOS: `autorizationLabel` não define `numberOfLines`, então usa o default = 1.
+        maxLines = 1
     }
 
     private val continueButton = DSSPrincipalButton(context).apply {
@@ -126,6 +127,10 @@ class BottomSheetEsimInstallationView @JvmOverloads constructor(
     private fun refresh() {
         titleLabel.setTextColor(DSSColors.primary())
         authorizationLabel.setTextColor(DSSColors.textPrimary())
+        // iOS: continueButton usa `backgroundColor: DSSColors.primaryButton` e
+        // `textColor: DSSColors.buttonText` (não o token `primary` default do botão).
+        continueButton.customBackgroundColor = DSSColors.primaryButton()
+        continueButton.customTextColor = DSSColors.buttonText()
         applyContentConfig()
     }
 }

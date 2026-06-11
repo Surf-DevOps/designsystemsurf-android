@@ -33,9 +33,12 @@ class DSSCheckboxView @JvmOverloads constructor(
 
     var onStateChange: ((State) -> Unit)? = null
 
-    var state: State = State.UNCHECKED
+    private var _state: State = State.UNCHECKED
+
+    var state: State
+        get() = _state
         set(value) {
-            field = value
+            _state = value
             checkbox.isChecked = value == State.CHECKED
             onStateChange?.invoke(value)
         }
@@ -52,16 +55,19 @@ class DSSCheckboxView @JvmOverloads constructor(
         titleLabel.textSize = 14f
         titleLabel.typeface = DSSFont.light(context, 14f).typeface
         titleLabel.maxLines = Int.MAX_VALUE
+        // iOS: titleCheckBox.width = 280, height = 35 (pt -> dp 1:1).
         row.addView(titleLabel, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
+            280f.dpToPx(context),
+            35f.dpToPx(context),
         ))
 
         addView(row)
 
-        checkbox.setOnCheckedChangeListener { _, isChecked ->
-            state = if (isChecked) State.CHECKED else State.UNCHECKED
-        }
+        // iOS: um único UITapGestureRecognizer na view inteira chama toggle().
+        // O checkbox não trata o toque sozinho (evita listener reentrante via
+        // checkbox.isChecked no setter de state).
+        checkbox.isClickable = false
+        checkbox.isFocusable = false
         setOnClickListener { toggle() }
 
         refresh()
@@ -80,7 +86,10 @@ class DSSCheckboxView @JvmOverloads constructor(
         titleCheckbox: String,
     ) : this(context, null, 0) {
         titleLabel.text = titleCheckbox
-        state = initialState
+        // iOS atribui state antes de super.init: o didSet NÃO dispara, então
+        // onStateChange não é invocado na construção. Aplica só o visual.
+        _state = initialState
+        checkbox.isChecked = initialState == State.CHECKED
     }
 
     fun setTitle(title: CharSequence) {

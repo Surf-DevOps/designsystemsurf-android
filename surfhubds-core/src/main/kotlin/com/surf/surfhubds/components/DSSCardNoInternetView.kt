@@ -17,8 +17,11 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -106,6 +109,23 @@ class DSSCardNoInternetView @JvmOverloads constructor(
 
     override fun applyTheme(theme: Theme) { refresh() }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        // iOS fixa intrinsicContentSize.height = 236
+        val minH = 236f.dpToPx(context)
+        super.onMeasure(
+            widthMeasureSpec,
+            MeasureSpec.makeMeasureSpec(
+                maxOf(MeasureSpec.getSize(heightMeasureSpec), minH),
+                if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
+                    MeasureSpec.EXACTLY
+                } else {
+                    MeasureSpec.AT_MOST
+                },
+            ),
+        )
+        setMeasuredDimension(measuredWidth, maxOf(measuredHeight, minH))
+    }
+
     private fun refresh() {
         applyAppearance()
     }
@@ -185,18 +205,29 @@ class DSSCardNoInternetView @JvmOverloads constructor(
     fun setAppearanceStyle(style: AppearanceStyle) {
         appearanceStyle = style
         applyAppearance()
+        updatePaymentOptionsUI()
     }
 
     private fun applyAppearance() {
         when (appearanceStyle) {
             AppearanceStyle.DARK -> {
-                backgroundCard.background = DrawableFactory.rounded(
-                    context = context,
-                    backgroundColor = Color.BLACK,
-                    cornerRadiusDp = 12f,
-                    strokeColor = Color.WHITE,
-                    strokeWidthDp = 1f,
-                )
+                val isBlack = ThemeManager.colorScheme == ColorScheme.BLACK
+                if (isBlack) {
+                    backgroundCard.background = DrawableFactory.rounded(
+                        context = context,
+                        backgroundColor = SECONDARY_SYSTEM_BACKGROUND_DARK,
+                        cornerRadiusDp = 12f,
+                    )
+                    anticipateSwipeView.innerColor = Color.WHITE
+                } else {
+                    backgroundCard.background = DrawableFactory.rounded(
+                        context = context,
+                        backgroundColor = Color.BLACK,
+                        cornerRadiusDp = 12f,
+                        strokeColor = Color.WHITE,
+                        strokeWidthDp = 1f,
+                    )
+                }
                 titleLabel.setTextColor(Color.WHITE)
                 dividerLine.setBackgroundColor(Color.rgb(77, 77, 77))
                 validityLabel.setTextColor(Color.argb(178, 255, 255, 255))
@@ -231,6 +262,12 @@ class DSSCardNoInternetView @JvmOverloads constructor(
         }
     }
 
+    /** Cor do texto do row recolhido (Pix/Alterar): branco no dark, token no light. */
+    private fun rowTextColor(): Int = when (appearanceStyle) {
+        AppearanceStyle.DARK -> Color.WHITE
+        AppearanceStyle.LIGHT -> DSSColors.textPrimary()
+    }
+
     private fun buildCollapsedRow(): android.view.View {
         val row = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -244,13 +281,13 @@ class DSSCardNoInternetView @JvmOverloads constructor(
             text = if (currentPaymentType == PaymentType.PIX) "Pix" else "Cartão de crédito"
             textSize = 15f
             typeface = DSSFont.regular(context, 15f).typeface
-            setTextColor(Color.WHITE)
+            setTextColor(rowTextColor())
         }
         val alterButton = TextView(context).apply {
             text = SpannableString("Alterar").apply { setSpan(UnderlineSpan(), 0, length, 0) }
             textSize = 13f
             typeface = DSSFont.regular(context, 13f).typeface
-            setTextColor(Color.WHITE)
+            setTextColor(rowTextColor())
             isClickable = true
             isFocusable = true
             setOnClickListener {
@@ -328,7 +365,8 @@ class DSSCardNoInternetView @JvmOverloads constructor(
         anticipateAmount: Double = 50.00,
     ) {
         percentageLabel.text = "${consumedPercentage}% consumida"
-        validityLabel.text = "Vencimento: $expiryDate"
+        val modDate = Utility.formatDateToBrazilianFormat(expiryDate)
+        validityLabel.text = "Vencimento: $modDate"
         currentPaymentType = paymentType
         updatePaymentOptionsUI()
         val formatted = String.format("R$ %.2f", anticipateAmount).replace('.', ',')
@@ -337,5 +375,9 @@ class DSSCardNoInternetView @JvmOverloads constructor(
 
     fun resetSlider() {
         anticipateSwipeView.resetState(animated = true)
+    }
+
+    companion object {
+        private const val SECONDARY_SYSTEM_BACKGROUND_DARK = 0xFF1C1C1E.toInt()
     }
 }

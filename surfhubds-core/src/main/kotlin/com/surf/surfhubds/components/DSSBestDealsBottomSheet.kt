@@ -17,7 +17,8 @@ import com.surf.surfhubds.brand.Brand
 import com.surf.surfhubds.brand.BrandResolver
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
-import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.theme.ThemeManager
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -51,7 +52,12 @@ class DSSBestDealsBottomSheet : BottomSheetDialogFragment() {
         val ctx = requireContext()
 
         val scroll = ScrollView(ctx).apply {
-            setBackgroundColor(DSSColors.background())
+            // iOS setupSheet(): .black -> preto; .dark -> rgb(28,28,30); default -> DSSColors.background
+            setBackgroundColor(when (ThemeManager.colorScheme) {
+                ColorScheme.BLACK -> Color.BLACK
+                ColorScheme.DARK -> Color.rgb(28, 28, 30)
+                else -> DSSColors.background()
+            })
         }
 
         val content = LinearLayout(ctx).apply {
@@ -85,13 +91,12 @@ class DSSBestDealsBottomSheet : BottomSheetDialogFragment() {
 
         val acceptButton = DSSPrincipalButton(ctx).apply {
             text = "Eu quero!"
-            // iOS passa backgroundColor: DSSColors.primaryButton (sobrescreve o default primary do botão)
-            setBackground(DrawableFactory.rounded(
-                context = ctx,
-                backgroundColor = DSSColors.primaryButton(),
-                cornerRadiusDp = cornerRadiusDp,
-            ))
-            setTextColor(DSSColors.buttonText())
+            // iOS: font = DSSFont.regular(16) (botão default é light(16))
+            typeface = DSSFont.regular(ctx, 16f).typeface
+            // iOS passa backgroundColor: DSSColors.primaryButton + textColor: DSSColors.buttonText.
+            // Usa os setters theme-aware p/ não serem sobrescritos pelo refresh() do botão.
+            customBackgroundColor = DSSColors.primaryButton()
+            customTextColor = DSSColors.buttonText()
             onTap = {
                 dismiss()
                 delegate?.bestDealsBottomSheetDidAcceptUpgrade(this@DSSBestDealsBottomSheet, upgrade)

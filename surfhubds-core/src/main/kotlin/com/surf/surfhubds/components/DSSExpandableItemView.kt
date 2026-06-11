@@ -55,7 +55,8 @@ class DSSExpandableItemView @JvmOverloads constructor(
         toggleButton.isAllCaps = false
         toggleButton.background = null
         toggleButton.text = "+"
-        toggleButton.textSize = 22f
+        // iOS UIButton(type: .system) sem font custom usa o tamanho de corpo padrão (~17pt).
+        toggleButton.textSize = 17f
         toggleButton.minWidth = 0
         toggleButton.minimumWidth = 0
         toggleButton.setPadding(0, 0, 0, 0)

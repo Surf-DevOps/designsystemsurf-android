@@ -137,6 +137,16 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
     private var currentPixCode: String = ""
     private val handler = Handler(Looper.getMainLooper())
 
+    private companion object {
+        // iOS usa literais hardcoded (não tokens semânticos):
+        // UIColor(red: 0.7, green: 0.1, blue: 0.1, alpha: 1.0) -> #B31A1A
+        val PIX_RED = Color.parseColor("#B31A1A")
+        // UIColor.systemGreen -> #34C759
+        val SYSTEM_GREEN = Color.parseColor("#34C759")
+        // UIColor.systemGray4 -> #D1D1D6
+        val SYSTEM_GRAY4 = Color.parseColor("#D1D1D6")
+    }
+
     init {
         addView(
             scrollView,
@@ -158,6 +168,8 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
         // backgroundColor = .systemBackground (= cor de fundo da página), borderColor = .systemGray4.
         resumeCard.cornerRadiusDp = 8f
         resumeCard.borderWidthDp = 1f
+        // iOS: resumeCard.borderColor = .systemGray4
+        resumeCard.borderColorOverride = SYSTEM_GRAY4
 
         val spacing = 24f.dpToPx(context)
 
@@ -266,7 +278,7 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
         val originalBg = copyButton.background
         copyButton.background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.success(),
+            backgroundColor = SYSTEM_GREEN,
             cornerRadiusDp = 8f,
         )
 
@@ -287,7 +299,8 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
         paymentDetailsLabel.setTextColor(DSSColors.textPrimary())
         pixTitleLabel.setTextColor(DSSColors.textPrimary())
         pixCodeLabel.setTextColor(DSSColors.textSecondary())
-        warningLabel.setTextColor(DSSColors.error())
+        // iOS: warningLabel.textColor = UIColor(red: 0.7, green: 0.1, blue: 0.1, alpha: 1.0) (literal, não token)
+        warningLabel.setTextColor(PIX_RED)
 
         pixContainer.background = DrawableFactory.rounded(
             context = context,
@@ -295,12 +308,14 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
             cornerRadiusDp = 12f,
         )
 
+        // iOS: copyButton.backgroundColor = UIColor(red: 0.7, green: 0.1, blue: 0.1, alpha: 1.0) (literal, não token)
         copyButton.background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.primary(),
+            backgroundColor = PIX_RED,
             cornerRadiusDp = 8f,
         )
-        copyButton.setTextColor(DSSColors.buttonText())
+        // iOS: copyButton.setTitleColor(.white, ...) (literal branco, não token)
+        copyButton.setTextColor(Color.WHITE)
 
         instructionsStack.children().forEach { v ->
             if (v is TextView) v.setTextColor(DSSColors.textSecondary())

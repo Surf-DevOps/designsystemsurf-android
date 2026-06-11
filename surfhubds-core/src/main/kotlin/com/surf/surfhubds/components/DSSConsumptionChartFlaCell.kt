@@ -13,6 +13,11 @@ import com.surf.surfhubds.util.dpToPx
  */
 class DSSConsumptionChartFlaCell(parent: Context) : RecyclerView.ViewHolder(FrameLayout(parent)) {
 
+    companion object {
+        // iOS: DSSConsumptionChartFlaCell.reuseIdentifier
+        const val reuseIdentifier = "DSSConsumptionChartFlaCell"
+    }
+
     private val container = itemView as FrameLayout
     private var chartView: DSSConsumptionChartFla? = null
 
@@ -29,7 +34,8 @@ class DSSConsumptionChartFlaCell(parent: Context) : RecyclerView.ViewHolder(Fram
         type: DSSConsumptionChartFla.TypeChart,
         isInverted: Boolean,
         progressColor: Int = com.surf.surfhubds.theme.DSSColors.primary(),
-        trackColor: Int = Color.argb(77, 200, 200, 200),
+        // iOS: UIColor.lightGray.withAlphaComponent(0.3) -> lightGray == rgb(170,170,170)
+        trackColor: Int = Color.argb(77, 170, 170, 170),
         usedTextColor: Int = Color.BLACK,
         totalTextColor: Int = Color.DKGRAY,
         action: (() -> Unit)?,
@@ -43,6 +49,7 @@ class DSSConsumptionChartFlaCell(parent: Context) : RecyclerView.ViewHolder(Fram
             this.progressColor = progressColor
             this.trackColor = trackColor
             this.usedTextColor = usedTextColor
+            this.totalTextColor = totalTextColor
             this.chartAction = action
         }
         val size = 200f.dpToPx(container.context)

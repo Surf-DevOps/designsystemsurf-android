@@ -168,6 +168,8 @@ class DSSPixPendentCardView @JvmOverloads constructor(
 
         if (collapsible) {
             expandButton.setImageDrawable(loadChevronDown())
+            // iOS: expandButton.tintColor = .systemGray (#8E8E93)
+            expandButton.setColorFilter(SYSTEM_GRAY)
             headerRow.addView(
                 expandButton,
                 LinearLayout.LayoutParams(24f.dpToPx(context), 24f.dpToPx(context)).apply {
@@ -272,8 +274,9 @@ class DSSPixPendentCardView @JvmOverloads constructor(
             clearPersistedData()
             return
         }
+        // iOS `configure` apenas armazena o title e o repassa ao resumeCard;
+        // NÃO altera o titleLabel do header (isso é feito só por configureStyle).
         this.customTitle = title
-        title?.let { titleLabel.text = it }
         this.msisdn = msisdn
         this.offer = offer
         this.priceInCents = priceInCents
@@ -331,8 +334,8 @@ class DSSPixPendentCardView @JvmOverloads constructor(
     fun hasPendingPix(): Boolean = prefs.getBoolean(KEY_IS_PENDING, false)
 
     fun clearData() {
+        // iOS clearData() apenas limpa os dados persistidos; não esconde a view.
         clearPersistedData()
-        visibility = View.GONE
     }
 
     fun stopTimer() {
@@ -521,6 +524,9 @@ class DSSPixPendentCardView @JvmOverloads constructor(
     companion object {
         /** iOS: UIColor(red: 0.65, green: 0.16, blue: 0.16) — vermelho do PIX pendente. */
         private const val PENDING_RED = 0xFFA62929.toInt()
+
+        /** iOS: UIColor.systemGray (#8E8E93) — tint do chevron. */
+        private const val SYSTEM_GRAY = 0xFF8E8E93.toInt()
 
         /** iOS: UIColor.systemGray5 (light #E5E5EA / dark #2C2C2E). */
         private const val SYSTEM_GRAY5_LIGHT = 0xFFE5E5EA.toInt()

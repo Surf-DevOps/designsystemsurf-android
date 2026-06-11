@@ -24,6 +24,7 @@ object DSSFont {
             val medium: Int? = null,
             val bold: Int? = null,
             val black: Int? = null,
+            val semibold: Int? = null,
         ) : FontFamily
     }
 
@@ -49,6 +50,15 @@ object DSSFont {
 
     fun medium(context: Context, sizeSp: Float): FontSpec =
         FontSpec(loadOrSystem(context, (currentFamily as? FontFamily.Custom)?.medium, Typeface.NORMAL), sizeSp)
+
+    /**
+     * Espelha o peso `.semibold` do iOS. Usa o recurso semibold da brand quando
+     * registrado; senão cai no `medium` registrado e, por fim, no system font.
+     */
+    fun semibold(context: Context, sizeSp: Float): FontSpec {
+        val custom = currentFamily as? FontFamily.Custom
+        return FontSpec(loadOrSystem(context, custom?.semibold ?: custom?.medium, Typeface.NORMAL), sizeSp)
+    }
 
     fun bold(context: Context, sizeSp: Float): FontSpec =
         FontSpec(loadOrSystem(context, (currentFamily as? FontFamily.Custom)?.bold, Typeface.BOLD), sizeSp)

@@ -13,6 +13,7 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.dpToPx
 import com.surf.surfhubds.util.dpToPxFloat
 import java.util.Date
@@ -55,7 +56,8 @@ class DSSScheduleCalendarBottomSheet : BottomSheetDialogFragment(), DSSScheduleC
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         val ctx = requireContext()
-        val isBlack = ThemeManager.colorScheme == ColorScheme.BLACK
+        val scheme = ThemeManager.colorScheme
+        val isBlack = scheme == ColorScheme.BLACK
 
         // Container com cantos superiores arredondados (iOS: cornerRadius 24 nos cantos de topo).
         val containerBg = GradientDrawable().apply {
@@ -63,6 +65,16 @@ class DSSScheduleCalendarBottomSheet : BottomSheetDialogFragment(), DSSScheduleC
             setColor(DSSColors.background())
             val r = 24f.dpToPxFloat(ctx)
             cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
+            // iOS: borderLayer (lineWidth 1) adicionado só em black/dark.
+            // black -> branco; dark -> branco @40%.
+            when (scheme) {
+                ColorScheme.BLACK -> setStroke(1f.dpToPx(ctx), android.graphics.Color.WHITE)
+                ColorScheme.DARK -> setStroke(
+                    1f.dpToPx(ctx),
+                    android.graphics.Color.argb(102, 255, 255, 255),
+                )
+                else -> {}
+            }
         }
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
@@ -106,7 +118,7 @@ class DSSScheduleCalendarBottomSheet : BottomSheetDialogFragment(), DSSScheduleC
 
         // iOS: backgroundColor = isBlack ? primaryButton : primary; textColor = .white; font = regular(16).
         val confirmButton = DSSPrincipalButton(ctx).apply {
-            text = "Confirmar"
+            text = AppStrings.brand(ctx, "schedule_calendar_confirm", "Confirmar")
             customBackgroundColor = if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
             customTextColor = android.graphics.Color.WHITE
             typeface = DSSFont.regular(ctx, 16f).typeface
@@ -130,8 +142,11 @@ class DSSScheduleCalendarBottomSheet : BottomSheetDialogFragment(), DSSScheduleC
 
     private fun confirmTapped() {
         val iso = selectedDateISO ?: return
-        delegate?.scheduleCalendarBottomSheetDidSelectDateISO(this, iso)
+        // iOS: animateDismissal { delegate.didSelectDateISO } — dispara o delegate
+        // só após o sheet ser dispensado (delegate capturado antes do dismiss).
+        val capturedDelegate = delegate
         dismiss()
+        capturedDelegate?.scheduleCalendarBottomSheetDidSelectDateISO(this, iso)
     }
 
     companion object {

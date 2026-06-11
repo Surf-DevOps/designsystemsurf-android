@@ -1,6 +1,7 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.FrameLayout
@@ -65,9 +66,7 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
         column.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT).apply {
             gravity = Gravity.CENTER
         }
-        val hPad = 24f.dpToPx(context)
-        column.setPadding(hPad, hPad, hPad, hPad)
-
+        // iOS não aplica padding no container; título/botão têm largura fixa 320 centralizados.
         column.addView(
             iconImage,
             LinearLayout.LayoutParams(100f.dpToPx(context), 100f.dpToPx(context)).apply {
@@ -125,15 +124,16 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
-        val isBlack = ThemeManager.colorScheme == ColorScheme.BLACK
+        val scheme = ThemeManager.colorScheme
+        val isBlack = scheme == ColorScheme.BLACK
 
         // iOS: `.black ? .black : .secondarySystemBackground`.
-        setBackgroundColor(DSSColors.backgroundSecondary())
+        setBackgroundColor(if (isBlack) Color.BLACK else DSSColors.backgroundSecondary())
 
         titleLabel.setTextColor(DSSColors.textPrimary())
 
-        // iOS: `.black ? .systemRed : DSSColors.primary`.
-        val benefitsColor = if (isBlack) DSSColors.error() else DSSColors.primary()
+        // iOS: `.black ? .systemRed : DSSColors.primary`  (.systemRed -> #FF3B30).
+        val benefitsColor = if (isBlack) Color.parseColor("#FF3B30") else DSSColors.primary()
         for (i in 0 until benefitsStack.childCount) {
             (benefitsStack.getChildAt(i) as? TextView)?.setTextColor(benefitsColor)
         }
@@ -141,6 +141,10 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
         // iOS: background `.black ? primaryButton : primary`; texto `.black ? .white : (dark? .black : .white)`.
         scheduleButton.customBackgroundColor =
             if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
-        scheduleButton.customTextColor = DSSColors.buttonText()
+        scheduleButton.customTextColor = when (scheme) {
+            ColorScheme.BLACK -> Color.WHITE
+            ColorScheme.DARK -> Color.BLACK
+            ColorScheme.LIGHT -> Color.WHITE
+        }
     }
 }

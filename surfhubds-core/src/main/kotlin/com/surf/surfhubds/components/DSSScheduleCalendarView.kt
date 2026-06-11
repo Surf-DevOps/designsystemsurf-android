@@ -218,8 +218,9 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         val maxMonth = maxCal.get(Calendar.MONTH) + 1; val maxYear = maxCal.get(Calendar.YEAR)
         prevButton.isEnabled = displayedYear > minYear || (displayedYear == minYear && displayedMonth > minMonth)
         nextButton.isEnabled = displayedYear < maxYear || (displayedYear == maxYear && displayedMonth < maxMonth)
-        prevButton.alpha = if (prevButton.isEnabled) 1f else 0.4f
-        nextButton.alpha = if (nextButton.isEnabled) 1f else 0.4f
+        // iOS: setTitleColor(textPrimary, .normal) / setTitleColor(.systemGray3, .disabled) -> #C7C7CC.
+        prevButton.setTextColor(if (prevButton.isEnabled) DSSColors.textPrimary() else android.graphics.Color.parseColor("#C7C7CC"))
+        nextButton.setTextColor(if (nextButton.isEnabled) DSSColors.textPrimary() else android.graphics.Color.parseColor("#C7C7CC"))
     }
 
     private fun prevMonth() {
@@ -319,7 +320,8 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         val label = TextView(context).apply {
             text = day.toString(); textSize = 15f
             typeface = DSSFont.regular(context, 15f).typeface
-            setTextColor(DSSColors.textTertiary())
+            // iOS: .systemGray3 (literal) para dia fora do mês -> #C7C7CC.
+            setTextColor(android.graphics.Color.parseColor("#C7C7CC"))
             gravity = Gravity.CENTER
         }
         container.addView(
@@ -338,7 +340,8 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         when {
             selected -> {
                 label.typeface = DSSFont.bold(context, 15f).typeface
-                label.setTextColor(DSSColors.textOnPrimary())
+                // iOS: setTitleColor(.white) hardcoded para o dia selecionado.
+                label.setTextColor(android.graphics.Color.WHITE)
                 label.background = DrawableFactory.rounded(
                     context = context,
                     backgroundColor = DSSColors.primary(),
@@ -354,7 +357,8 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
             }
             else -> {
                 label.typeface = DSSFont.regular(context, 15f).typeface
-                label.setTextColor(DSSColors.textTertiary())
+                // iOS: .systemGray3 (literal) para dia desabilitado -> #C7C7CC.
+                label.setTextColor(android.graphics.Color.parseColor("#C7C7CC"))
                 container.addView(label, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER })
             }
         }
@@ -377,6 +381,9 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         monthLabel.setTextColor(DSSColors.textPrimary())
         prevButton.setTextColor(DSSColors.textPrimary())
         nextButton.setTextColor(DSSColors.textPrimary())
+        // Reaplica a cor disabled (#C7C7CC) caso a navegação esteja no limite, espelhando
+        // o estado .disabled do iOS após troca de tema.
+        updateNavigationButtons()
         for (i in 0 until weekdayRow.childCount) {
             (weekdayRow.getChildAt(i) as? TextView)?.setTextColor(DSSColors.primary())
         }

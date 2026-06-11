@@ -101,8 +101,9 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
                 } else {
                     setImageResource(android.R.drawable.checkbox_on_background)
                 }
-                setColorFilter(DSSColors.primary())
             }
+            // iOS: iv.tintColor = DSSColors.primary aplicado em todos os casos.
+            setColorFilter(DSSColors.primary())
         }
         root.addView(successIcon, LinearLayout.LayoutParams(
             80f.dpToPx(ctx), 80f.dpToPx(ctx),
@@ -148,8 +149,13 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
         ).apply { topMargin = 8f.dpToPx(ctx) })
 
         // "Resgatar novo benefício" button
+        // iOS: backgroundColor = DSSColors.primaryButton, textColor = DSSColors.buttonText,
+        // font = DSSFont.regular(16) (DSSPrincipalButton default é light(16)).
         val newRedeemButton = DSSPrincipalButton(ctx).apply {
             text = NEW_REDEEM
+            typeface = DSSFont.regular(ctx, 16f).typeface
+            customBackgroundColor = DSSColors.primaryButton()
+            customTextColor = DSSColors.buttonText()
             onTap = { newRedeemTapped() }
         }
         root.addView(newRedeemButton, LinearLayout.LayoutParams(

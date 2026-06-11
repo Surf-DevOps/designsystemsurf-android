@@ -485,7 +485,21 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
 
         fun relativeTime(item: Transacao): String {
             val executionDate = DateParser.parse(item.dtExecucao) ?: return ""
-            val diffMillis = Date().time - executionDate.time
+            // iOS: Calendar.current.dateComponents([.day], from: executionDate, to: Date()) — diferença em dias-calendário
+            val startCal = Calendar.getInstance().apply {
+                time = executionDate
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val endCal = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val diffMillis = endCal.timeInMillis - startCal.timeInMillis
             val days = (diffMillis / (1000L * 60 * 60 * 24)).toInt()
             val clamped = max(0, days)
             return "há ${clamped}D"
@@ -506,7 +520,8 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         private val formatters: List<SimpleDateFormat> = formats.map { fmt ->
             SimpleDateFormat(fmt, Locale("en", "US")).apply {
                 timeZone = TimeZone.getTimeZone("America/Sao_Paulo")
-                isLenient = false
+                // iOS DateFormatter usa isLenient = true por padrão
+                isLenient = true
             }
         }
 

@@ -15,7 +15,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
@@ -67,9 +69,8 @@ class RechargeCompletedCardView @JvmOverloads constructor(
     }
 
     private val bulletsStack = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
-    private val bullet1 = BulletRow(context)
-    private val bullet2 = BulletRow(context)
-    private val bullet3 = BulletRow(context)
+    // iOS reconstrói os bullets dinamicamente a cada configure() — sem limite fixo.
+    private val bullets = mutableListOf<BulletRow>()
 
     private val sep2 = View(context)
 
@@ -99,7 +100,7 @@ class RechargeCompletedCardView @JvmOverloads constructor(
     var bulletIcon: Drawable? = null
         set(value) {
             field = value
-            listOf(bullet1, bullet2, bullet3).forEach { it.setIcon(value) }
+            bullets.forEach { it.setIcon(value) }
         }
 
     init {
@@ -107,34 +108,25 @@ class RechargeCompletedCardView @JvmOverloads constructor(
         stack.setPadding(pad, pad, pad, pad)
 
         addView(stack, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
+        // iOS: UIStackView.spacing = 16 — gap uniforme de 16 entre TODOS os arranged subviews.
         stack.addView(numberTitleLabel, columnLp(0))
-        stack.addView(numberValueLabel, columnLp(4f.dpToPx(context)))
+        stack.addView(numberValueLabel, columnLp(16f.dpToPx(context)))
         stack.addView(sep1, sepLp())
 
         stack.addView(planTitleLabel, columnLp(16f.dpToPx(context)))
-        stack.addView(totalPlanLabel, columnLp(4f.dpToPx(context)))
-        stack.addView(bulletsStack, columnLp(8f.dpToPx(context)))
+        stack.addView(totalPlanLabel, columnLp(16f.dpToPx(context)))
+        stack.addView(bulletsStack, columnLp(16f.dpToPx(context)))
         stack.addView(sep2, sepLp())
 
         stack.addView(valueTitleLabel, columnLp(16f.dpToPx(context)))
-        stack.addView(valueValueLabel, columnLp(4f.dpToPx(context)))
+        stack.addView(valueValueLabel, columnLp(16f.dpToPx(context)))
         stack.addView(sep3, sepLp())
 
         stack.addView(paymentTitleLabel, columnLp(16f.dpToPx(context)))
-        stack.addView(makePaymentRow(), columnLp(8f.dpToPx(context)))
-        stack.addView(makeSecondPaymentRow(), columnLp(4f.dpToPx(context)))
+        stack.addView(makePaymentRow(), columnLp(16f.dpToPx(context)))
+        stack.addView(makeSecondPaymentRow(), columnLp(16f.dpToPx(context)))
 
         stack.addView(bottomInfoLabel, columnLp(16f.dpToPx(context)))
-
-        listOf(bullet1, bullet2, bullet3).forEach {
-            bulletsStack.addView(
-                it,
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                ).apply { topMargin = 4f.dpToPx(context) },
-            )
-        }
 
         // Try to load a default check icon
         bulletIcon = loadCheckCircle()
@@ -150,10 +142,21 @@ class RechargeCompletedCardView @JvmOverloads constructor(
         planTitleLabel.text = "Plano"
         totalPlanLabel.text = Utility.formatMBToGB(config.totalDataPlan)
 
-        val bullets = listOf(bullet1, bullet2, bullet3)
-        bullets.forEachIndexed { i, b -> b.visibility = if (i < config.benefits.size) View.VISIBLE else View.GONE }
+        // iOS: remove todos e recria os bullets a partir de config.benefits (sem limite).
+        bulletsStack.removeAllViews()
+        bullets.clear()
         config.benefits.forEachIndexed { i, b ->
-            if (i < bullets.size) bullets[i].setText(b.text)
+            val bullet = BulletRow(context)
+            bullet.setIcon(bulletIcon)
+            bullet.setText(b.text)
+            bullets.add(bullet)
+            bulletsStack.addView(
+                bullet,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ).apply { topMargin = if (i == 0) 0 else 8f.dpToPx(context) },
+            )
         }
 
         valueTitleLabel.text = "Valor"
@@ -190,11 +193,22 @@ class RechargeCompletedCardView @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
+        // iOS: light = sombra (sem borda); dark/black = borda 1pt (white / white-alpha-0.4).
+        val scheme = ThemeManager.colorScheme
+        val borderColor: Int? = when (scheme) {
+            ColorScheme.BLACK -> Color.WHITE
+            ColorScheme.DARK -> Color.argb((0.4f * 255).toInt(), 255, 255, 255)
+            ColorScheme.LIGHT -> null
+        }
         background = DrawableFactory.rounded(
             context = context,
             backgroundColor = DSSColors.surface(),
             cornerRadiusDp = 16f,
+            strokeColor = borderColor,
+            strokeWidthDp = if (borderColor != null) 1f else 0f,
         )
+        // iOS light: shadowOffset (0,2), shadowRadius 8, opacity 0.1 — aproximado via elevation.
+        elevation = if (scheme == ColorScheme.LIGHT) 8f.dpToPx(context).toFloat() else 0f
 
         listOf(numberTitleLabel, planTitleLabel, valueTitleLabel, paymentTitleLabel)
             .forEach { it.setTextColor(DSSColors.textPrimary()) }
@@ -208,7 +222,7 @@ class RechargeCompletedCardView @JvmOverloads constructor(
         bottomInfoLabel.setTextColor(DSSColors.textPrimary())
 
         listOf(sep1, sep2, sep3).forEach { it.setBackgroundColor(DSSColors.divider()) }
-        listOf(bullet1, bullet2, bullet3).forEach { it.applyThemeColors() }
+        bullets.forEach { it.applyThemeColors() }
     }
 
     private fun makeTitleLabel(): TextView = TextView(context).apply {

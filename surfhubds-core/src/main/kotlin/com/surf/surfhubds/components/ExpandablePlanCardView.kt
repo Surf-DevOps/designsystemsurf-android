@@ -74,6 +74,8 @@ class ExpandablePlanCardView @JvmOverloads constructor(
 
     private fun setupHierarchy() {
         cardBackground.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        // iOS: containerView tem shadow (offset 0,2 / radius 8 / opacity 0.1) atrás do card.
+        cardBackground.elevation = 4f.dpToPx(context).toFloat()
         val pad = 16f.dpToPx(context)
         contentColumn.setPadding(pad, pad, pad, pad)
 
@@ -86,7 +88,9 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         headerRow.addView(planNameLabel, planNameLp)
         headerRow.addView(
             priceLabel,
-            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT),
+            // iOS: priceLabel.leading >= planName.trailing + 8 (gap mínimo de 8).
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                .apply { leftMargin = 8f.dpToPx(context) },
         )
 
         // Validity row
@@ -94,7 +98,13 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
-        validityRow.addView(validityBadge)
+        validityRow.addView(
+            validityBadge,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                24f.dpToPx(context), // iOS: validityBadge heightAnchor = 24
+            ),
+        )
         val spacer = View(context)
         validityRow.addView(spacer, LinearLayout.LayoutParams(0, 1, 1f))
         validityRow.addView(validityDateLabel)
@@ -140,7 +150,9 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             text = "validade"
             textSize = 12f
             typeface = DSSFont.bold(context, 12f).typeface
-            setPadding(12f.dpToPx(context), 4f.dpToPx(context), 12f.dpToPx(context), 4f.dpToPx(context))
+            // iOS: label inset 12 leading/trailing, centerY em altura fixa de 24 (sem inset vertical).
+            gravity = Gravity.CENTER
+            setPadding(12f.dpToPx(context), 0, 12f.dpToPx(context), 0)
         }
         validityDateLabel.apply { textSize = 14f; typeface = DSSFont.light(context, 14f).typeface; gravity = Gravity.END }
         ilimitadosTitle.apply { text = "Ilimitados"; textSize = 16f; typeface = DSSFont.bold(context, 16f).typeface }
@@ -190,15 +202,20 @@ class ExpandablePlanCardView @JvmOverloads constructor(
 
         // Ilimitados
         ilimitadosStack.removeAllViews()
-        val hasUnlimited = plan.unlimitedItems.isNotEmpty() ||
-            plan.voz.lowercase().contains("ilimitad")
+        // iOS: se há provider customizado (aqui: unlimitedItems não vazio) ele SUBSTITUI os defaults
+        // e a linha "Ligações usando o código 41" só é injetada no branch sem provider.
+        val ilimitadosItems: List<DSSPlanCollectionView.CheckListItem> = if (plan.unlimitedItems.isNotEmpty()) {
+            plan.unlimitedItems
+        } else if (plan.voz.lowercase().contains("ilimitad")) {
+            listOf(DSSPlanCollectionView.CheckListItem("Ligações usando o código 41", null))
+        } else {
+            emptyList()
+        }
+        val hasUnlimited = ilimitadosItems.isNotEmpty()
         ilimitadosTitle.visibility = if (hasUnlimited) View.VISIBLE else View.GONE
         ilimitadosStack.visibility = if (hasUnlimited) View.VISIBLE else View.GONE
         // iOS: ilimitadosStackView.spacing = 16
-        for (item in plan.unlimitedItems) ilimitadosStack.addView(iconRow(item, itemSpacingDp = 16))
-        if (plan.voz.lowercase().contains("ilimitad")) {
-            ilimitadosStack.addView(iconRow(DSSPlanCollectionView.CheckListItem("Ligações usando o código 41", null), itemSpacingDp = 16))
-        }
+        for (item in ilimitadosItems) ilimitadosStack.addView(iconRow(item, itemSpacingDp = 16))
 
         // Subscriptions
         subscriptionsStack.removeAllViews()
@@ -275,9 +292,11 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         }
         row.addView(
             label,
+            // iOS: label.numberOfLines = 0 e trailing pinado ao container — ocupa o espaço restante.
             LinearLayout.LayoutParams(
+                0,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f,
             ).apply { leftMargin = 12f.dpToPx(context) },
         )
         row.layoutParams = LinearLayout.LayoutParams(
@@ -304,9 +323,11 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         }
         row.addView(
             label,
+            // iOS: label.numberOfLines = 0 e trailing pinado ao container — ocupa o espaço restante.
             LinearLayout.LayoutParams(
+                0,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f,
             ).apply { leftMargin = 12f.dpToPx(context) },
         )
         val half = (itemSpacingDp / 2f)
@@ -334,9 +355,11 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             strokeColor = DSSColors.borderDefault(),
             strokeWidthDp = 1f,
         )
+        // iOS: currentOfferLabel/planNameLabel/priceLabel/validityDateLabel compartilham o mesmo
+        // labelColor (.gray no light, .white no dark/black) — não usam textPrimary.
         currentOfferLabel.setTextColor(DSSColors.textSecondary())
-        planNameLabel.setTextColor(DSSColors.textPrimary())
-        priceLabel.setTextColor(DSSColors.textPrimary())
+        planNameLabel.setTextColor(DSSColors.textSecondary())
+        priceLabel.setTextColor(DSSColors.textSecondary())
         validityDateLabel.setTextColor(DSSColors.textSecondary())
         ilimitadosTitle.setTextColor(DSSColors.textPrimary())
         subscriptionsTitle.setTextColor(DSSColors.textPrimary())

@@ -81,10 +81,12 @@ class DSSSelectorType @JvmOverloads constructor(
                 textSize = 18f
                 typeface = DSSFont.light(context, 18f).typeface
                 background = null
+                // iOS: botão sem padding horizontal; só reservamos o espaço inferior
+                // ocupado pela linha/indicador (que no iOS ficam abaixo de button.bottom).
                 setPadding(
-                    8f.dpToPx(context),
                     0,
-                    8f.dpToPx(context),
+                    0,
+                    0,
                     indicatorHeightDp.dpToPx(context) + 4f.dpToPx(context),
                 )
                 setTextColor(if (index == selectedIndex) selectedColor else unselectedColor)

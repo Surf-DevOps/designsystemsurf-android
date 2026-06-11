@@ -60,6 +60,18 @@ class DSSDeleteCardScheduleBottomSheet : BottomSheetDialogFragment() {
             gravity = Gravity.CENTER_HORIZONTAL
         }
 
+        // iOS grabberView: 60x6, cornerRadius 3, top 8, centerX, cor systemGray4/branco por tema.
+        val grabberView = View(ctx).apply {
+            background = DrawableFactory.rounded(
+                ctx,
+                backgroundColor = DSSColors.borderDefault(),
+                cornerRadiusDp = 3f,
+            )
+        }
+        root.addView(grabberView, LinearLayout.LayoutParams(
+            60f.dpToPx(ctx), 6f.dpToPx(ctx),
+        ).apply { gravity = Gravity.CENTER_HORIZONTAL })
+
         val titleLabel = TextView(ctx).apply {
             text = "Excluir cartão"
             typeface = DSSFont.regular(ctx, 18f).typeface
@@ -70,6 +82,8 @@ class DSSDeleteCardScheduleBottomSheet : BottomSheetDialogFragment() {
         root.addView(titleLabel, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply {
+            // iOS: grabber->title = 24pt.
+            topMargin = 24f.dpToPx(ctx)
             // iOS: title leading/trailing = 32pt; root já tem 24, +8 para chegar a 32.
             leftMargin = 8f.dpToPx(ctx)
             rightMargin = 8f.dpToPx(ctx)
@@ -170,10 +184,11 @@ class DSSDeleteCardScheduleBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun confirmTapped() {
+        // iOS handleConfirm: dispara o callback ANTES de dismiss().
         val option = selectedOption
-        dismiss()
         delegate?.deleteCardScheduleBottomSheetDidConfirm(this, option)
         onConfirm?.invoke(option)
+        dismiss()
     }
 
     companion object {

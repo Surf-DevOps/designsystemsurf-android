@@ -68,6 +68,8 @@ class DSSConsumptionChart @JvmOverloads constructor(
     private val totalLabel = TextView(context).apply {
         textSize = 26f
         gravity = Gravity.CENTER
+        // iOS totalLabel usa numberOfLines default (1).
+        maxLines = 1
         typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
     }
     private val usedLabel = TextView(context).apply {

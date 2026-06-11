@@ -61,7 +61,7 @@ class DoubtsPopupDialogFragment : DialogFragment() {
         val root = FrameLayout(ctx).apply {
             setBackgroundColor(DSSColors.overlay())
             isClickable = true
-            setOnClickListener { dismiss() }
+            setOnClickListener { animateOutAndDismiss() }
         }
 
         // Container card (320x420)
@@ -83,8 +83,8 @@ class DoubtsPopupDialogFragment : DialogFragment() {
         val titleLabel = TextView(ctx).apply {
             text = "Dúvidas"
             gravity = Gravity.CENTER
-            // iOS: .systemFont(ofSize: 16, weight: .semibold) -> medium
-            typeface = DSSFont.medium(ctx, 16f).typeface
+            // iOS: .systemFont(ofSize: 16, weight: .semibold) -> semibold
+            typeface = DSSFont.semibold(ctx, 16f).typeface
             textSize = 16f
             maxLines = 1
             // iOS: .systemBlue (// DSSColors.brandPrimary) -> primary
@@ -99,13 +99,15 @@ class DoubtsPopupDialogFragment : DialogFragment() {
             setBackgroundColor(Color.TRANSPARENT)
             // iOS: tintColor = .systemBlue (// DSSColors.brandPrimary) -> primary
             setColorFilter(DSSColors.primary())
-            setOnClickListener { dismiss() }
+            setOnClickListener { animateOutAndDismiss() }
         }
         card.addView(closeButton, FrameLayout.LayoutParams(
             28f.dpToPx(ctx), 28f.dpToPx(ctx),
         ).apply {
             gravity = Gravity.END or Gravity.TOP
-            topMargin = 32f.dpToPx(ctx)
+            // iOS: closeButton.centerY = titleLabel.centerY. titleLabel.top=38, h~20 => centerY~48;
+            // botão h=28 => top ~34.
+            topMargin = 34f.dpToPx(ctx)
             rightMargin = 16f.dpToPx(ctx)
         })
 
@@ -148,7 +150,8 @@ class DoubtsPopupDialogFragment : DialogFragment() {
         card.addView(scroll, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT,
         ).apply {
-            topMargin = 80f.dpToPx(ctx)
+            // iOS: scroll.top = titleLabel.bottom + 26. titleLabel.top = 38 e altura ~20 (16pt) => ~84.
+            topMargin = 84f.dpToPx(ctx)
             leftMargin = 18f.dpToPx(ctx)
             rightMargin = 18f.dpToPx(ctx)
             bottomMargin = 18f.dpToPx(ctx)
@@ -185,6 +188,23 @@ class DoubtsPopupDialogFragment : DialogFragment() {
                 .setDuration(180L)
                 .start()
         }
+    }
+
+    /**
+     * Reproduz `animateOut(completion:)` do iOS: card faz fade-out (alpha 1 -> 0) em 0.15s
+     * (UIView.animate withDuration: 0.15) e só então fecha (dismiss).
+     */
+    private fun animateOutAndDismiss() {
+        val card = cardView
+        if (card == null) {
+            dismiss()
+            return
+        }
+        card.animate()
+            .alpha(0f)
+            .setDuration(150L)
+            .withEndAction { dismiss() }
+            .start()
     }
 
     companion object {

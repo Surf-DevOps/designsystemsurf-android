@@ -102,7 +102,8 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
         scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
     }
     private val msisdnTextfield = AppCompatEditText(context).apply {
-        inputType = InputType.TYPE_CLASS_PHONE
+        // iOS usa .numberPad (apenas dígitos); TYPE_CLASS_NUMBER é o equivalente.
+        inputType = InputType.TYPE_CLASS_NUMBER
         textSize = 16f
         typeface = DSSFont.regular(context, 16f).typeface
         setPadding(12f.dpToPx(context), 0, 12f.dpToPx(context), 0)
@@ -206,8 +207,12 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
             95f.dpToPx(context), 36f.dpToPx(context),
         ).apply {
             gravity = Gravity.CENTER_VERTICAL or Gravity.END
-            // Sobrepõe levemente o campo: leading = trailing-78 (do iOS)
+            // Sobrepõe levemente o campo: leading = textfield.trailing-78 (do iOS).
+            // Com gravity END, o leftMargin garante a largura (stack vira 277dp:
+            // 230 + 95 - 78 + 30 de trailing) e o rightMargin reproduz o
+            // editStackContainer.trailing = confirmButton.trailing - 30.
             leftMargin = (230 - 78).dpToPx(context)
+            rightMargin = 30f.dpToPx(context)
         })
 
         confirmButton.text = confirmButtonTitle

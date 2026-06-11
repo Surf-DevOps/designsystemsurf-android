@@ -194,7 +194,8 @@ class DSSFixedCalendarView @JvmOverloads constructor(
         }
         when {
             selected -> {
-                label.setTextColor(DSSColors.textOnPrimary())
+                // iOS: setTitleColor(.white) hardcoded para o dia selecionado.
+                label.setTextColor(android.graphics.Color.WHITE)
                 label.background = DrawableFactory.rounded(
                     context = context,
                     backgroundColor = DSSColors.primary(),
@@ -205,7 +206,8 @@ class DSSFixedCalendarView @JvmOverloads constructor(
                 label.setTextColor(DSSColors.textPrimary())
             }
             else -> {
-                label.setTextColor(DSSColors.textTertiary())
+                // iOS: .systemGray3 (literal) para dia desabilitado -> #C7C7CC.
+                label.setTextColor(android.graphics.Color.parseColor("#C7C7CC"))
             }
         }
 

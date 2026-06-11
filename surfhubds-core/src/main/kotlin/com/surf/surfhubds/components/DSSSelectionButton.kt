@@ -81,25 +81,28 @@ class DSSSelectionButton @JvmOverloads constructor(
         val isDarkOrBlack = ThemeManager.colorScheme == ColorScheme.DARK ||
             ThemeManager.colorScheme == ColorScheme.BLACK
         if (isDarkOrBlack) {
-            // No iOS init `isSelected` é false: bg = base, título normal = branco.
+            // iOS `setupButton` (dark): bg = base, borda branca 40%; sem ramo de isSelected.
             val baseBackground = Color.rgb(28, 28, 30)
             val border = Color.argb((0.4f * 255).toInt(), 255, 255, 255)
             background = DrawableFactory.rounded(
                 context = context,
-                backgroundColor = if (isSelected) Color.WHITE else baseBackground,
+                backgroundColor = baseBackground,
                 cornerRadiusDp = 20f,
                 strokeColor = border,
                 strokeWidthDp = 1f,
             )
+            // iOS: setTitleColor(.white, .normal) / setTitleColor(.black, .selected).
             setTextColor(if (isSelected) Color.BLACK else Color.WHITE)
         } else {
+            // iOS `setupButton` (light): backgroundColor = .white, borda = borderColor; sem ramo de isSelected.
             background = DrawableFactory.rounded(
                 context = context,
-                backgroundColor = if (isSelected) DSSColors.primary() else Color.WHITE,
+                backgroundColor = Color.WHITE,
                 cornerRadiusDp = 20f,
                 strokeColor = borderColorOverride,
                 strokeWidthDp = 1f,
             )
+            // iOS: setTitleColor(unselectedTitleColor, .normal) / setTitleColor(selectedTitleColor, .selected).
             setTextColor(if (isSelected) selectedTitleColor else unselectedTitleColor)
         }
     }

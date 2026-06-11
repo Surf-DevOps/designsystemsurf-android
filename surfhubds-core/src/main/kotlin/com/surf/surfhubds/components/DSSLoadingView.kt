@@ -36,8 +36,11 @@ import com.surf.surfhubds.util.dpToPx
  */
 object DSSLoadingView {
 
-    /** Tamanho do GIF/indicador, espelha os 80pt do iOS. */
+    /** Tamanho do GIF, espelha os 80pt do iOS. */
     private const val INDICATOR_SIZE_DP = 80f
+
+    /** Cor literal `.systemBlue` do iOS usada no indicador de fallback (não é token semântico). */
+    private const val SYSTEM_BLUE = 0xFF007AFF.toInt()
 
     private var overlay: View? = null
     private var factory: ((Context) -> View)? = null
@@ -138,9 +141,13 @@ object DSSLoadingView {
     /** Fallback final, equivalente ao `useSimpleLoadingIndicator()` do iOS. */
     private fun defaultProgress(context: Context): View {
         val bar = ProgressBar(context)
-        bar.indeterminateTintList = android.content.res.ColorStateList.valueOf(DSSColors.primary())
-        val px = INDICATOR_SIZE_DP.dpToPx(context)
-        bar.layoutParams = ViewGroup.LayoutParams(px, px)
+        // iOS: activityIndicator.color = .systemBlue (cor literal do sistema, #007AFF).
+        bar.indeterminateTintList = android.content.res.ColorStateList.valueOf(SYSTEM_BLUE)
+        // iOS não define tamanho explícito no UIActivityIndicatorView(style: .large) — sizes-to-fit.
+        bar.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+        )
         return bar
     }
 }

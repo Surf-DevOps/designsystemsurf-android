@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
+import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -80,16 +81,26 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
         // iOS: contentStackView spacing = 20, alignment = .center, padding 16/20.
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
             setPadding(16f.dpToPx(ctx), 20f.dpToPx(ctx), 16f.dpToPx(ctx), 20f.dpToPx(ctx))
         }
+
+        // iOS: handleView 40x5, cornerRadius 2.5, systemGray4, top 12, centerX.
+        // .systemGray4 (light) ≈ #D1D1D6 — cor de sistema literal do UIKit.
+        val handleView = View(ctx).apply {
+            background = DrawableFactory.rounded(ctx, 0xFFD1D1D6.toInt(), 2.5f)
+        }
+        root.addView(handleView, LinearLayout.LayoutParams(
+            40f.dpToPx(ctx), 5f.dpToPx(ctx),
+        ).apply { gravity = Gravity.CENTER_HORIZONTAL; bottomMargin = 20f.dpToPx(ctx) })
 
         // Resume card section — usa o DSSResumeCard portado (sem borda, igual ao iOS).
         resumeCard = DSSResumeCard(ctx).apply {
             borderWidthDp = 0f
             setCategoryLabels(number = "Número", offer = "Oferta", price = "Valor")
             // iOS: setTitle(... systemFont(22, .light), color .red); borderWidth = 0.
-            setTitle("Confirme sua recarga")
-            titleFont = DSSFont.light(ctx, 22f).typeface
+            // .red é cor literal do iOS (UIColor.red = #FF0000), não token semântico.
+            setTitle("Confirme sua recarga", DSSFont.light(ctx, 22f).typeface, 0xFFFF0000.toInt())
         }
         root.addView(resumeCard, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -158,6 +169,8 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
         }
         scheduleSwitch = SwitchCompat(ctx).apply {
             isChecked = true
+            // iOS: sw.onTintColor = DSSColors.primary (cor da trilha quando ligado).
+            trackTintList = android.content.res.ColorStateList.valueOf(DSSColors.primary())
             setOnCheckedChangeListener { _, on ->
                 isScheduled = on
                 delegate?.rechargeBottomSheetDidChangeScheduleStatus(this@DSSRechargeBottomSheet, on)
@@ -198,6 +211,8 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
         // iOS: confirmButton title = "recharge_schedule.continue", font regular(16), height 48.
         confirmButton = DSSPrincipalButton(ctx).apply {
             text = "Continuar"
+            // iOS: font = DSSFont.regular(16) (o default do botão é light(16)).
+            typeface = DSSFont.regular(ctx, 16f).typeface
             onTap = { confirmTapped() }
         }
         root.addView(confirmButton, LinearLayout.LayoutParams(

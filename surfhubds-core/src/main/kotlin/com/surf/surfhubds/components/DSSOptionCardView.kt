@@ -65,6 +65,7 @@ class DSSOptionCardView @JvmOverloads constructor(
         setSingleLine(false)
     }
     private val actionButton = DSSPrincipalButton(context).apply {
+        text = ""
         onTap = { this@DSSOptionCardView.onTapButton?.invoke() }
     }
 

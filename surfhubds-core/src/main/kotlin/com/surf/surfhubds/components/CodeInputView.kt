@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatEditText
@@ -110,7 +111,10 @@ class CodeInputView @JvmOverloads constructor(
                 if (txt.isNotEmpty() && index < textFields.size - 1) {
                     textFields[index + 1].requestFocus()
                 } else if (txt.isNotEmpty()) {
+                    // iOS: último dígito chama endEditing(true) -> dispensa o teclado, não apenas tira o foco.
                     field.clearFocus()
+                    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                    imm?.hideSoftInputFromWindow(windowToken, 0)
                 }
                 codeChanged?.invoke(code)
             }

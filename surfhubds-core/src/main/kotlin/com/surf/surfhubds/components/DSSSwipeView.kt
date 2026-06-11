@@ -76,6 +76,8 @@ class DSSSwipeView @JvmOverloads constructor(
         setPrivateDimen("mActualAreaMargin", 4f.dpToPx(context))
         setPrivateDimen("mOriginAreaMargin", 4f.dpToPx(context))
         setPrivateDimen("mIconMargin", 8f.dpToPx(context))
+        // iOS: slide.textFont = DSSFont.light(16) → 16sp. `mTextSize` é privado (px).
+        setPrivateDimen("mTextSize", 16f.dpToPx(context))
         slide.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener {
             override fun onSlideComplete(view: SlideToActView) {
                 onCompleted?.invoke()

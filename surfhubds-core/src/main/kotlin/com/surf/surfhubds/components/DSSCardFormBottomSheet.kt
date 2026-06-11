@@ -84,6 +84,13 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
             isDark -> DARK_CONTAINER
             else -> Color.WHITE
         }
+        // iOS: borderLayer 1pt (topo + laterais) só nos schemes black/dark.
+        // black → branco; dark → branco 40%. Default não tem borda.
+        val borderColor = when {
+            isBlack -> Color.WHITE
+            isDark -> withAlpha(Color.WHITE, 0x66) // white 40%
+            else -> null
+        }
         val sheetRoot = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             background = GradientDrawable().apply {
@@ -91,6 +98,7 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
                 setColor(containerColor)
                 val r = 28f.dpToPx(ctx).toFloat()
                 cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
+                if (borderColor != null) setStroke(1f.dpToPx(ctx), borderColor)
             }
         }
 
@@ -232,6 +240,9 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
             textSize = 18f
             typeface = DSSFont.bold(ctx, 18f).typeface
             cornerRadiusDp = 28f
+            // iOS: addButton.backgroundColor = DSSColors.primaryButton (não primary).
+            customBackgroundColor = DSSColors.primaryButton()
+            customTextColor = DSSColors.buttonText()
             onTap = { handleAddCard() }
         }
         root.addView(addButton, LinearLayout.LayoutParams(

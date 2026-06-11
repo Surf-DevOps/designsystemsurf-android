@@ -17,7 +17,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.util.Locale
@@ -197,20 +199,28 @@ class DSSUsageCard @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
+        val scheme = ThemeManager.colorScheme
+        // iOS: claro borderWidth=1; escuro (scheme != .black) borderWidth=2; escuro .black borderWidth=0.
+        val strokeWidthDp = when (scheme) {
+            ColorScheme.LIGHT -> 1f
+            ColorScheme.DARK -> 2f
+            ColorScheme.BLACK -> 0f
+        }
         background = DrawableFactory.rounded(
             context = context,
             backgroundColor = DSSColors.surface(),
             cornerRadiusDp = 12f,
             strokeColor = DSSColors.borderDefault(),
-            strokeWidthDp = 1f,
+            strokeWidthDp = strokeWidthDp,
         )
         iconView.setColorFilter(DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
         // iOS usa a MESMA cor (.darkGray claro / .white escuro) para title, available,
-        // total e validUntil. Apenas usedLabel é DSSColors.primary (no claro).
+        // total e validUntil. usedLabel é DSSColors.primary APENAS no claro; no escuro
+        // o iOS usa .white (= textPrimary).
         titleLabel.setTextColor(DSSColors.textPrimary())
         availableLabel.setTextColor(DSSColors.textPrimary())
         totalLabel.setTextColor(DSSColors.textPrimary())
-        usedLabel.setTextColor(DSSColors.primary())
+        usedLabel.setTextColor(if (scheme == ColorScheme.LIGHT) DSSColors.primary() else DSSColors.textPrimary())
         validUntilLabel.setTextColor(DSSColors.textPrimary())
         divider.setBackgroundColor(DSSColors.divider())
     }

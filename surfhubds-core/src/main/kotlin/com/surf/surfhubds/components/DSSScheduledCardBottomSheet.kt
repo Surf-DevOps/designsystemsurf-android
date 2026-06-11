@@ -117,7 +117,8 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         val ctx = requireContext()
-        val scroll = ScrollView(ctx).apply { setBackgroundColor(DSSColors.background()) }
+        // iOS: containerView cornerRadius 24 com maskedCorners nos cantos superiores.
+        val scroll = ScrollView(ctx).apply { background = roundedTopBackground(ctx, DSSColors.background()) }
 
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
@@ -479,6 +480,13 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
 
         private val cardImageView = ImageView(context).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
+            // iOS: cardImageView.layer.cornerRadius = 6 + clipsToBounds = true
+            clipToOutline = true
+            outlineProvider = object : android.view.ViewOutlineProvider() {
+                override fun getOutline(view: View, outline: android.graphics.Outline) {
+                    outline.setRoundRect(0, 0, view.width, view.height, 6f.dpToPx(context).toFloat())
+                }
+            }
         }
         private val titleLabel = TextView(context).apply {
             text = "Cartão cadastrado"
@@ -752,7 +760,8 @@ class DSSScheduledCardSuccessBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         val ctx = requireContext()
-        val scroll = ScrollView(ctx).apply { setBackgroundColor(DSSColors.background()) }
+        // iOS: containerView cornerRadius 24 com maskedCorners nos cantos superiores.
+        val scroll = ScrollView(ctx).apply { background = roundedTopBackground(ctx, DSSColors.background()) }
 
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
@@ -820,5 +829,18 @@ class DSSScheduledCardSuccessBottomSheet : BottomSheetDialogFragment() {
             sheet.show(activity.supportFragmentManager, "DSSScheduledCardSuccessBottomSheet")
             return sheet
         }
+    }
+}
+
+/**
+ * Fundo com cantos superiores arredondados (24dp), espelhando o `containerView` do iOS
+ * (`cornerRadius = 24` + `maskedCorners = [minXMinY, maxXMinY]`).
+ */
+private fun roundedTopBackground(ctx: Context, @androidx.annotation.ColorInt color: Int): Drawable {
+    val r = 24f.dpToPx(ctx).toFloat()
+    return android.graphics.drawable.GradientDrawable().apply {
+        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+        setColor(color)
+        cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
     }
 }

@@ -130,7 +130,7 @@ class CardsEmptyStateView @JvmOverloads constructor(
             "Mais agilidade",
             "Mais praticidade",
         )
-        items.forEach { text ->
+        items.forEachIndexed { index, text ->
             val label = TextView(context).apply {
                 textSize = 15f
                 typeface = DSSFont.regular(context, 15f).typeface
@@ -141,7 +141,8 @@ class CardsEmptyStateView @JvmOverloads constructor(
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
-                ).apply { topMargin = 8f.dpToPx(context) },
+                    // iOS UIStackView.spacing = 8 is inter-item only; no spacing before the first.
+                ).apply { topMargin = if (index == 0) 0 else 8f.dpToPx(context) },
             )
         }
     }
@@ -171,8 +172,8 @@ class CardsEmptyStateView @JvmOverloads constructor(
         }
         addCardButton.setTextColor(buttonTitleColor)
 
-        // iOS: colorScheme == .black ? .systemRed : DSSColors.primary
-        val benefitColor = if (isBlack) Color.RED else DSSColors.primary()
+        // iOS: colorScheme == .black ? .systemRed : DSSColors.primary  (.systemRed -> #FF3B30)
+        val benefitColor = if (isBlack) Color.parseColor("#FF3B30") else DSSColors.primary()
         for (i in 0 until benefitsStack.childCount) {
             (benefitsStack.getChildAt(i) as? TextView)?.setTextColor(benefitColor)
         }

@@ -65,6 +65,7 @@ class DSSIconTitleButton @JvmOverloads constructor(
         )
         titleView.textSize = 14f
         titleView.typeface = DSSFont.regular(context, 14f).typeface
+        titleView.maxLines = 1
 
         stack.addView(iconView)
         stack.addView(titleView)

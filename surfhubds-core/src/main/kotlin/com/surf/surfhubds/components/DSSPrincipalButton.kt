@@ -34,10 +34,10 @@ class DSSPrincipalButton @JvmOverloads constructor(
 
     /** Espelha `defaultSize` do iOS (pt -> dp 1:1). Aplicado como min width/height. */
     var defaultWidthDp: Float = 320f
-        set(value) { field = value; minWidth = value.dpToPx(context) }
+        set(value) { field = value; minWidth = value.dpToPx(context); requestLayout() }
 
     var defaultHeightDp: Float = 50f
-        set(value) { field = value; minHeight = value.dpToPx(context) }
+        set(value) { field = value; minHeight = value.dpToPx(context); requestLayout() }
 
     /** `backgroundColor` opcional do iOS; null => usa o token semântico (reage ao tema). */
     @ColorInt

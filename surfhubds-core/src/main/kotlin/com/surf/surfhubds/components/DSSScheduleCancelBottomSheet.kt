@@ -77,11 +77,12 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
             orientation = LinearLayout.VERTICAL
         }
         // iOS: colorScheme == .black ? .systemRed : DSSColors.primary
-        val benefitColor = if (isBlack) Color.RED else DSSColors.primary()
+        // .systemRed -> #FF3B30 (cor literal hardcoded também no iOS)
+        val benefitColor = if (isBlack) Color.parseColor("#FF3B30") else DSSColors.primary()
         benefits.forEach { text ->
             val label = TextView(ctx).apply {
                 this.text = "✓ $text"
-                typeface = DSSFont.regular(ctx, 15f).typeface
+                // iOS: .systemFont(ofSize: 15) — fonte de sistema, não DSSFont
                 textSize = 15f
                 maxLines = Int.MAX_VALUE
                 setTextColor(benefitColor)

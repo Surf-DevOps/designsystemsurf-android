@@ -158,6 +158,7 @@ class DSSScheduleOfferCardView @JvmOverloads constructor(
             backgroundColor = DSSColors.primary(),
             cornerRadiusDp = 14f,
         )
-        badge.setTextColor(DSSColors.textOnPrimary())
+        // iOS: badgeLabel.textColor = .white (literal, não token — fixo em qualquer tema)
+        badge.setTextColor(android.graphics.Color.WHITE)
     }
 }

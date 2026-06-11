@@ -337,8 +337,9 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
             downArrow.visibility = if (plan.hasRatingGroups) View.VISIBLE else View.GONE
 
             benefitsStack.removeAllViews()
-            for (item in plan.checkListItems) {
-                benefitsStack.addView(createItemView(item, isCheckmark = true))
+            // iOS: benefitsStackView.spacing = 6
+            for ((idx, item) in plan.checkListItems.withIndex()) {
+                benefitsStack.addView(createItemView(item, isCheckmark = true, topSpacing = if (idx == 0) 0 else 6))
             }
             configureSection(ilimitadosStack, ilimitadosTitle, plan.unlimitedItems)
             configureSection(assinaturasStack, assinaturasTitle, plan.subscriptionItems)
@@ -350,10 +351,13 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
             title.visibility = if (hasItems) View.VISIBLE else View.GONE
             stack.visibility = if (hasItems) View.VISIBLE else View.GONE
             if (!hasItems) return
-            for (item in items) stack.addView(createItemView(item, isCheckmark = false))
+            // iOS: makeSectionItemsStack().spacing = 12
+            for ((idx, item) in items.withIndex()) {
+                stack.addView(createItemView(item, isCheckmark = false, topSpacing = if (idx == 0) 0 else 12))
+            }
         }
 
-        private fun createItemView(item: DSSPlanCollectionView.CheckListItem, isCheckmark: Boolean): View {
+        private fun createItemView(item: DSSPlanCollectionView.CheckListItem, isCheckmark: Boolean, topSpacing: Int): View {
             val row = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
             val size = if (item.imageUrl != null) 28 else 20
 
@@ -380,15 +384,22 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
             row.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-            ).apply { topMargin = 4f.dpToPx(context); bottomMargin = 4f.dpToPx(context) }
+            ).apply { topMargin = topSpacing.toFloat().dpToPx(context) }
             return row
         }
 
         fun setExpanded(expanded: Boolean, animated: Boolean) {
             if (isExpanded == expanded) return
             isExpanded = expanded
+            // iOS: conteúdo aparece/some instantaneamente; só o chevron anima (0.3s).
             expandableContainer.visibility = if (expanded) View.VISIBLE else View.GONE
-            downArrow.rotation = if (expanded) 180f else 0f
+            val target = if (expanded) 180f else 0f
+            if (animated) {
+                downArrow.animate().rotation(target).setDuration(300).start()
+            } else {
+                downArrow.animate().cancel()
+                downArrow.rotation = target
+            }
         }
 
         fun setSelectedStyle(isSelected: Boolean) {

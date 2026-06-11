@@ -111,21 +111,24 @@ class DSSLabelTextField @JvmOverloads constructor(
         leftButton.visibility = View.GONE
         leftButton.setOnClickListener { leftButtonAction?.invoke() }
         fieldRow.addView(leftButton, FrameLayout.LayoutParams(24f.dpToPx(context), 24f.dpToPx(context)).apply {
+            // iOS: ícone 24 centrado em container de 44 -> margem (44-24)/2 = 10.
             gravity = Gravity.START or Gravity.CENTER_VERTICAL
-            leftMargin = 16f.dpToPx(context)
+            leftMargin = 10f.dpToPx(context)
         })
 
         rightButton.visibility = View.GONE
         rightButton.setOnClickListener { onRightTapped() }
         fieldRow.addView(rightButton, FrameLayout.LayoutParams(24f.dpToPx(context), 24f.dpToPx(context)).apply {
+            // iOS: ícone 24 centrado em container de 44 -> margem (44-24)/2 = 10.
             gravity = Gravity.END or Gravity.CENTER_VERTICAL
-            rightMargin = 16f.dpToPx(context)
+            rightMargin = 10f.dpToPx(context)
         })
 
         addView(fieldRow, LayoutParams(LayoutParams.MATCH_PARENT, 50f.dpToPx(context)))
 
         errorLabel.textSize = 12f
-        errorLabel.setTextColor(Color.RED)
+        errorLabel.setTextColor(Color.parseColor("#FF3B30"))
+        errorLabel.maxLines = Int.MAX_VALUE
         errorLabel.visibility = View.GONE
         addView(errorLabel, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
             topMargin = 4f.dpToPx(context)
@@ -189,19 +192,20 @@ class DSSLabelTextField @JvmOverloads constructor(
         leftIcon?.let {
             leftButton.setImageDrawable(it)
             leftButton.visibility = View.VISIBLE
-            editText.setPadding(56f.dpToPx(context), 0, editText.paddingRight, 0)
+            // iOS: leftView é um container de 44pt -> inset de 44.
+            editText.setPadding(44f.dpToPx(context), 0, editText.paddingRight, 0)
         }
         // Right button: ícone explícito OU olhinho padrão para campos de senha (espelha iOS).
         when {
             rightIcon != null -> {
                 rightButton.setImageDrawable(rightIcon)
                 rightButton.visibility = View.VISIBLE
-                editText.setPadding(editText.paddingLeft, 0, 56f.dpToPx(context), 0)
+                editText.setPadding(editText.paddingLeft, 0, 44f.dpToPx(context), 0)
             }
             type is Type.Password -> {
                 ImageLoader.image(context, "eye_open")?.let { rightButton.setImageDrawable(it) }
                 rightButton.visibility = View.VISIBLE
-                editText.setPadding(editText.paddingLeft, 0, 56f.dpToPx(context), 0)
+                editText.setPadding(editText.paddingLeft, 0, 44f.dpToPx(context), 0)
             }
         }
 
@@ -251,7 +255,8 @@ class DSSLabelTextField @JvmOverloads constructor(
 
     private fun refreshTheme(error: Boolean = false) {
         val borderColor = when {
-            error -> DSSColors.borderError()
+            // iOS usa UIColor.systemRed literal no estado de erro -> #FF3B30.
+            error -> Color.parseColor("#FF3B30")
             borderColorOverride != null -> borderColorOverride!!
             else -> DSSColors.borderDefault()
         }

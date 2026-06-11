@@ -172,6 +172,10 @@ class DSSBannerCollectionView @JvmOverloads constructor(
         }
         private val loading = ProgressBar(context)
 
+        // Espelha SDImageResizingTransformer(size: 314x106) do iOS.
+        private val bannerWidthPx = 314f.dpToPx(context)
+        private val bannerHeightPx = 106f.dpToPx(context)
+
         init {
             addView(imageView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
             val lpLoad = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
@@ -181,14 +185,31 @@ class DSSBannerCollectionView @JvmOverloads constructor(
 
         fun load(url: String) {
             loading.visibility = VISIBLE
+            // Reset (equivale ao prepareForReuse do iOS): limpa imagem e volta o fundo placeholder.
+            imageView.setImageDrawable(null)
+            imageView.background = DrawableFactory.rounded(
+                context = context,
+                backgroundColor = DSSColors.backgroundSecondary(),
+                cornerRadiusDp = 8f,
+            )
             Glide.with(context).load(url)
+                .override(bannerWidthPx, bannerHeightPx)
                 .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
                     override fun onLoadFailed(
                         e: com.bumptech.glide.load.engine.GlideException?,
                         model: Any?,
                         target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
                         isFirstResource: Boolean,
-                    ): Boolean { loading.visibility = GONE; return false }
+                    ): Boolean {
+                        loading.visibility = GONE
+                        // iOS: imageView.backgroundColor = .systemGray5 no erro.
+                        imageView.background = DrawableFactory.rounded(
+                            context = context,
+                            backgroundColor = DSSColors.backgroundSecondary(),
+                            cornerRadiusDp = 8f,
+                        )
+                        return false
+                    }
 
                     override fun onResourceReady(
                         resource: android.graphics.drawable.Drawable,
@@ -196,7 +217,20 @@ class DSSBannerCollectionView @JvmOverloads constructor(
                         target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
                         dataSource: com.bumptech.glide.load.DataSource,
                         isFirstResource: Boolean,
-                    ): Boolean { loading.visibility = GONE; return false }
+                    ): Boolean {
+                        loading.visibility = GONE
+                        // iOS: fade-in (alpha 0 -> 1, 0.3s) só quando vem da rede (cacheType == .none).
+                        if (dataSource != com.bumptech.glide.load.DataSource.MEMORY_CACHE &&
+                            dataSource != com.bumptech.glide.load.DataSource.RESOURCE_DISK_CACHE &&
+                            dataSource != com.bumptech.glide.load.DataSource.DATA_DISK_CACHE
+                        ) {
+                            imageView.alpha = 0f
+                            imageView.animate().alpha(1f).setDuration(300).start()
+                        } else {
+                            imageView.alpha = 1f
+                        }
+                        return false
+                    }
                 })
                 .into(imageView)
         }

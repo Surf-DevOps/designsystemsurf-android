@@ -35,6 +35,9 @@ class DarkModeExampleFragment : Fragment() {
 
         rootContainer = ScrollView(ctx).apply {
             setBackgroundColor(DSSColors.background())
+            // iOS reaplica a cor de fundo em traitCollectionDidChange (mudança de tema do sistema).
+            // Aqui reagimos via observer: atualiza o background a cada troca de tema.
+            ThemeManager.bind(this) { setBackgroundColor(DSSColors.background()) }
         }
         val stack = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
@@ -147,8 +150,8 @@ class DarkModeExampleFragment : Fragment() {
         val current = ThemeManager.colorScheme
         val next = if (current == ColorScheme.LIGHT) ColorScheme.DARK else ColorScheme.LIGHT
         ThemeManager.setColorScheme(next)
-        // ThemeAware observers irão atualizar automaticamente.
-        rootContainer.setBackgroundColor(DSSColors.background())
+        // O observer registrado em rootContainer (ThemeManager.bind) reaplica o background,
+        // espelhando o setupUI() chamado pelo toggleTheme do iOS.
     }
 
     private fun showAlert(title: String, message: String) {

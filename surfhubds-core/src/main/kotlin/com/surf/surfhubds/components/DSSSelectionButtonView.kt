@@ -35,7 +35,8 @@ class DSSSelectionButtonView @JvmOverloads constructor(
     var didSelectCategory: ((List<DSSFAQItem>) -> Unit)? = null
 
     @ColorInt private var selectTitleColor: Int = Color.WHITE
-    @ColorInt private var unselectTitleColor: Int = Color.DKGRAY
+    // iOS: UIColor.darkGray == rgb(85,85,85) == #555555 (Android Color.DKGRAY é 68,68,68).
+    @ColorInt private var unselectTitleColor: Int = DARK_GRAY
     @ColorInt private var borderColorOverride: Int = DSSColors.textPrimary()
 
     init {
@@ -48,7 +49,7 @@ class DSSSelectionButtonView @JvmOverloads constructor(
     fun configure(
         categories: List<DSSFAQCategory>,
         @ColorInt selectTitleColor: Int = Color.WHITE,
-        @ColorInt unselectTitleColor: Int = Color.DKGRAY,
+        @ColorInt unselectTitleColor: Int = DARK_GRAY,
         @ColorInt borderColor: Int = DSSColors.textPrimary(),
     ) {
         this.orderedCategories = categories
@@ -65,7 +66,7 @@ class DSSSelectionButtonView @JvmOverloads constructor(
     fun configure(
         categories: Map<String, List<DSSFAQItem>>,
         @ColorInt selectTitleColor: Int = Color.WHITE,
-        @ColorInt unselectTitleColor: Int = Color.DKGRAY,
+        @ColorInt unselectTitleColor: Int = DARK_GRAY,
         @ColorInt borderColor: Int = DSSColors.textPrimary(),
     ) {
         val mapped = categories.map { (title, items) -> DSSFAQCategory(title, items) }
@@ -144,5 +145,10 @@ class DSSSelectionButtonView @JvmOverloads constructor(
     private fun itemsForCategoryAt(index: Int): List<DSSFAQItem> {
         if (index < 0 || index >= orderedCategories.size) return emptyList()
         return orderedCategories[index].items
+    }
+
+    private companion object {
+        // iOS UIColor.darkGray == rgb(85,85,85). Android Color.DKGRAY diverge (68,68,68).
+        const val DARK_GRAY = 0xFF555555.toInt()
     }
 }

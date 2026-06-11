@@ -27,7 +27,6 @@ import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.surf.surfhubds.font.DSSFont
-import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.util.regex.Pattern
@@ -199,14 +198,22 @@ class DSSCardScannerActivity : AppCompatActivity() {
             },
         )
 
+        // iOS: começa com "bolt.slash.fill" (flash desligado) e alterna para "bolt.fill" ao ligar.
         val flashButton = ImageButton(this).apply {
-            setImageResource(android.R.drawable.ic_menu_view)
+            setImageResource(android.R.drawable.ic_lock_idle_low_battery)
             background = null
             setColorFilter(Color.WHITE)
             var torchOn = false
             setOnClickListener {
                 torchOn = !torchOn
-                if (torchOn) barcodeView.setTorchOn() else barcodeView.setTorchOff()
+                if (torchOn) {
+                    barcodeView.setTorchOn()
+                    setImageResource(android.R.drawable.ic_lock_idle_charging)
+                } else {
+                    barcodeView.setTorchOff()
+                    setImageResource(android.R.drawable.ic_lock_idle_low_battery)
+                }
+                setColorFilter(Color.WHITE)
             }
         }
         root.addView(
@@ -309,11 +316,12 @@ class DSSCardScannerActivity : AppCompatActivity() {
         )
 
         // Feedback de sucesso (igual iOS): borda verde + título + delay de 0.8s
+        // iOS usa UIColor.systemGreen (literal), não token semântico → #34C759.
         cardFrame.background = DrawableFactory.rounded(
             context = this,
             backgroundColor = Color.TRANSPARENT,
             cornerRadiusDp = 12f,
-            strokeColor = DSSColors.success(),
+            strokeColor = SYSTEM_GREEN,
             strokeWidthDp = 2f,
         )
         instructionLabel.text = "Cartão detectado!"
@@ -439,6 +447,9 @@ class DSSCardScannerActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_RESULT = "DSS_SCANNED_CARD_DATA"
+
+        // iOS UIColor.systemGreen (borda do cartão ao detectar)
+        private val SYSTEM_GREEN = Color.parseColor("#34C759")
 
         // Validade MM/YY (igual iOS regex)
         private val EXPIRY_PATTERN: Pattern =

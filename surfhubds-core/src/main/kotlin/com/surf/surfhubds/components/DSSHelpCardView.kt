@@ -48,7 +48,8 @@ class DSSHelpCardView @JvmOverloads constructor(
         maxLines = Int.MAX_VALUE
     }
     private val arrowImageView = ImageView(context).apply {
-        scaleType = ImageView.ScaleType.FIT_CENTER
+        // iOS: arrowImageView sem contentMode -> default .scaleToFill == FIT_XY
+        scaleType = ImageView.ScaleType.FIT_XY
     }
     private val textColumn = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL

@@ -41,6 +41,7 @@ class DSSPaymentMethodCard @JvmOverloads constructor(
         textSize = 16f
         typeface = DSSFont.medium(context, 16f).typeface
         maxLines = 1
+        ellipsize = android.text.TextUtils.TruncateAt.END
         gravity = Gravity.START or Gravity.CENTER_VERTICAL
     }
     private val row = LinearLayout(context).apply {

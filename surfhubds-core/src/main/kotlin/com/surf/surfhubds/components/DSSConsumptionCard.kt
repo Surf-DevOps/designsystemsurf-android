@@ -48,7 +48,11 @@ class DSSConsumptionCard @JvmOverloads constructor(
     var iconResolver: (cardType: String) -> android.graphics.drawable.Drawable? = { null }
 
     private val container = FrameLayout(context)
-    private val iconView = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
+    private val iconView = ImageView(context).apply {
+        scaleType = ImageView.ScaleType.FIT_CENTER
+        // iOS: iconImageView.tintColor = .white (SF Symbol renderizado como template branco)
+        setColorFilter(Color.WHITE)
+    }
     private val titleView = TextView(context).apply {
         text = "Total disponível"
         textSize = 14f

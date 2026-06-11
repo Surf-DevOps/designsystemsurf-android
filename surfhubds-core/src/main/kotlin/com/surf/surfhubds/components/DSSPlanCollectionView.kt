@@ -430,6 +430,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 text = "Ilimitados"
                 textSize = 14f
                 typeface = DSSFont.bold(context, 14f).typeface
+                maxLines = 1 // iOS makeSectionTitleLabel numberOfLines = 1
             }
             expandableContainer.addView(
                 ilimitadosTitle,
@@ -450,6 +451,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 text = "Assinaturas"
                 textSize = 14f
                 typeface = DSSFont.bold(context, 14f).typeface
+                maxLines = 1 // iOS makeSectionTitleLabel numberOfLines = 1
             }
             expandableContainer.addView(
                 assinaturasTitle,
@@ -660,6 +662,8 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 strokeColor = stroke,
                 strokeWidthDp = strokeWidth,
             )
+            // iOS: shadow opacity 0.1, offset (0,2), radius 4. Aproximação via elevation.
+            container.elevation = 4f.dpToPxFloat(context)
 
             validityLabel.setTextColor(DSSColors.textPrimary())
             validityLabel.background = DrawableFactory.rounded(

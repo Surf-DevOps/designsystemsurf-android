@@ -98,7 +98,7 @@ class PortabilityCardView @JvmOverloads constructor(
     private val cardContainer = FrameLayout(context)
     private val actionButton = AppCompatButton(context).apply {
         textSize = 16f
-        typeface = DSSFont.medium(context, 16f).typeface
+        typeface = DSSFont.semibold(context, 16f).typeface
         isAllCaps = false
         visibility = View.GONE
         alpha = 0f
@@ -214,7 +214,7 @@ class PortabilityCardView @JvmOverloads constructor(
     // MARK: Status configs
 
     private fun configError(response: PortabilityStatusResponse) {
-        titleLabel.text = "Infelizmente não conseguimos seguir com a sua portabilidade"
+        titleLabel.text = "Infelizmente não conseguirmos seguir com a sua portabilidade"
         subtitleLabel.text = "Verifique se:"
         progressImageView.setImageDrawable(progressImages.refused)
         progressImageView.visibility = View.GONE
@@ -386,7 +386,7 @@ class PortabilityCardView @JvmOverloads constructor(
         val title = TextView(context).apply {
             text = "Previsão de conclusão\n${response.resultado?.dtConfirmacao ?: "Em breve"}"
             textSize = 16f
-            typeface = DSSFont.medium(context, 16f).typeface
+            typeface = DSSFont.semibold(context, 16f).typeface
             gravity = Gravity.CENTER_HORIZONTAL
             setSingleLine(false)
             setTextColor(DSSColors.textPrimary())
@@ -556,7 +556,7 @@ class PortabilityCardView @JvmOverloads constructor(
             val title = TextView(ctx).apply {
                 tag = "title"
                 textSize = 18f
-                typeface = DSSFont.medium(ctx, 18f).typeface
+                typeface = DSSFont.semibold(ctx, 18f).typeface
                 gravity = Gravity.CENTER_HORIZONTAL
                 setSingleLine(false)
                 setTextColor(DSSColors.textPrimary())

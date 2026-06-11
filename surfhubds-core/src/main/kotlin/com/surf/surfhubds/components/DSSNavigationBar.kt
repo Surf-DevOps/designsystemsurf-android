@@ -57,6 +57,9 @@ class DSSNavigationBar @JvmOverloads constructor(
         })
 
         leftButton.background = null
+        // iOS: contentEdgeInsets = .zero / imageEdgeInsets = .zero
+        leftButton.setPadding(0, 0, 0, 0)
+        leftButton.scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
         leftButton.setOnClickListener { leftAction?.invoke() }
         leftButton.visibility = View.GONE
         addView(leftButton, LayoutParams(32f.dpToPx(context), 32f.dpToPx(context)).apply {
@@ -65,6 +68,9 @@ class DSSNavigationBar @JvmOverloads constructor(
         })
 
         rightButton.background = null
+        // iOS: contentEdgeInsets = .zero / imageEdgeInsets = .zero
+        rightButton.setPadding(0, 0, 0, 0)
+        rightButton.scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
         rightButton.setOnClickListener { rightAction?.invoke() }
         rightButton.visibility = View.GONE
         addView(rightButton, LayoutParams(7f.dpToPx(context), 24f.dpToPx(context)).apply {
@@ -171,12 +177,18 @@ class DSSNavigationBar @JvmOverloads constructor(
 
     fun setLeftTintColor(@ColorInt color: Int?) {
         leftTintOverride = color
-        leftButton.setColorFilter(color ?: DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
+        // iOS: só aplica tint se o botão tiver imagem (currentImage != nil)
+        if (leftButton.drawable != null) {
+            leftButton.setColorFilter(color ?: DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
+        }
     }
 
     fun setRightTintColor(@ColorInt color: Int?) {
         rightTintOverride = color
-        rightButton.setColorFilter(color ?: DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
+        // iOS: só aplica tint se o botão tiver imagem (currentImage != nil)
+        if (rightButton.drawable != null) {
+            rightButton.setColorFilter(color ?: DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
+        }
     }
 
     override fun applyTheme(theme: Theme) { refresh() }

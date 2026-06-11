@@ -88,6 +88,7 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
     var cornerRadiusDp: Float = 12f
         set(value) { field = value; refresh() }
 
+    private var title: String? = null
     private var msisdn: String? = null
     private var offer: String? = null
     private var priceInCents: Int? = null
@@ -193,13 +194,13 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
             clearPersistedData()
             return
         }
-        if (title != null) titleLabel.text = title
+        this.title = title
         this.msisdn = msisdn
         this.offer = offer
         this.priceInCents = priceInCents
         this.pixCode = pixCode
 
-        resumeCard.configure(number = msisdn, offer = offer, priceInCents = priceInCents)
+        resumeCard.configure(title = title, number = msisdn, offer = offer, priceInCents = priceInCents)
 
         targetTimestamp = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(durationInSeconds.toLong())
 
@@ -289,11 +290,12 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
             strokeColor = strokeColor,
             strokeWidthDp = strokeWidthDp,
         )
-        // Título: vermelho-escuro do iOS (~0.65,0.16,0.16) -> token error; override de configureStyle tem prioridade.
-        titleLabel.setTextColor(titleColorOverride ?: DSSColors.error())
+        // Título: vermelho-escuro literal do iOS UIColor(red:0.65, green:0.16, blue:0.16) = #A62929
+        // (cor literal, não semântica). Override de configureStyle tem prioridade.
+        titleLabel.setTextColor(titleColorOverride ?: PIX_DARK_RED)
         timeLabel.setTextColor(DSSColors.textPrimary())
 
-        val buttonColor = buttonColorOverride ?: DSSColors.error()
+        val buttonColor = buttonColorOverride ?: PIX_DARK_RED
         copyButton.setTextColor(buttonColor)
         copyButton.background = DrawableFactory.rounded(
             context = context,
@@ -419,6 +421,9 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
     }
 
     companion object {
+        // iOS UIColor(red: 0.65, green: 0.16, blue: 0.16, alpha: 1.0) — literal hardcoded, não token.
+        @ColorInt private val PIX_DARK_RED: Int = android.graphics.Color.rgb(166, 41, 41)
+
         private const val KEY_IS_PENDING = "DSSPixSimpleCard_isPixPending"
         private const val KEY_TARGET = "DSSPixSimpleCard_targetDate"
         private const val KEY_MSISDN = "DSSPixSimpleCard_msisdn"

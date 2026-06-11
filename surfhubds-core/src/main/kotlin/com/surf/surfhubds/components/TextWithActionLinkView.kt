@@ -51,6 +51,11 @@ class TextWithActionLinkView @JvmOverloads constructor(
     init {
         movementMethod = LinkMovementMethod.getInstance()
         highlightColor = 0x00000000 // sem highlight cinza
+        // iOS: textContainerInset = .zero + lineFragmentPadding = 0 (UITextView sem padding, parece label).
+        setPadding(0, 0, 0, 0)
+        includeFontPadding = false
+        // iOS bloqueia seleção/handles (selectedTextRange = nil, long press desativado).
+        setTextIsSelectable(false)
         setupThemeObserver()
     }
 

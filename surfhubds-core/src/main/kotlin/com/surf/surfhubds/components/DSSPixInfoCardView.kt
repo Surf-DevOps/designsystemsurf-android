@@ -67,15 +67,16 @@ class DSSPixInfoCardView @JvmOverloads constructor(
         val vPad = 12f.dpToPx(context)
         container.setPadding(hPad, vPad, hPad, vPad)
 
-        // Header row — pesos: 40 / 25 / 35
+        // Header row — pesos: 40 / 25 / 35, spacing 8dp entre colunas (iOS stackView.spacing = 8)
+        val columnSpacing = 8f.dpToPx(context)
         headerRow.addView(numberHeaderLabel, weighted(0.40f))
-        headerRow.addView(planHeaderLabel, weighted(0.25f))
-        headerRow.addView(valueHeaderLabel, weighted(0.35f))
+        headerRow.addView(planHeaderLabel, weighted(0.25f, leftMargin = columnSpacing))
+        headerRow.addView(valueHeaderLabel, weighted(0.35f, leftMargin = columnSpacing))
 
         // Data row — mesmos pesos
         dataRow.addView(numberLabel, weighted(0.40f))
-        dataRow.addView(planLabel, weighted(0.25f))
-        dataRow.addView(valueLabel, weighted(0.35f))
+        dataRow.addView(planLabel, weighted(0.25f, leftMargin = columnSpacing))
+        dataRow.addView(valueLabel, weighted(0.35f, leftMargin = columnSpacing))
 
         container.addView(
             headerRow,
@@ -154,12 +155,12 @@ class DSSPixInfoCardView @JvmOverloads constructor(
         gravity = gravityValue or Gravity.CENTER_VERTICAL
     }
 
-    private fun weighted(weight: Float): LinearLayout.LayoutParams =
+    private fun weighted(weight: Float, leftMargin: Int = 0): LinearLayout.LayoutParams =
         LinearLayout.LayoutParams(
             0,
             LinearLayout.LayoutParams.WRAP_CONTENT,
             weight,
-        )
+        ).apply { this.leftMargin = leftMargin }
 
     private fun formatPhoneNumber(raw: String): String {
         val digits = raw.filter { it.isDigit() }

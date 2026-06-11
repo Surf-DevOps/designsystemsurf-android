@@ -96,7 +96,8 @@ class DSSResumeCard @JvmOverloads constructor(
             clipToPadding = false
         }
         val col1 = makeColumn(numberLabel, numberValue, valueWidthDp = 140f)
-        val col2 = makeColumn(offerLabel, offerValue)
+        // iOS: offerValueLabel width 100 (fixo).
+        val col2 = makeColumn(offerLabel, offerValue, valueWidthDp = 100f)
         val col3 = makeColumn(priceLabel, priceValue)
         // iOS: numberLabel/offerLabel width 100, gap 20 entre colunas; priceLabel ocupa o restante.
         val gap = 20f.dpToPx(context)
@@ -157,6 +158,9 @@ class DSSResumeCard @JvmOverloads constructor(
     fun setOffer(offer: String) { offerValue.text = offer }
     fun setPrice(cents: Int) { priceValue.text = formatPrice(cents) }
     fun setTitle(title: String) { titleLabel.text = title }
+
+    // iOS: setTitleFont(_:) — exposto pela property `titleFont` (gera setTitleFont
+    // para Java e `titleFont =` para Kotlin); o setter já aplica no titleLabel.
 
     /** Configura a cor do título (iOS: setTitleColor). */
     fun setTitleColor(@ColorInt color: Int) { titleTextColorOverride = color }

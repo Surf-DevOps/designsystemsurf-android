@@ -96,7 +96,10 @@ class DSSPaymentSelectionView @JvmOverloads constructor(
     private val creditCardsRecycler = RecyclerView(context).apply {
         layoutManager = LinearLayoutManager(context)
         isNestedScrollingEnabled = true
-        overScrollMode = OVER_SCROLL_NEVER
+        // iOS: showsVerticalScrollIndicator = true; bounces / alwaysBounceVertical = true.
+        isVerticalScrollBarEnabled = true
+        isHorizontalScrollBarEnabled = false
+        overScrollMode = OVER_SCROLL_ALWAYS
     }
 
     private val adapter = CreditCardAdapter()

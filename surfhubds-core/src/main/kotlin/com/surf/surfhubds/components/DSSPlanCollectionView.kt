@@ -341,7 +341,8 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 gravity = Gravity.END
             }
             downArrow.apply {
-                text = "v"
+                // iOS usa chevron.down (SF Symbol). Glifo de seta pra baixo (não a letra "v").
+                text = "▾"
                 textSize = 14f
                 gravity = Gravity.CENTER
             }

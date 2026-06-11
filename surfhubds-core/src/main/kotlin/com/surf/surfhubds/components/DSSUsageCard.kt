@@ -98,7 +98,7 @@ class DSSUsageCard @JvmOverloads constructor(
             progressBar,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                8f.dpToPx(context),
+                12f.dpToPx(context),
             ).apply { topMargin = 12f.dpToPx(context) },
         )
         container.addView(

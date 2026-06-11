@@ -177,12 +177,13 @@ class DSSUsageCard @JvmOverloads constructor(
             clamped < 70 -> Color.parseColor("#FFCC00") // .systemYellow
             else -> Color.parseColor("#FF3B30") // .systemRed
         }
-        val drawable = progressBar.progressDrawable
-        if (drawable != null) {
-            val wrapped = DrawableCompat.wrap(drawable.mutate())
-            DrawableCompat.setTint(wrapped, color)
-            progressBar.progressDrawable = wrapped
-        }
+        // Tinge APENAS a camada android.R.id.progress (igual DSSCardPlanRechargeView
+        // da home). setTint no drawable inteiro tingia também a track, deixando-a
+        // verde-clara; a track deve ficar no cinza neutro padrão.
+        progressBar.progressTintList = android.content.res.ColorStateList.valueOf(color)
+        (progressBar.progressDrawable as? android.graphics.drawable.LayerDrawable)
+            ?.findDrawableByLayerId(android.R.id.progress)
+            ?.setTint(color)
     }
 
     /**

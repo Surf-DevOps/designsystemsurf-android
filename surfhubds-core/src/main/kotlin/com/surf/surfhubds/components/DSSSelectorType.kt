@@ -102,9 +102,12 @@ class DSSSelectorType @JvmOverloads constructor(
                 background = indicatorDrawable(if (index == selectedIndex) selectedColor else Color.TRANSPARENT)
             }
 
-            // Stacking: button | background line + indicator overlap at bottom
+            // Stacking: button | background line + indicator overlap at bottom.
+            // BOTTOM (não TOP): o texto encosta na linha/indicador (o padding inferior
+            // do botão reserva o espaço do indicador), igual ao iOS. Com TOP o texto
+            // flutuava no topo do container, muito alto em relação à linha.
             val buttonLp = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+                gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
             }
             itemContainer.addView(button, buttonLp)
 

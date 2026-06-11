@@ -591,10 +591,18 @@ class DSSPlanCollectionView @JvmOverloads constructor(
 
             val iv = ImageView(context).apply {
                 scaleType = ImageView.ScaleType.FIT_CENTER
-                setImageDrawable(item.icon)
                 if (isCheckmark) {
+                    // iOS usa o SF Symbol checkmark tingido de primary. Usa o vetor
+                    // built-in quando o consumidor não fornece um ícone (antes ficava
+                    // em branco — sem o ✓ azul das linhas de benefício).
+                    setImageDrawable(
+                        item.icon ?: androidx.core.content.ContextCompat.getDrawable(
+                            context, com.surf.surfhubds.R.drawable.dss_ic_check,
+                        ),
+                    )
                     setColorFilter(DSSColors.primary(), PorterDuff.Mode.SRC_IN)
                 } else {
+                    setImageDrawable(item.icon)
                     clearColorFilter()
                 }
             }

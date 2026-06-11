@@ -59,6 +59,9 @@ class DSSContentCardView @JvmOverloads constructor(
 
     init {
         orientation = VERTICAL
+        // iOS: contentCard reserva `bottomSpacing = 15` abaixo das opções de pagamento
+        // (updatePaymentOptionsUI). Replicado como padding inferior.
+        setPadding(0, 0, 0, 15f.dpToPx(context))
         refresh()
         setupThemeObserver()
     }
@@ -129,7 +132,9 @@ class DSSContentCardView @JvmOverloads constructor(
         row.addView(
             label,
             LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                leftMargin = 4f.dpToPx(context)
+                // iOS: opção selecionada (recolhida) usa icon.trailing + 25; nas opções
+                // em edição usa + 4 (addSelectedPaymentOption vs updatePaymentOptionsUI).
+                leftMargin = (if (editing) 4f else 25f).dpToPx(context)
             },
         )
         row.addView(FrameLayout(context), LayoutParams(0, 1, 1f))

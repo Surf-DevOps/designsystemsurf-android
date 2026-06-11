@@ -117,7 +117,7 @@ class DSSUsageCard @JvmOverloads constructor(
     fun configure(config: Configuration) {
         when (config.type) {
             Type.INTERNET -> {
-                iconView.setImageDrawable(internetIcon)
+                iconView.setImageDrawable(internetIcon ?: defaultIcon(com.surf.surfhubds.R.drawable.dss_ic_globe))
                 titleLabel.text = "Internet base do plano"
                 availableLabel.text = "${formatMBToGB(config.available)}GB disponíveis"
                 totalLabel.text = "de ${formatMBToGB(config.total)}GB"
@@ -128,7 +128,7 @@ class DSSUsageCard @JvmOverloads constructor(
                 applyProgress(pct)
             }
             Type.CALLS -> {
-                iconView.setImageDrawable(callsIcon)
+                iconView.setImageDrawable(callsIcon ?: defaultIcon(com.surf.surfhubds.R.drawable.dss_ic_phone))
                 titleLabel.text = "Ligações"
                 val usedMinutes = (config.total - config.available).coerceAtLeast(0)
                 val totalSecondsUsed = usedMinutes * 60
@@ -149,7 +149,7 @@ class DSSUsageCard @JvmOverloads constructor(
                 }
             }
             Type.SMS -> {
-                iconView.setImageDrawable(smsIcon)
+                iconView.setImageDrawable(smsIcon ?: defaultIcon(com.surf.surfhubds.R.drawable.dss_ic_chat))
                 titleLabel.text = "SMS"
                 val used = (config.total - config.available).coerceAtLeast(0)
                 val pct = percent(used, config.total)
@@ -169,7 +169,6 @@ class DSSUsageCard @JvmOverloads constructor(
 
     private fun applyProgress(percent: Int) {
         val clamped = percent.coerceIn(0, 100)
-        progressBar.progress = clamped
         // iOS usa cores de sistema fixas (.systemGreen/.systemYellow/.systemRed),
         // não tokens semânticos — espelhamos os hex exatos para fidelidade visual.
         val color: Int = when {
@@ -177,13 +176,38 @@ class DSSUsageCard @JvmOverloads constructor(
             clamped < 70 -> Color.parseColor("#FFCC00") // .systemYellow
             else -> Color.parseColor("#FF3B30") // .systemRed
         }
-        // Tinge APENAS a camada android.R.id.progress (igual DSSCardPlanRechargeView
-        // da home). setTint no drawable inteiro tingia também a track, deixando-a
-        // verde-clara; a track deve ficar no cinza neutro padrão.
-        progressBar.progressTintList = android.content.res.ColorStateList.valueOf(color)
-        (progressBar.progressDrawable as? android.graphics.drawable.LayerDrawable)
-            ?.findDrawableByLayerId(android.R.id.progress)
-            ?.setTint(color)
+        // Drawable arredondado: track cinza neutro + fill colorido, ambos com cantos
+        // = metade da altura (pontas totalmente arredondadas, como o iOS).
+        progressBar.progressDrawable = buildRoundedProgress(color)
+        progressBar.progress = clamped
+    }
+
+    /** Ícone built-in por tipo (globe/phone/chat) quando o consumidor não fornece um. */
+    private fun defaultIcon(resId: Int): Drawable? =
+        androidx.core.content.ContextCompat.getDrawable(context, resId)
+
+    private fun buildRoundedProgress(progressColor: Int): android.graphics.drawable.LayerDrawable {
+        val radius = 6f.dpToPx(context).toFloat() // metade dos 12dp de altura
+        val trackColor = if (ThemeManager.colorScheme == ColorScheme.LIGHT) {
+            Color.parseColor("#F2F2F2")
+        } else {
+            Color.parseColor("#404040")
+        }
+        val track = android.graphics.drawable.GradientDrawable().apply {
+            shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+            setColor(trackColor); cornerRadius = radius
+        }
+        val fill = android.graphics.drawable.GradientDrawable().apply {
+            shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+            setColor(progressColor); cornerRadius = radius
+        }
+        val clip = android.graphics.drawable.ClipDrawable(
+            fill, Gravity.START, android.graphics.drawable.ClipDrawable.HORIZONTAL,
+        )
+        return android.graphics.drawable.LayerDrawable(arrayOf(track, clip)).apply {
+            setId(0, android.R.id.background)
+            setId(1, android.R.id.progress)
+        }
     }
 
     /**

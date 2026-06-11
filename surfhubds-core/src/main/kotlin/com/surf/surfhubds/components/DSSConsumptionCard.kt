@@ -44,8 +44,19 @@ class DSSConsumptionCard @JvmOverloads constructor(
         val totalValue: Int,
     )
 
-    /** Resolver de ícone — por padrão sem ícone (no iOS usa SF Symbols). */
-    var iconResolver: (cardType: String) -> android.graphics.drawable.Drawable? = { null }
+    /**
+     * Resolver de ícone. Por padrão resolve os vetores built-in (globe/phone/chat),
+     * espelhando os SF Symbols globe / phone.fill / bubble do iOS. O consumidor pode
+     * sobrescrever.
+     */
+    var iconResolver: (cardType: String) -> android.graphics.drawable.Drawable? = { cardType ->
+        val resId = when (cardType) {
+            CardKind.CALLS -> com.surf.surfhubds.R.drawable.dss_ic_phone
+            CardKind.SMS -> com.surf.surfhubds.R.drawable.dss_ic_chat
+            else -> com.surf.surfhubds.R.drawable.dss_ic_globe
+        }
+        androidx.core.content.ContextCompat.getDrawable(context, resId)
+    }
 
     private val container = FrameLayout(context)
     private val iconView = ImageView(context).apply {

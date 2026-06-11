@@ -98,7 +98,7 @@ class DSSUsageCard @JvmOverloads constructor(
             progressBar,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                12f.dpToPx(context),
+                10f.dpToPx(context),
             ).apply { topMargin = 12f.dpToPx(context) },
         )
         container.addView(
@@ -187,7 +187,7 @@ class DSSUsageCard @JvmOverloads constructor(
         androidx.core.content.ContextCompat.getDrawable(context, resId)
 
     private fun buildRoundedProgress(progressColor: Int): android.graphics.drawable.LayerDrawable {
-        val radius = 6f.dpToPx(context).toFloat() // metade dos 12dp de altura
+        val radius = 5f.dpToPx(context).toFloat() // metade dos 10dp de altura
         val trackColor = if (ThemeManager.colorScheme == ColorScheme.LIGHT) {
             Color.parseColor("#F2F2F2")
         } else {

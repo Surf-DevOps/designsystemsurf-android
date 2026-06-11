@@ -101,6 +101,15 @@ class DSSSelector @JvmOverloads constructor(
                 textSize = 14f
                 typeface = DSSFont.light(context, 14f).typeface
                 tag = index
+                // AppCompatButton tem minHeight/minWidth (~48dp) e padding default que
+                // clipam o texto quando o seletor é baixo (iOS usa h:28). Zera tudo.
+                minHeight = 0
+                minimumHeight = 0
+                minWidth = 0
+                minimumWidth = 0
+                includeFontPadding = false
+                setPadding(0, 0, 0, 0)
+                stateListAnimator = null
                 setOnClickListener { updateSelection(index) }
 
                 images?.getOrNull(index)?.let { drawable ->

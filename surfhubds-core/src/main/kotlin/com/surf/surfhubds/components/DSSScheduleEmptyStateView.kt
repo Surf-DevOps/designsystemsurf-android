@@ -63,7 +63,10 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
     }
 
     init {
-        column.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT).apply {
+        // WRAP_CONTENT + gravity CENTER centraliza o bloco (ícone/título/benefícios/
+        // botão) vertical e horizontalmente no FrameLayout. Com MATCH_PARENT o column
+        // preenchia tudo e o conteúdo colava no topo (não centralizava).
+        column.layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
             gravity = Gravity.CENTER
         }
         // iOS não aplica padding no container; título/botão têm largura fixa 320 centralizados.

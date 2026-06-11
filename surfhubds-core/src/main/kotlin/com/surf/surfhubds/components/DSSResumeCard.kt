@@ -1,6 +1,7 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.Gravity
@@ -12,7 +13,10 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.text.NumberFormat
@@ -28,24 +32,35 @@ class DSSResumeCard @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr), ThemeAware {
 
     private val container = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+
+    // Espelha o iOS: textos default resolvidos do bundle da brand (AppStrings "resume_card.*").
     private val titleLabel = TextView(context).apply {
-        text = "Resumo"
+        text = AppStrings.brand(context, "resume_card_title", "Resumo")
         textSize = 18f
         typeface = DSSFont.medium(context, 18f).typeface
         gravity = Gravity.START
     }
     private val numberLabel = TextView(context).apply {
-        text = "Número"; textSize = 14f; typeface = DSSFont.light(context, 14f).typeface
+        text = AppStrings.brand(context, "resume_card_number", "Número")
+        textSize = 14f; typeface = DSSFont.light(context, 14f).typeface
     }
-    private val numberValue = TextView(context).apply { textSize = 11f; typeface = DSSFont.medium(context, 11f).typeface }
+    private val numberValue = TextView(context).apply {
+        textSize = 11f; typeface = DSSFont.medium(context, 11f).typeface; maxLines = 1
+    }
     private val offerLabel = TextView(context).apply {
-        text = "Oferta"; textSize = 14f; typeface = DSSFont.light(context, 14f).typeface
+        text = AppStrings.brand(context, "resume_card_offer", "Oferta")
+        textSize = 14f; typeface = DSSFont.light(context, 14f).typeface
     }
-    private val offerValue = TextView(context).apply { textSize = 11f; typeface = DSSFont.medium(context, 11f).typeface }
+    private val offerValue = TextView(context).apply {
+        textSize = 11f; typeface = DSSFont.medium(context, 11f).typeface; maxLines = 1
+    }
     private val priceLabel = TextView(context).apply {
-        text = "Valor"; textSize = 14f; typeface = DSSFont.light(context, 14f).typeface
+        text = AppStrings.brand(context, "resume_card_price", "Valor")
+        textSize = 14f; typeface = DSSFont.light(context, 14f).typeface
     }
-    private val priceValue = TextView(context).apply { textSize = 11f; typeface = DSSFont.medium(context, 11f).typeface }
+    private val priceValue = TextView(context).apply {
+        textSize = 11f; typeface = DSSFont.medium(context, 11f).typeface; maxLines = 1
+    }
 
     var cornerRadiusDp: Float = 12f
         set(value) { field = value; refresh() }
@@ -73,8 +88,14 @@ class DSSResumeCard @JvmOverloads constructor(
         container.setPadding(pad, pad, pad, pad)
         container.addView(titleLabel)
 
-        val row = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
-        val col1 = makeColumn(numberLabel, numberValue)
+        val row = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            // iOS: numberValueLabel tem width 140 (> coluna de 100) — o valor pode "vazar"
+            // para o gap sem ser clipado.
+            clipChildren = false
+            clipToPadding = false
+        }
+        val col1 = makeColumn(numberLabel, numberValue, valueWidthDp = 140f)
         val col2 = makeColumn(offerLabel, offerValue)
         val col3 = makeColumn(priceLabel, priceValue)
         // iOS: numberLabel/offerLabel width 100, gap 20 entre colunas; priceLabel ocupa o restante.
@@ -107,13 +128,17 @@ class DSSResumeCard @JvmOverloads constructor(
         setupThemeObserver()
     }
 
-    private fun makeColumn(label: TextView, value: TextView): LinearLayout {
-        val col = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+    private fun makeColumn(label: TextView, value: TextView, valueWidthDp: Float? = null): LinearLayout {
+        val col = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            clipChildren = false
+            clipToPadding = false
+        }
         col.addView(label)
         col.addView(
             value,
             LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
+                valueWidthDp?.dpToPx(context) ?: LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply { topMargin = 4f.dpToPx(context) },
         )
@@ -176,11 +201,24 @@ class DSSResumeCard @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
+        // Espelha applyColors() do iOS:
+        // - bg: scheme black → .black; dark → secondarySystemBackground; light → .white
+        //   (o token `surface` já resolve branco/#1C1C1E em light/dark);
+        // - borda 1pt: systemGray5 (light) / systemGray4 (dark) — cinza CLARO, não o
+        //   borderDefault (#595959) que escurecia o contorno do card.
+        val isDark = ThemeManager.colorScheme == ColorScheme.DARK ||
+            ThemeManager.colorScheme == ColorScheme.BLACK
+        val defaultBackground = if (ThemeManager.colorScheme == ColorScheme.BLACK) {
+            Color.BLACK
+        } else {
+            DSSColors.surface()
+        }
+        val defaultBorder = if (isDark) SYSTEM_GRAY4_DARK else SYSTEM_GRAY5_LIGHT
         container.background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = backgroundColorOverride ?: DSSColors.surface(),
+            backgroundColor = backgroundColorOverride ?: defaultBackground,
             cornerRadiusDp = cornerRadiusDp,
-            strokeColor = borderColorOverride ?: DSSColors.borderDefault(),
+            strokeColor = borderColorOverride ?: defaultBorder,
             strokeWidthDp = borderWidthDp,
         )
         titleLabel.setTextColor(titleTextColorOverride ?: DSSColors.textPrimary())
@@ -195,6 +233,12 @@ class DSSResumeCard @JvmOverloads constructor(
     }
 
     companion object {
+        /** iOS: UIColor.systemGray5 (light) — borda sutil dos cards. */
+        private const val SYSTEM_GRAY5_LIGHT = 0xFFE5E5EA.toInt()
+
+        /** iOS: UIColor.systemGray4 (dark) — borda sutil dos cards no dark. */
+        private const val SYSTEM_GRAY4_DARK = 0xFF3A3A3C.toInt()
+
         /** Card de resumo com estilo padrão. */
         fun defaultStyle(context: Context): DSSResumeCard = DSSResumeCard(context).apply {
             cornerRadiusDp = 12f

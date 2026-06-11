@@ -15,6 +15,22 @@ object AppStrings {
     fun t(context: Context, @StringRes id: Int, vararg args: Any): String =
         context.getString(id, *args)
 
+    /**
+     * Resolve uma string da brand pelo nome do resource (ex.: `resume_card_title`),
+     * espelhando o `AppStrings.t("resume_card.title")` do iOS — onde os componentes do
+     * DSS leem os textos do bundle da brand. No Android os módulos `surfhubds-brand-*`
+     * mesclam `res/values/strings.xml` no app host, então o lookup é por
+     * `getIdentifier`. Se a brand não definir a chave, usa [fallback].
+     */
+    fun brand(context: Context, name: String, fallback: String, vararg args: Any): String {
+        val resId = context.resources.getIdentifier(name, "string", context.packageName)
+        return if (resId != 0) {
+            if (args.isEmpty()) context.getString(resId) else context.getString(resId, *args)
+        } else {
+            if (args.isEmpty()) fallback else fallback.format(*args)
+        }
+    }
+
     /** Lookup por chave (key→default), útil quando vier de remote config. */
     private val builtIn: Map<String, String> = mapOf(
         "home.title" to "Educação Inteligente SP - Bem-vindo",

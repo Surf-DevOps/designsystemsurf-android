@@ -3,6 +3,7 @@ package com.surf.surfhubds.components
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.Gravity
@@ -103,9 +104,13 @@ class DSSPaymentMethodCard @JvmOverloads constructor(
     fun configure(icon: Drawable?, title: String) {
         iconImageView.setImageDrawable(icon)
         titleLabel.text = title
+        applyIconTint()
     }
 
-    fun setIcon(icon: Drawable?) { iconImageView.setImageDrawable(icon) }
+    fun setIcon(icon: Drawable?) {
+        iconImageView.setImageDrawable(icon)
+        applyIconTint()
+    }
     fun setTitleText(title: String) { titleLabel.text = title }
 
     /** Atualiza visual selecionado / não selecionado. */
@@ -125,6 +130,11 @@ class DSSPaymentMethodCard @JvmOverloads constructor(
         } else {
             DSSColors.primary()
         }
+        // iOS: containerView.backgroundColor = .systemBackground (branco no light, preto
+        // no dark) — não o token `surface`.
+        val isDark = ThemeManager.colorScheme == ColorScheme.DARK ||
+            ThemeManager.colorScheme == ColorScheme.BLACK
+        val systemBackground = if (isDark) Color.BLACK else Color.WHITE
         if (_selected) {
             background = DrawableFactory.rounded(
                 context = context,
@@ -136,14 +146,27 @@ class DSSPaymentMethodCard @JvmOverloads constructor(
         } else {
             background = DrawableFactory.rounded(
                 context = context,
-                backgroundColor = DSSColors.surface(),
+                backgroundColor = systemBackground,
                 cornerRadiusDp = cornerRadiusDp,
                 strokeColor = if (cardBorderWidthDp > 0f) cardBorderColor else null,
                 strokeWidthDp = cardBorderWidthDp,
             )
         }
         titleLabel.setTextColor(DSSColors.textPrimary())
-        iconImageView.setColorFilter(DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
+        applyIconTint()
+    }
+
+    /**
+     * Espelha o `tintColor` do iOS: só imagens template (SF Symbols → vetores no Android)
+     * recebem tint; assets raster da brand (ex.: ícone do Pix em teal, bandeiras dos
+     * cartões) são exibidos com as cores originais (rendering `.automatic` no iOS).
+     */
+    private fun applyIconTint() {
+        if (iconImageView.drawable is BitmapDrawable) {
+            iconImageView.clearColorFilter()
+        } else {
+            iconImageView.setColorFilter(DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
+        }
     }
 
     private fun withAlpha(@ColorInt color: Int, alpha: Int): Int {

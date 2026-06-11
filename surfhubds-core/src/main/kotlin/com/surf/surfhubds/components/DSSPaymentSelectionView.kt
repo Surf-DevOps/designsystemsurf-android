@@ -1,6 +1,7 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
@@ -11,8 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -189,9 +194,16 @@ class DSSPaymentSelectionView @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
+        // Espelha applyColors() do iOS: scheme black → .black; dark →
+        // .secondarySystemBackground (#1C1C1E); light → DSSColors.backgroundSecondary.
+        val bg = when {
+            ThemeManager.colorScheme == ColorScheme.BLACK -> Color.BLACK
+            ThemeManager.colorScheme == ColorScheme.DARK -> SECONDARY_SYSTEM_BACKGROUND_DARK
+            else -> DSSColors.backgroundSecondary()
+        }
         background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.backgroundSecondary(),
+            backgroundColor = bg,
             cornerRadiusDp = 12f,
         )
     }
@@ -238,6 +250,19 @@ class DSSPaymentSelectionView @JvmOverloads constructor(
             LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = if (first) 0 else spacingPx }
 
+    /**
+     * Espelha `getCardIcon(for:)` + `CardType(rawValue:)` do iOS: só "VISA", "ELO" e
+     * "MASTERCARD" (uppercased) resolvem para os assets de brand `ilVisa`/`ilElo`/
+     * `ilMaster`; qualquer outra bandeira fica sem ícone (`nil` no iOS).
+     */
+    private fun cardIconForFlag(context: Context, flag: String): Drawable? =
+        when (flag.uppercase()) {
+            "VISA" -> ImageLoader.image(context, "ilVisa")
+            "ELO" -> ImageLoader.image(context, "ilElo")
+            "MASTERCARD" -> ImageLoader.image(context, "ilMaster")
+            else -> null
+        }
+
     // MARK: Adapter
 
     private inner class CreditCardAdapter :
@@ -275,8 +300,17 @@ class DSSPaymentSelectionView @JvmOverloads constructor(
                 lp.topMargin = if (position == 0) 0 else 12f.dpToPx(holder.card.context)
                 holder.card.layoutParams = lp
             }
-            val title = "Final ${card.lastFour}"
-            holder.card.configure(card.brandIcon, title)
+            // Espelha a célula do iOS: título via brand string
+            // ("card_collection.final_digits_format") e ícone da bandeira resolvido
+            // internamente via ImageLoader quando a app não injetar um.
+            val title = AppStrings.brand(
+                holder.card.context,
+                "card_collection_final_digits_format",
+                "Final %s",
+                card.lastFour,
+            )
+            val icon = card.brandIcon ?: cardIconForFlag(holder.card.context, card.flag)
+            holder.card.configure(icon, title)
             val selected = (selectedMethod as? DSSPaymentMethod.CreditCard)?.index == position
             holder.card.setSelectedState(selected)
             holder.card.setOnClickListener {
@@ -300,5 +334,10 @@ class DSSPaymentSelectionView @JvmOverloads constructor(
         override fun getItemCount(): Int = items.size
 
         inner class VH(val card: DSSPaymentMethodCard) : RecyclerView.ViewHolder(card)
+    }
+
+    companion object {
+        /** iOS: UIColor.secondarySystemBackground no dark (#1C1C1E). */
+        private const val SECONDARY_SYSTEM_BACKGROUND_DARK = 0xFF1C1C1E.toInt()
     }
 }

@@ -1,5 +1,6 @@
 package com.surf.surfhubds.components
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -12,6 +13,8 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.surf.surfhubds.brand.Brand
+import com.surf.surfhubds.brand.BrandResolver
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.util.DrawableFactory
@@ -131,6 +134,17 @@ class DSSBestDealsBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Opção de plano usada pelas regras de upsell. Como o tipo
+     * `CatalogSuccess.CustomerResult` vive no SurfAPIKit (iOS), aqui o plano vira
+     * um par (nome, payload opaco) — o payload volta intacto no
+     * [Delegate.bestDealsBottomSheetDidAcceptUpgrade].
+     */
+    data class PlanOption(
+        val noPlano: String,
+        val payload: Any? = null,
+    )
+
     companion object {
         fun present(
             activity: FragmentActivity,
@@ -144,5 +158,88 @@ class DSSBestDealsBottomSheet : BottomSheetDialogFragment() {
             sheet.show(activity.supportFragmentManager, "DSSBestDealsBottomSheet")
             return sheet
         }
+
+        /**
+         * Espelha `presentIfApplicable(from:currentPlan:availablePlans:delegate:)` do iOS:
+         * aplica as [OfferUpsellRules] da brand atual e, sem oferta aplicável, chama
+         * `didDecline` direto (o fluxo segue como se o usuário tivesse recusado).
+         */
+        fun presentIfApplicable(
+            activity: FragmentActivity,
+            currentPlan: PlanOption,
+            availablePlans: List<PlanOption>,
+            delegate: Delegate,
+        ) {
+            val offer = OfferUpsellRules.upgrade(activity, currentPlan, availablePlans)
+            if (offer == null) {
+                delegate.bestDealsBottomSheetDidDecline(DSSBestDealsBottomSheet())
+                return
+            }
+            present(
+                activity = activity,
+                offerText = offer.text,
+                upgrade = offer.upgrade.payload ?: offer.upgrade,
+                delegate = delegate,
+            )
+        }
+    }
+}
+
+/**
+ * Port do enum `OfferUpsellRules` (brand-aware) do `DSSBestDealsBottomSheet.swift` —
+ * regras de upsell por brand usadas pelo `presentIfApplicable`.
+ */
+object OfferUpsellRules {
+
+    data class Offer(
+        val upgrade: DSSBestDealsBottomSheet.PlanOption,
+        val text: String,
+    )
+
+    fun upgrade(
+        context: Context,
+        current: DSSBestDealsBottomSheet.PlanOption,
+        plans: List<DSSBestDealsBottomSheet.PlanOption>,
+    ): Offer? = when (BrandResolver.current(context)) {
+        Brand.FLACHIP -> flachipUpgrade(current, plans)
+        Brand.BANDSPORTS -> bandsportsUpgrade(current, plans)
+        else -> null
+    }
+
+    private fun flachipUpgrade(
+        current: DSSBestDealsBottomSheet.PlanOption,
+        plans: List<DSSBestDealsBottomSheet.PlanOption>,
+    ): Offer? {
+        val name = current.noPlano.uppercase()
+        if (name.contains("FLA 30")) {
+            plans.firstOrNull { it.noPlano.uppercase().contains("FLA 40") }?.let { target ->
+                return Offer(
+                    upgrade = target,
+                    text = "Por apenas mais R$10,00 tenha até 15GB A MAIS para usar como quiser.",
+                )
+            }
+        }
+        if (name.contains("FLA 40")) {
+            plans.firstOrNull { it.noPlano.uppercase().contains("FLA 50") }?.let { target ->
+                return Offer(
+                    upgrade = target,
+                    text = "Por apenas mais R$10,00 tenha até 10GB A MAIS para usar como quiser.",
+                )
+            }
+        }
+        return null
+    }
+
+    private fun bandsportsUpgrade(
+        current: DSSBestDealsBottomSheet.PlanOption,
+        plans: List<DSSBestDealsBottomSheet.PlanOption>,
+    ): Offer? {
+        if (!current.noPlano.contains("Essencial", ignoreCase = true)) return null
+        val currentIndex = plans.indexOfFirst { it.noPlano == current.noPlano }
+        if (currentIndex < 0 || currentIndex + 1 >= plans.size) return null
+        return Offer(
+            upgrade = plans[currentIndex + 1],
+            text = "Por apenas mais R$10,00 tenha a muito mais canais de conteúdo no streaming Newco Play.",
+        )
     }
 }

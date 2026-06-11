@@ -1,6 +1,8 @@
 package com.surf.surfhubds.components
 
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
@@ -11,10 +13,17 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.surf.surfhubds.R
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
+import com.surf.surfhubds.theme.ThemeManager
+import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
+import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -66,8 +75,47 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
     ): View {
         val ctx = requireContext()
 
+        // Espelha o containerView do iOS: cantos superiores 28, cor por scheme
+        // (.black → preto; .dark → #1C1C1E; default → .systemBackground) e grabber.
+        val isBlack = ThemeManager.colorScheme == ColorScheme.BLACK
+        val isDark = ThemeManager.colorScheme == ColorScheme.DARK
+        val containerColor = when {
+            isBlack -> Color.BLACK
+            isDark -> DARK_CONTAINER
+            else -> Color.WHITE
+        }
+        val sheetRoot = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                setColor(containerColor)
+                val r = 28f.dpToPx(ctx).toFloat()
+                cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
+            }
+        }
+
+        // Grabber (iOS: 60×6, corner 3, a 8pt do topo).
+        val grabberColor = when {
+            isBlack -> withAlpha(Color.WHITE, 0x66) // white 40%
+            isDark -> withAlpha(Color.WHITE, 0x4D) // white 30%
+            else -> SYSTEM_GRAY4_LIGHT
+        }
+        val grabber = View(ctx).apply {
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                setColor(grabberColor)
+                cornerRadius = 3f.dpToPx(ctx).toFloat()
+            }
+        }
+        sheetRoot.addView(grabber, LinearLayout.LayoutParams(
+            60f.dpToPx(ctx), 6f.dpToPx(ctx),
+        ).apply {
+            topMargin = 8f.dpToPx(ctx)
+            gravity = android.view.Gravity.CENTER_HORIZONTAL
+        })
+
         val scroll = ScrollView(ctx).apply {
-            setBackgroundColor(DSSColors.background())
+            setBackgroundColor(Color.TRANSPARENT)
             isFillViewport = true
         }
 
@@ -76,8 +124,9 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
             setPadding(24f.dpToPx(ctx), 16f.dpToPx(ctx), 24f.dpToPx(ctx), 24f.dpToPx(ctx))
         }
 
+        // iOS: textos resolvidos do bundle da brand (AppStrings "card_form.*").
         val titleLabel = TextView(ctx).apply {
-            text = "Novo cartão"
+            text = AppStrings.brand(ctx, "card_form_title", "Novo cartão")
             typeface = DSSFont.bold(ctx, 22f).typeface
             textSize = 22f
             setTextColor(DSSColors.textPrimary())
@@ -86,11 +135,15 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { bottomMargin = 24f.dpToPx(ctx) })
 
+        // iOS resolve a câmera (camera.fill) e as bandeiras (ilCardFlags) internamente;
+        // a app pode sobrescrever via [cameraIcon]/[brandsImage].
+        val resolvedCameraIcon = cameraIcon
+            ?: AppCompatResources.getDrawable(ctx, R.drawable.dss_camera_fill)
         numberField = DSSLabelTextField(ctx).apply {
             configure(
-                placeholder = "Número do cartão",
+                placeholder = AppStrings.brand(ctx, "card_form_card_number", "Número do cartão"),
                 type = DSSLabelTextField.Type.Numeric(19),
-                rightIcon = cameraIcon,
+                rightIcon = resolvedCameraIcon,
                 rightAction = { onCameraTap?.invoke() },
             )
         }
@@ -104,11 +157,17 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
 
         // Expiry + CVV row
         expiryField = DSSLabelTextField(ctx).apply {
-            configure(placeholder = "Validade (MM/AA)", type = DSSLabelTextField.Type.Numeric(5))
+            configure(
+                placeholder = AppStrings.brand(ctx, "card_form_expiry", "Validade (MM/AA)"),
+                type = DSSLabelTextField.Type.Numeric(5),
+            )
         }
         expiryErrorLabel = makeErrorLabel(ctx)
         cvvField = DSSLabelTextField(ctx).apply {
-            configure(placeholder = "CVV", type = DSSLabelTextField.Type.Numeric(3))
+            configure(
+                placeholder = AppStrings.brand(ctx, "card_form_cvv", "CVV"),
+                type = DSSLabelTextField.Type.Numeric(3),
+            )
         }
         cvvErrorLabel = makeErrorLabel(ctx)
 
@@ -136,24 +195,32 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
         ).apply { topMargin = 12f.dpToPx(ctx) })
 
         holderField = DSSLabelTextField(ctx).apply {
-            configure(placeholder = "Nome impresso no cartão", type = DSSLabelTextField.Type.Text)
+            configure(
+                placeholder = AppStrings.brand(ctx, "card_form_holder_name", "Nome impresso no cartão"),
+                type = DSSLabelTextField.Type.Text,
+            )
         }
         holderErrorLabel = makeErrorLabel(ctx)
         root.addView(holderField, defaultFieldLp(ctx))
         root.addView(holderErrorLabel, fullWidthErrorLp(ctx))
 
         documentField = DSSLabelTextField(ctx).apply {
-            configure(placeholder = "CPF / CNPJ", type = DSSLabelTextField.Type.CpfOrCnpj)
+            configure(
+                placeholder = AppStrings.brand(ctx, "card_form_document", "CPF / CNPJ"),
+                type = DSSLabelTextField.Type.CpfOrCnpj,
+            )
         }
         documentErrorLabel = makeErrorLabel(ctx)
         root.addView(documentField, defaultFieldLp(ctx))
         root.addView(documentErrorLabel, fullWidthErrorLp(ctx))
 
-        // Bandeiras (opcional via brand)
-        if (brandsImage != null) {
+        // Bandeiras — iOS resolve internamente via ImageLoader ("ilCardFlags");
+        // a app pode sobrescrever via [brandsImage].
+        val resolvedBrandsImage = brandsImage ?: ImageLoader.image(ctx, "ilCardFlags")
+        if (resolvedBrandsImage != null) {
             val brandsImageView = android.widget.ImageView(ctx).apply {
                 scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
-                setImageDrawable(brandsImage)
+                setImageDrawable(resolvedBrandsImage)
             }
             root.addView(brandsImageView, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 30f.dpToPx(ctx),
@@ -161,7 +228,7 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
         }
 
         val addButton = DSSPrincipalButton(ctx).apply {
-            text = "Adicionar cartão"
+            text = AppStrings.brand(ctx, "card_form_add_card", "Adicionar cartão")
             textSize = 18f
             typeface = DSSFont.bold(ctx, 18f).typeface
             cornerRadiusDp = 28f
@@ -185,8 +252,21 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
         scroll.addView(root, ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
         ))
-        return scroll
+        sheetRoot.addView(scroll, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
+        ))
+        return sheetRoot
     }
+
+    override fun onStart() {
+        super.onStart()
+        // Deixa o background padrão do BottomSheet transparente para que os cantos
+        // arredondados (28dp) do container apareçam, como no iOS.
+        (view?.parent as? View)?.setBackgroundColor(Color.TRANSPARENT)
+    }
+
+    private fun withAlpha(@ColorInt color: Int, alpha: Int): Int =
+        (color and 0x00FFFFFF) or ((alpha and 0xFF) shl 24)
 
     private fun defaultFieldLp(ctx: android.content.Context) = LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -245,14 +325,17 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
 
         var hasError = false
 
+        val ctx = requireContext()
         if (cardDigits.length != 16) {
             numberErrorLabel.visibility = View.VISIBLE
-            numberErrorLabel.text = "Número do cartão é obrigatório."
+            numberErrorLabel.text =
+                AppStrings.brand(ctx, "card_form_error_card_number", "Número do cartão é obrigatório.")
             hasError = true
         }
         if (expiryDigits.length < 4) {
             expiryErrorLabel.visibility = View.VISIBLE
-            expiryErrorLabel.text = "Validade é obrigatório."
+            expiryErrorLabel.text =
+                AppStrings.brand(ctx, "card_form_error_expiry", "Validade é obrigatório.")
             hasError = true
         }
         val month = if (expiryDigits.length >= 2) expiryDigits.take(2) else ""
@@ -260,22 +343,26 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
 
         if (month.isEmpty() || year.isEmpty()) {
             expiryErrorLabel.visibility = View.VISIBLE
-            expiryErrorLabel.text = "Validade é obrigatório."
+            expiryErrorLabel.text =
+                AppStrings.brand(ctx, "card_form_error_expiry", "Validade é obrigatório.")
             hasError = true
         }
         if (cvv.isEmpty()) {
             cvvErrorLabel.visibility = View.VISIBLE
-            cvvErrorLabel.text = "CVV é obrigatório."
+            cvvErrorLabel.text =
+                AppStrings.brand(ctx, "card_form_error_cvv", "CVV é obrigatório.")
             hasError = true
         }
         if (holder.isEmpty()) {
             holderErrorLabel.visibility = View.VISIBLE
-            holderErrorLabel.text = "Nome impresso é obrigatório."
+            holderErrorLabel.text =
+                AppStrings.brand(ctx, "card_form_error_holder", "Nome impresso é obrigatório.")
             hasError = true
         }
         if (documentDigits.isEmpty()) {
             documentErrorLabel.visibility = View.VISIBLE
-            documentErrorLabel.text = "CPF / CNPJ é obrigatório."
+            documentErrorLabel.text =
+                AppStrings.brand(ctx, "card_form_error_document", "CPF / CNPJ é obrigatório.")
             hasError = true
         }
         if (hasError) return
@@ -346,6 +433,12 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
+        /** iOS: UIColor(red: 28/255, green: 28/255, blue: 30/255) — container no scheme dark. */
+        private const val DARK_CONTAINER = 0xFF1C1C1E.toInt()
+
+        /** iOS: UIColor.systemGray4 (light) — grabber/borda no scheme default. */
+        private const val SYSTEM_GRAY4_LIGHT = 0xFFD1D1D6.toInt()
+
         fun present(
             activity: FragmentActivity,
             brandsImage: Drawable? = null,

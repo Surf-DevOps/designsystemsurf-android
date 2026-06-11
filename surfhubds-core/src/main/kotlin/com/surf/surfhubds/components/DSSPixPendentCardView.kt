@@ -22,7 +22,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.util.concurrent.TimeUnit
@@ -366,20 +368,28 @@ class DSSPixPendentCardView @JvmOverloads constructor(
     }
 
     private fun refresh() {
+        // Espelha setupContainerView() do iOS: backgroundColor = .systemBackground
+        // (branco/preto), cornerRadius 12 e sombra (offset 0,2 / opacity 0.1 / radius 4)
+        // — SEM borda. A sombra vira elevation no Android.
+        val isDark = ThemeManager.colorScheme == ColorScheme.DARK ||
+            ThemeManager.colorScheme == ColorScheme.BLACK
         background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.surface(),
+            backgroundColor = if (isDark) Color.BLACK else Color.WHITE,
             cornerRadiusDp = cornerRadiusDp,
-            strokeColor = DSSColors.borderDefault(),
-            strokeWidthDp = 1f,
         )
+        elevation = 2f.dpToPx(context).toFloat()
 
-        titleLabel.setTextColor(titleColorOverride ?: DSSColors.error())
-        timeLabel.setTextColor(DSSColors.textPrimary())
+        // iOS: título e botão usam o vermelho fixo UIColor(0.65, 0.16, 0.16) — não o
+        // token error da brand.
+        titleLabel.setTextColor(titleColorOverride ?: PENDING_RED)
+        // iOS: timeLabel é textPrimary no collapsible e .black no modo simples.
+        timeLabel.setTextColor(if (collapsible) DSSColors.textPrimary() else Color.BLACK)
         subtitleLabel.setTextColor(DSSColors.textSecondary())
-        separator.setBackgroundColor(DSSColors.divider())
+        // iOS: separator = .systemGray5.
+        separator.setBackgroundColor(if (isDark) SYSTEM_GRAY5_DARK else SYSTEM_GRAY5_LIGHT)
 
-        val buttonColor = buttonColorOverride ?: DSSColors.error()
+        val buttonColor = buttonColorOverride ?: PENDING_RED
         copyButton.setTextColor(buttonColor)
         copyButton.background = DrawableFactory.rounded(
             context = context,
@@ -509,6 +519,13 @@ class DSSPixPendentCardView @JvmOverloads constructor(
     }
 
     companion object {
+        /** iOS: UIColor(red: 0.65, green: 0.16, blue: 0.16) — vermelho do PIX pendente. */
+        private const val PENDING_RED = 0xFFA62929.toInt()
+
+        /** iOS: UIColor.systemGray5 (light #E5E5EA / dark #2C2C2E). */
+        private const val SYSTEM_GRAY5_LIGHT = 0xFFE5E5EA.toInt()
+        private const val SYSTEM_GRAY5_DARK = 0xFF2C2C2E.toInt()
+
         private const val KEY_IS_PENDING = "isPixPending"
         private const val KEY_TARGET = "targetDate"
         private const val KEY_MSISDN = "msisdn"

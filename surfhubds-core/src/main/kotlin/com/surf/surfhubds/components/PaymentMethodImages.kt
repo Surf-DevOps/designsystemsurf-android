@@ -3,6 +3,7 @@ package com.surf.surfhubds.components
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
+import com.surf.surfhubds.R
 import com.surf.surfhubds.util.ImageLoader
 
 /**
@@ -27,16 +28,22 @@ object PaymentMethodImages {
      */
     fun pixIcon(context: Context): Drawable? = ImageLoader.image(context, "pix")
 
-    /** Ícone genérico de cartão. */
+    /**
+     * Ícone genérico de cartão.
+     *
+     * Espelha o SF Symbol "creditcard" do iOS — o fallback é o vetor [R.drawable.dss_creditcard]
+     * do próprio DSS (antes caía no `ic_menu_edit` do sistema, um lápis).
+     */
     fun creditCardIcon(context: Context): Drawable? =
         drawableByName(context, "ic_credit_card")
-            ?: ContextCompat.getDrawable(context, android.R.drawable.ic_menu_edit)
+            ?: ContextCompat.getDrawable(context, R.drawable.dss_creditcard)
 
-    /** Ícone preenchido de cartão. */
+    /** Ícone preenchido de cartão (SF "creditcard.fill"). */
     fun creditCardFilledIcon(context: Context): Drawable? =
-        drawableByName(context, "ic_credit_card_filled") ?: creditCardIcon(context)
+        drawableByName(context, "ic_credit_card_filled")
+            ?: ContextCompat.getDrawable(context, R.drawable.dss_creditcard_fill)
 
-    /** Ícone para adicionar cartão. */
+    /** Ícone para adicionar cartão (iOS usa o SF "creditcard", contorno). */
     fun addCardIcon(context: Context): Drawable? =
         drawableByName(context, "ic_add_card") ?: creditCardIcon(context)
 

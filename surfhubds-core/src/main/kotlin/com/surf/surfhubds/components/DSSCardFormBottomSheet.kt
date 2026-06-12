@@ -1,5 +1,8 @@
 package com.surf.surfhubds.components
 
+import android.Manifest
+import android.app.Activity
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
@@ -13,8 +16,10 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.R
@@ -51,7 +56,36 @@ data class DSSCardFormData(
 class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
 
     var onAddCard: ((DSSCardFormData) -> Unit)? = null
+
+    /**
+     * Override opcional do toque na câmera. Se `null` (padrão), o bottom sheet abre
+     * o leitor de cartão embutido ([DSSCardScannerActivity]) e auto-preenche os campos
+     * com os dados lidos — exatamente como o iOS faz internamente. Defina apenas se o
+     * app quiser usar um fluxo de scanner próprio.
+     */
     var onCameraTap: (() -> Unit)? = null
+
+    // Launcher do leitor embutido: ao retornar OK, popula os campos (igual iOS populateFromScan).
+    private val scannerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                DSSCardScannerActivity.extractResult(result.data)?.let { data ->
+                    populateFromScan(
+                        number = data.number,
+                        expiryMonth = data.expiryMonth,
+                        expiryYear = data.expiryYear,
+                        cvv = data.cvv,
+                        holderName = data.holderName,
+                    )
+                }
+            }
+        }
+
+    // Permissão de câmera: ao conceder, abre o leitor.
+    private val cameraPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) launchBuiltInScanner()
+        }
 
     /** Drawable das bandeiras (ilCardFlags) provido pelo módulo de brand. */
     var brandsImage: Drawable? = null
@@ -152,7 +186,7 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
                 placeholder = AppStrings.brand(ctx, "card_form_card_number", "Número do cartão"),
                 type = DSSLabelTextField.Type.Numeric(19),
                 rightIcon = resolvedCameraIcon,
-                rightAction = { onCameraTap?.invoke() },
+                rightAction = { handleCameraTap() },
             )
         }
         numberErrorLabel = makeErrorLabel(ctx)
@@ -298,6 +332,29 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
         // iOS usa DSSColors.primary (cor da brand) nos labels de erro deste sheet, não o token de erro.
         setTextColor(DSSColors.primary())
         visibility = View.GONE
+    }
+
+    /**
+     * Espelha o `handleCameraTap` do iOS: se o app forneceu [onCameraTap], delega a
+     * ele; caso contrário abre o leitor embutido (pedindo permissão de câmera quando
+     * necessário) e auto-preenche os campos ao concluir.
+     */
+    private fun handleCameraTap() {
+        onCameraTap?.let { it.invoke(); return }
+
+        val ctx = context ?: return
+        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            launchBuiltInScanner()
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+
+    private fun launchBuiltInScanner() {
+        val ctx = context ?: return
+        scannerLauncher.launch(DSSCardScannerActivity.newIntent(ctx))
     }
 
     /** Aceita o cartão lido por outro fluxo (ex.: scanner) populando os campos. */

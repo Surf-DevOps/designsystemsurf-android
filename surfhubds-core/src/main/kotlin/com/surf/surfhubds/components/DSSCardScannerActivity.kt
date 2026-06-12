@@ -1,12 +1,15 @@
 package com.surf.surfhubds.components
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Bundle
 import android.os.Handler
@@ -20,41 +23,60 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.ResultPoint
-import com.journeyapps.barcodescanner.BarcodeCallback
-import com.journeyapps.barcodescanner.BarcodeResult
-import com.journeyapps.barcodescanner.DecoratedBarcodeView
-import com.journeyapps.barcodescanner.DefaultDecoderFactory
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.TextRecognizer
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.regex.Pattern
 
 /**
  * Port do `DSSCardScannerViewController` do iOS.
  *
- * No iOS, este componente abre a câmera com overlay em formato de cartão e usa
- * Vision (OCR) para extrair PAN, validade, CVV e nome via bounding boxes. Na
- * versão Android usamos `journeyapps:zxing-android-embedded` para abrir a câmera
- * com o mesmo overlay (cartão central + título + máscara escurecida com recorte).
+ * No iOS este componente abre a câmera com overlay em formato de cartão e usa
+ * Vision (`VNRecognizeTextRequest`) para fazer OCR do texto do cartão, extraindo
+ * PAN, validade, CVV e nome a partir das *bounding boxes* de cada linha. Na versão
+ * Android usamos o equivalente: `CameraX` (preview + análise de frames) +
+ * `ML Kit Text Recognition` (OCR no dispositivo). O ML Kit também entrega o texto
+ * e a bounding box de cada linha, então conseguimos reproduzir **toda** a lógica do
+ * iOS — inclusive o filtro espacial do nome (nome deve ficar abaixo do número).
  *
- * O ZXing entrega o texto decodificado de um frame por vez. Para manter a lógica
- * de negócio fiel ao iOS, cada texto decodificado é tratado como um "frame" e
- * passa pelos mesmos extratores ([extractCardNumber] com Luhn, [extractExpiry],
+ * Cada frame da câmera é convertido para [InputImage] e processado pelo OCR. As
+ * linhas reconhecidas viram [OcrObject]s (texto + retângulo "em pé" + confiança) e
+ * passam pelos mesmos extratores ([extractCardNumber] com Luhn, [extractExpiry],
  * [extractCVVFromLine], [likelyName]) e pela mesma máquina de estabilização por
  * votação ([requiredConfirmations] confirmações consecutivas do mesmo número,
- * votação de nome por frequência). Quando confirmado, a borda fica verde, o
- * título vira "Cartão detectado!" e o resultado é entregue após 0.8s — igual iOS.
+ * votação de nome por frequência). Quando confirmado, a borda fica verde, o título
+ * vira "Cartão detectado!" e o resultado é entregue após 0.8s — igual iOS.
  *
  * Resultado: o caller inicia via [Intent] e recebe em `onActivityResult` um
  * [DSSScannedCardData] (Parcelable) com o que foi reconhecido.
  */
 class DSSCardScannerActivity : AppCompatActivity() {
 
-    private lateinit var barcodeView: DecoratedBarcodeView
+    private lateinit var previewView: PreviewView
     private lateinit var cardFrame: View
     private lateinit var instructionLabel: TextView
+
+    private val recognizer: TextRecognizer by lazy {
+        TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    }
+    private lateinit var cameraExecutor: ExecutorService
+    private var camera: Camera? = null
 
     // MARK: - OCR state (igual iOS)
     private var hasDeliveredResult = false
@@ -69,18 +91,13 @@ class DSSCardScannerActivity : AppCompatActivity() {
 
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    private val callback = object : BarcodeCallback {
-        override fun barcodeResult(result: BarcodeResult?) {
-            if (hasDeliveredResult || result == null) return
-            val text = result.text ?: return
-            analyzeText(text)
-        }
-
-        override fun possibleResultPoints(resultPoints: MutableList<ResultPoint>?) = Unit
-    }
+    /** Objeto OCR com texto, bounding box "em pé" e confiança (igual OcrObject do iOS). */
+    private data class OcrObject(val text: String, val rect: RectF, val confidence: Float)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        cameraExecutor = Executors.newSingleThreadExecutor()
+
         val root = FrameLayout(this).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -89,23 +106,11 @@ class DSSCardScannerActivity : AppCompatActivity() {
             setBackgroundColor(Color.BLACK)
         }
 
-        barcodeView = DecoratedBarcodeView(this).apply {
-            barcodeView.decoderFactory = DefaultDecoderFactory(
-                listOf(
-                    BarcodeFormat.CODE_39,
-                    BarcodeFormat.CODE_128,
-                    BarcodeFormat.EAN_13,
-                    BarcodeFormat.ITF,
-                    BarcodeFormat.QR_CODE,
-                    BarcodeFormat.PDF_417,
-                ),
-            )
-            statusView.text = ""
-            statusView.visibility = View.GONE
-            setStatusText(null)
+        previewView = PreviewView(this).apply {
+            scaleType = PreviewView.ScaleType.FILL_CENTER
         }
         root.addView(
-            barcodeView,
+            previewView,
             FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -205,14 +210,14 @@ class DSSCardScannerActivity : AppCompatActivity() {
             setColorFilter(Color.WHITE)
             var torchOn = false
             setOnClickListener {
+                val cam = camera ?: return@setOnClickListener
+                if (cam.cameraInfo.hasFlashUnit().not()) return@setOnClickListener
                 torchOn = !torchOn
-                if (torchOn) {
-                    barcodeView.setTorchOn()
-                    setImageResource(android.R.drawable.ic_lock_idle_charging)
-                } else {
-                    barcodeView.setTorchOff()
-                    setImageResource(android.R.drawable.ic_lock_idle_low_battery)
-                }
+                cam.cameraControl.enableTorch(torchOn)
+                setImageResource(
+                    if (torchOn) android.R.drawable.ic_lock_idle_charging
+                    else android.R.drawable.ic_lock_idle_low_battery,
+                )
                 setColorFilter(Color.WHITE)
             }
         }
@@ -229,21 +234,60 @@ class DSSCardScannerActivity : AppCompatActivity() {
 
         setContentView(root)
 
-        barcodeView.decodeContinuous(callback)
+        // Permissão de câmera: se já concedida, inicia; senão pede (iOS mostra alerta de permissão).
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            startCamera()
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA)
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-        barcodeView.resume()
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CAMERA) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startCamera()
+            } else {
+                setResult(Activity.RESULT_CANCELED)
+                finish()
+            }
+        }
     }
 
-    override fun onPause() {
-        super.onPause()
-        barcodeView.pause()
+    private fun startCamera() {
+        val providerFuture = ProcessCameraProvider.getInstance(this)
+        providerFuture.addListener({
+            val cameraProvider = providerFuture.get()
+
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(previewView.surfaceProvider)
+            }
+
+            val analysis = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+                .also { it.setAnalyzer(cameraExecutor, CardAnalyzer()) }
+
+            cameraProvider.unbindAll()
+            camera = cameraProvider.bindToLifecycle(
+                this,
+                CameraSelector.DEFAULT_BACK_CAMERA,
+                preview,
+                analysis,
+            )
+        }, ContextCompat.getMainExecutor(this))
     }
 
     override fun onDestroy() {
         mainHandler.removeCallbacksAndMessages(null)
+        if (this::cameraExecutor.isInitialized) cameraExecutor.shutdown()
+        recognizer.close()
         super.onDestroy()
     }
 
@@ -252,30 +296,148 @@ class DSSCardScannerActivity : AppCompatActivity() {
         return if (id > 0) resources.getDimensionPixelSize(id) else 24f.dpToPx(this)
     }
 
-    // MARK: - OCR Processing (mesma lógica do iOS analyzeWithBoundingBoxes, sobre o texto do ZXing)
+    // MARK: - Analyzer (frames da câmera → OCR)
+
+    private inner class CardAnalyzer : ImageAnalysis.Analyzer {
+        @ExperimentalGetImage
+        override fun analyze(imageProxy: ImageProxy) {
+            val mediaImage = imageProxy.image
+            if (mediaImage == null || hasDeliveredResult) {
+                imageProxy.close()
+                return
+            }
+            val rotation = imageProxy.imageInfo.rotationDegrees
+            val input = InputImage.fromMediaImage(mediaImage, rotation)
+            // Dimensões do buffer (sem rotação) — usadas para colocar as boxes "em pé".
+            val bufferW = mediaImage.width
+            val bufferH = mediaImage.height
+            recognizer.process(input)
+                .addOnSuccessListener { text ->
+                    handleOcrResult(text, rotation, bufferW, bufferH)
+                }
+                .addOnCompleteListener { imageProxy.close() }
+        }
+    }
+
+    /** Converte o resultado do ML Kit em [OcrObject]s e roda a análise do iOS. */
+    private fun handleOcrResult(text: Text, rotation: Int, bufferW: Int, bufferH: Int) {
+        if (hasDeliveredResult) return
+        val objects = ArrayList<OcrObject>()
+        for (block in text.textBlocks) {
+            for (line in block.lines) {
+                val box = line.boundingBox ?: continue
+                objects.add(
+                    OcrObject(
+                        text = line.text,
+                        rect = uprightRect(box, rotation, bufferW, bufferH),
+                        confidence = line.confidence ?: 1f,
+                    ),
+                )
+            }
+        }
+        analyzeWithBoundingBoxes(objects)
+    }
 
     /**
-     * Aplica os mesmos extratores do iOS ao texto decodificado e roda a máquina de
-     * estabilização por votação. O ZXing não fornece bounding boxes, então o filtro
-     * espacial do nome do iOS não se aplica; o restante da lógica (número + Luhn,
-     * validade maior, CVV por keyword, votação de nome, N confirmações) é fiel.
+     * Converte uma bounding box do espaço do buffer (sem rotação) para o espaço
+     * "em pé" (origem no topo-esquerda, y crescendo para baixo) — mesma orientação
+     * que o iOS usa após converter as coordenadas normalizadas do Vision. Sem isso,
+     * em sensores rotacionados 90°/270° o eixo Y trocaria com o X e o filtro espacial
+     * do nome ("abaixo do número") não funcionaria.
      */
-    private fun analyzeText(text: String) {
+    private fun uprightRect(r: Rect, rotation: Int, w: Int, h: Int): RectF = when (rotation) {
+        90 -> RectF(
+            (h - r.bottom).toFloat(), r.left.toFloat(),
+            (h - r.top).toFloat(), r.right.toFloat(),
+        )
+        180 -> RectF(
+            (w - r.right).toFloat(), (h - r.bottom).toFloat(),
+            (w - r.left).toFloat(), (h - r.top).toFloat(),
+        )
+        270 -> RectF(
+            r.top.toFloat(), (w - r.right).toFloat(),
+            r.bottom.toFloat(), (w - r.left).toFloat(),
+        )
+        else -> RectF(r)
+    }
+
+    // MARK: - OCR Processing (mesma lógica do iOS analyzeWithBoundingBoxes)
+
+    /**
+     * Análise principal usando bounding boxes (idêntica ao iOS): encontra número
+     * (com Luhn), validade (mantendo a maior), CVV (por keyword) e filtra o nome por
+     * posição espacial — o nome deve estar abaixo do número do cartão.
+     */
+    private fun analyzeWithBoundingBoxes(objects: List<OcrObject>) {
         if (hasDeliveredResult) return
 
-        val foundNumber = extractCardNumber(text)
-        var foundExpiry = extractExpiry(text)
-        val foundCVV = extractCVVFromLine(text)
-        val foundName = likelyName(text)
+        var foundNumber: String? = null
+        var numberBox: RectF? = null
+        var foundExpiryMonth: String? = null
+        var foundExpiryYear: String? = null
+        var expiryBox: RectF? = null
+        var foundCVV: String? = null
+        val nameCandidates = ArrayList<OcrObject>()
+
+        // 1. Primeiro pass: número, data e CVV + coletar candidatos a nome
+        for (obj in objects) {
+            val text = obj.text
+
+            if (foundNumber == null) {
+                extractCardNumber(text)?.let {
+                    foundNumber = it
+                    numberBox = obj.rect
+                }
+            }
+
+            val expiry = extractExpiry(text)
+            if (expiry != null) {
+                if (foundExpiryMonth == null) {
+                    foundExpiryMonth = expiry.first
+                    foundExpiryYear = expiry.second
+                    expiryBox = obj.rect
+                } else {
+                    // Se encontrou outra data, pegar a maior (validade real) — igual iOS
+                    val oldValue =
+                        (foundExpiryYear?.toIntOrNull() ?: 0) * 100 + (foundExpiryMonth?.toIntOrNull() ?: 0)
+                    val newValue =
+                        (expiry.second.toIntOrNull() ?: 0) * 100 + (expiry.first.toIntOrNull() ?: 0)
+                    if (newValue > oldValue) {
+                        foundExpiryMonth = expiry.first
+                        foundExpiryYear = expiry.second
+                        expiryBox = obj.rect
+                    }
+                }
+            }
+
+            if (foundCVV == null) {
+                extractCVVFromLine(text)?.let { foundCVV = it }
+            }
+
+            if (likelyName(text) != null) {
+                nameCandidates.add(obj)
+            }
+        }
+
+        // 2. Filtrar nome por posição espacial (CHAVE do Stripe/iOS!)
+        // O nome deve estar ABAIXO do número (minY = topo do número - altura, ou topo da data).
+        val minY: Float? = numberBox?.let { it.top - it.height() } ?: expiryBox?.top
+        var foundName: String? = null
+
+        val validNames = nameCandidates.filter { candidate ->
+            val isInExpectedLocation = minY?.let { candidate.rect.top >= (it - 5f) } ?: true
+            candidate.confidence >= 0.5f && isInExpectedLocation
+        }
+        validNames.firstOrNull()?.let { foundName = likelyName(it.text) }
 
         // Pelo menos o número do cartão precisa ser encontrado
-        if (foundNumber == null) return
+        val number = foundNumber ?: return
 
         // Verificar estabilidade: mesmo número por N frames consecutivos (igual iOS)
-        if (foundNumber == candidateNumber) {
+        if (number == candidateNumber) {
             confirmationCount += 1
         } else {
-            candidateNumber = foundNumber
+            candidateNumber = number
             candidateExpiry = null
             candidateCVV = null
             nameVotes.clear()
@@ -283,22 +445,13 @@ class DSSCardScannerActivity : AppCompatActivity() {
         }
 
         // Atualizar dados extras
-        if (foundExpiry != null) {
-            // Se já havia uma data, manter a maior (validade real) — igual iOS
-            val current = candidateExpiry
-            if (current != null) {
-                val oldValue = (current.second.toIntOrNull() ?: 0) * 100 + (current.first.toIntOrNull() ?: 0)
-                val newValue = (foundExpiry.second.toIntOrNull() ?: 0) * 100 + (foundExpiry.first.toIntOrNull() ?: 0)
-                if (newValue <= oldValue) foundExpiry = current
-            }
-            candidateExpiry = foundExpiry
+        if (foundExpiryMonth != null && foundExpiryYear != null) {
+            candidateExpiry = foundExpiryMonth!! to foundExpiryYear!!
         }
         if (foundCVV != null) candidateCVV = foundCVV
 
         // Votação de nomes por frequência (igual iOS ErrorCorrection)
-        if (foundName != null) {
-            nameVotes[foundName] = (nameVotes[foundName] ?: 0) + 1
-        }
+        foundName?.let { nameVotes[it] = (nameVotes[it] ?: 0) + 1 }
 
         if (confirmationCount < requiredConfirmations) return
 
@@ -317,18 +470,17 @@ class DSSCardScannerActivity : AppCompatActivity() {
 
         // Feedback de sucesso (igual iOS): borda verde + título + delay de 0.8s
         // iOS usa UIColor.systemGreen (literal), não token semântico → #34C759.
-        cardFrame.background = DrawableFactory.rounded(
-            context = this,
-            backgroundColor = Color.TRANSPARENT,
-            cornerRadiusDp = 12f,
-            strokeColor = SYSTEM_GREEN,
-            strokeWidthDp = 2f,
-        )
-        instructionLabel.text = "Cartão detectado!"
-
-        mainHandler.postDelayed({
-            deliverResult(scannedData)
-        }, 800L)
+        mainHandler.post {
+            cardFrame.background = DrawableFactory.rounded(
+                context = this,
+                backgroundColor = Color.TRANSPARENT,
+                cornerRadiusDp = 12f,
+                strokeColor = SYSTEM_GREEN,
+                strokeWidthDp = 2f,
+            )
+            instructionLabel.text = "Cartão detectado!"
+            mainHandler.postDelayed({ deliverResult(scannedData) }, 800L)
+        }
     }
 
     private fun deliverResult(data: DSSScannedCardData) {
@@ -447,6 +599,7 @@ class DSSCardScannerActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_RESULT = "DSS_SCANNED_CARD_DATA"
+        private const val REQUEST_CAMERA = 4711
 
         // iOS UIColor.systemGreen (borda do cartão ao detectar)
         private val SYSTEM_GREEN = Color.parseColor("#34C759")
@@ -495,10 +648,7 @@ class DSSCardScannerActivity : AppCompatActivity() {
 }
 
 /**
- * Dados extraídos do cartão (paralelo iOS `DSSScannedCardData`).
- *
- * Na versão Android atual o [number] é preenchido pelo ZXing; validade, CVV e nome
- * são preenchidos quando o texto decodificado contém esses padrões (mesma lógica iOS).
+ * Dados extraídos do cartão via OCR (paralelo iOS `DSSScannedCardData`).
  */
 data class DSSScannedCardData(
     val number: String? = null,

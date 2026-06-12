@@ -43,6 +43,14 @@ dependencies {
     api(libs.glide)
     api(libs.zxing.android.embedded)
     api(libs.slidetoact)
+
+    // OCR de cartão (equivalente Android do Vision/AVFoundation usado no iOS):
+    // CameraX para o preview/análise de frames + ML Kit Text Recognition para o OCR.
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.mlkit.text.recognition)
 }
 
 afterEvaluate {

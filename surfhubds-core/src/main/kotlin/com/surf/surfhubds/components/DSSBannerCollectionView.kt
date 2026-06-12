@@ -88,13 +88,14 @@ class DSSBannerCollectionView @JvmOverloads constructor(
         urls.forEachIndexed { index, url ->
             items.add(BannerItem(id = index, url = url, value = null))
         }
+        sortByBannerOrder()
         this.tapAction = tapAction
         this.pathTapAction = null
 
         // Esconde a view quando não há banners (lista vazia / erro).
         visibility = if (items.isEmpty()) GONE else VISIBLE
 
-        preloadImages(urls)
+        preloadImages(items.map { it.url })
 
         adapter.notifyDataSetChanged()
     }
@@ -109,6 +110,7 @@ class DSSBannerCollectionView @JvmOverloads constructor(
         banners.forEach {
             items.add(BannerItem(id = it.id, url = it.url, value = it.value, path = it.path))
         }
+        sortByBannerOrder()
         this.tapAction = null
         this.pathTapAction = onBannerTap
 
@@ -119,6 +121,19 @@ class DSSBannerCollectionView @JvmOverloads constructor(
 
         adapter.notifyDataSetChanged()
     }
+
+    /**
+     * Ordena os banners pela sequência `banner_N` retornada pela API (ex.: banner_1,
+     * banner_2, ...). Usa o `value` quando presente (ex.: "banner_1.png"); senão extrai
+     * de dentro da própria URL presigned, que carrega o nome do objeto. Itens sem índice
+     * vão para o fim, preservando a ordem original (sort estável).
+     */
+    private fun sortByBannerOrder() {
+        items.sortBy { bannerOrder(it.value ?: it.url) }
+    }
+
+    private fun bannerOrder(source: String): Int =
+        Regex("banner_(\\d+)").find(source)?.groupValues?.get(1)?.toIntOrNull() ?: Int.MAX_VALUE
 
     private fun preloadImages(urls: List<String>) {
         urls.forEach { url ->

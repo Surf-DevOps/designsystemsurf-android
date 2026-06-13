@@ -227,7 +227,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
         private val validityLabel = TextView(context)
         private val priceLabel = TextView(context)
         private val planNameLabel = TextView(context)
-        private val downArrow = TextView(context)
+        private val downArrow = ImageView(context)
         private val untilLabel = TextView(context)
         private val dataLabel = TextView(context)
 
@@ -320,10 +320,20 @@ class DSSPlanCollectionView @JvmOverloads constructor(
         }
 
         private fun setupHeader() {
+            // iOS monta o header com cadeia de constraints relativas. Aqui reproduzimos
+            // com uma coluna vertical de 3 linhas, em vez de topMargins fixos (que não
+            // acompanham as métricas das fontes e desalinhavam o preço/plano).
+            val pad = 16f.dpToPx(context)
             headerContainer.layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
             )
+
+            val column = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(pad, pad, pad, pad)
+                minimumHeight = 130f.dpToPx(context)
+            }
 
             validityLabel.apply {
                 textSize = 12f
@@ -341,10 +351,9 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 gravity = Gravity.END
             }
             downArrow.apply {
-                // iOS usa chevron.down (SF Symbol). Glifo de seta pra baixo (não a letra "v").
-                text = "▾"
-                textSize = 14f
-                gravity = Gravity.CENTER
+                // iOS usa chevron.down (SF Symbol) tingido de textPrimary; aqui o vetor equivalente.
+                setImageResource(com.surf.surfhubds.R.drawable.dss_ic_chevron_down)
+                scaleType = ImageView.ScaleType.FIT_CENTER
             }
             untilLabel.apply {
                 text = "Até"
@@ -356,56 +365,93 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 typeface = DSSFont.bold(context, 22f).typeface
             }
 
-            headerContainer.addView(
+            // Linha 1: [validade]  ....  [preço] [chevron]
+            // iOS: validade top-left; chevron top-right; preço centerY = chevron, à esquerda dele.
+            val topRow = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            topRow.addView(
                 validityLabel,
-                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                    gravity = Gravity.START or Gravity.TOP
-                    leftMargin = 16f.dpToPx(context)
-                    topMargin = 16f.dpToPx(context)
-                },
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ),
             )
-            headerContainer.addView(
-                downArrow,
-                LayoutParams(20f.dpToPx(context), 20f.dpToPx(context)).apply {
-                    gravity = Gravity.END or Gravity.TOP
-                    topMargin = 16f.dpToPx(context)
-                    rightMargin = 16f.dpToPx(context)
-                },
+            topRow.addView(
+                View(context),
+                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f),
             )
-            headerContainer.addView(
+            topRow.addView(
                 priceLabel,
-                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                    gravity = Gravity.END or Gravity.TOP
-                    topMargin = 16f.dpToPx(context)
-                    rightMargin = 44f.dpToPx(context)
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ),
+            )
+            topRow.addView(
+                downArrow,
+                LinearLayout.LayoutParams(20f.dpToPx(context), 20f.dpToPx(context)).apply {
+                    leftMargin = 8f.dpToPx(context)
                 },
             )
-            headerContainer.addView(
+            column.addView(
+                topRow,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ),
+            )
+
+            // Linha 2: "Até" — iOS: top = validade.bottom + 8.
+            column.addView(
                 untilLabel,
-                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                    gravity = Gravity.START
-                    leftMargin = 16f.dpToPx(context)
-                    topMargin = 44f.dpToPx(context)
-                },
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ).apply { topMargin = 8f.dpToPx(context) },
             )
-            headerContainer.addView(
+
+            // Linha 3: [dados]  ....  [nome do plano] — iOS: planName.centerY = dataLabel.centerY.
+            val dataRow = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            dataRow.addView(
                 dataLabel,
-                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                    gravity = Gravity.START
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ),
+            )
+            dataRow.addView(
+                View(context),
+                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f).apply {
                     leftMargin = 16f.dpToPx(context)
-                    topMargin = 72f.dpToPx(context)
-                    bottomMargin = 16f.dpToPx(context)
                 },
             )
-            headerContainer.addView(
+            dataRow.addView(
                 planNameLabel,
-                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                    gravity = Gravity.END
-                    topMargin = 80f.dpToPx(context)
-                    rightMargin = 16f.dpToPx(context)
-                },
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ),
             )
-            headerContainer.minimumHeight = 130f.dpToPx(context)
+            column.addView(
+                dataRow,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ).apply { topMargin = 4f.dpToPx(context) },
+            )
+
+            headerContainer.addView(
+                column,
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                ),
+            )
 
             mainColumn.addView(headerContainer)
         }
@@ -691,7 +737,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             planNameLabel.setTextColor(DSSColors.textPrimary())
             untilLabel.setTextColor(DSSColors.textPrimary())
             dataLabel.setTextColor(DSSColors.primary())
-            downArrow.setTextColor(DSSColors.textPrimary())
+            downArrow.setColorFilter(DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
             separator.setBackgroundColor(DSSColors.divider())
             ilimitadosTitle.setTextColor(DSSColors.textPrimary())
             assinaturasTitle.setTextColor(DSSColors.textPrimary())

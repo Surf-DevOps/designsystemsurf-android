@@ -727,8 +727,9 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 strokeColor = stroke,
                 strokeWidthDp = strokeWidth,
             )
-            // iOS: shadow opacity 0.1, offset (0,2), radius 4. Aproximação via elevation.
-            container.elevation = 4f.dpToPxFloat(context)
+            // Sem elevation: a sombra retangular vazava como "sombrinha" cinza nos cantos
+            // arredondados do card. iOS tinha shadow sutil, mas aqui ficava artefato.
+            container.elevation = 0f
 
             validityLabel.setTextColor(DSSColors.textPrimary())
             validityLabel.background = DrawableFactory.rounded(

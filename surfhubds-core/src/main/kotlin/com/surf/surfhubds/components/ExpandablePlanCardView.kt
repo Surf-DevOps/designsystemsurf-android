@@ -74,8 +74,9 @@ class ExpandablePlanCardView @JvmOverloads constructor(
 
     private fun setupHierarchy() {
         cardBackground.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        // iOS: containerView tem shadow (offset 0,2 / radius 8 / opacity 0.1) atrás do card.
-        cardBackground.elevation = 4f.dpToPx(context).toFloat()
+        // Sem elevation: a sombra retangular vazava como "sombrinha" cinza nos cantos
+        // arredondados do card.
+        cardBackground.elevation = 0f
         val pad = 16f.dpToPx(context)
         contentColumn.setPadding(pad, pad, pad, pad)
 

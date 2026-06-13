@@ -111,8 +111,11 @@ class DSSPlanCollectionView @JvmOverloads constructor(
     }
 
     private fun refresh() {
-        setBackgroundColor(DSSColors.background())
-        recycler.setBackgroundColor(DSSColors.background())
+        // iOS: collectionView/backgroundColor = .secondarySystemBackground (cinza atrás dos
+        // cards brancos). No DS isso mapeia para backgroundSecondary — background() vira
+        // branco em vários brands, deixando o fundo igual aos cards.
+        setBackgroundColor(DSSColors.backgroundSecondary())
+        recycler.setBackgroundColor(DSSColors.backgroundSecondary())
     }
 
     /** Substitui a lista exibida e recarrega. */

@@ -589,12 +589,14 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             }
             val size = if (item.imageUrl != null) 28 else 20
 
+            // Mostra o ✓ azul (SF Symbol checkmark tingido de primary no iOS) quando:
+            //  - é a lista de benefícios (isCheckmark), ou
+            //  - é um item de seção sem ícone próprio (ex.: "Caixa" em Ilimitados).
+            // Só vale quando não há imageUrl — itens com URL carregam a imagem remota.
+            val showBlueCheck = item.imageUrl == null && (isCheckmark || item.icon == null)
             val iv = ImageView(context).apply {
                 scaleType = ImageView.ScaleType.FIT_CENTER
-                if (isCheckmark) {
-                    // iOS usa o SF Symbol checkmark tingido de primary. Usa o vetor
-                    // built-in quando o consumidor não fornece um ícone (antes ficava
-                    // em branco — sem o ✓ azul das linhas de benefício).
+                if (showBlueCheck) {
                     setImageDrawable(
                         item.icon ?: androidx.core.content.ContextCompat.getDrawable(
                             context, com.surf.surfhubds.R.drawable.dss_ic_check,
@@ -610,7 +612,11 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 iv,
                 LinearLayout.LayoutParams(size.toFloat().dpToPx(context), size.toFloat().dpToPx(context)),
             )
-            loadImageInto(iv, item.imageUrl, item.icon)
+            // iOS carrega a imagem só quando há URL; caso contrário mantém o ✓/ícone acima.
+            // (Antes chamávamos sempre, e com url=null o fallback nulo apagava o ✓ azul.)
+            if (item.imageUrl != null) {
+                loadImageInto(iv, item.imageUrl, item.icon)
+            }
 
             val label = TextView(context).apply {
                 text = item.title

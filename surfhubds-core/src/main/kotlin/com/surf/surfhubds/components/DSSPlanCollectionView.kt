@@ -668,8 +668,9 @@ class DSSPlanCollectionView @JvmOverloads constructor(
 
         private fun refresh() {
             val bg = DSSColors.surface()
-            val stroke = if (selectedStyle) DSSColors.primary() else DSSColors.borderDefault()
-            val strokeWidth = if (selectedStyle) 2f else 1f
+            // iOS setSelectedStyle: selecionado -> borda 2pt primary; colapsado (light) -> sem borda.
+            val stroke = if (selectedStyle) DSSColors.primary() else android.graphics.Color.TRANSPARENT
+            val strokeWidth = if (selectedStyle) 2f else 0f
             container.background = DrawableFactory.rounded(
                 context = context,
                 backgroundColor = bg,

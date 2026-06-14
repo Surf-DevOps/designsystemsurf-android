@@ -89,7 +89,11 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply { topMargin = 16f.dpToPx(context) },
         )
-        addView(column)
+        // MATCH_PARENT obrigatório: sem isso o FrameLayout adiciona o column como WRAP_CONTENT,
+        // e toda a cadeia (column→stack→row→container→labelsStack) colapsa pra largura intrínseca
+        // (~181px) na 1ª passada de medição. O titleLabel single-line mede travado nessa largura
+        // e corta "Cartão cadastrado" → "Cartão ca", mesmo o card depois esticando pra largura cheia.
+        addView(column, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
         registerButton.setOnClickListener { delegate?.onRegisterNewCard(this) }
         refresh()
         setupThemeObserver()
@@ -190,10 +194,15 @@ class DSSScheduleCardListView @JvmOverloads constructor(
     /** Linha visual do cartão. */
     private class CardRowView(context: Context) : FrameLayout(context), ThemeAware {
 
-        // FrameLayout (não LinearLayout): posicionamos dot/imagem/labels por gravity, sem `weight`.
-        // Com weight (width=0), o LinearLayout mede o labelsStack wrap_content na 1ª passada com
-        // largura 0 e trava em ~181px, truncando "Cartão cadastrado" → "Cartão ca".
-        private val container = FrameLayout(context)
+        // LinearLayout horizontal com SPACER de peso (peso no spacer, labels em WRAP_CONTENT).
+        // Tentativas anteriores falharam: weight nos labels (width=0) colapsava p/ ~181px; e
+        // FrameLayout+gravity END dava AT_MOST insuficiente ao labelsStack (~229px), truncando
+        // "Cartão cadastrado" → "Cartão ca". O spacer de peso força a largura total e o
+        // labelsStack mede na largura natural do texto. (validado por teste instrumentado)
+        private val container = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
         private val defaultDot = View(context)
         private val cardImage = ImageView(context).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
@@ -205,7 +214,11 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                 }
             }
         }
-        private val labelsStack = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+        private val labelsStack = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            // Linhas alinhadas à direita (encostadas na margem trailing), como no iOS.
+            gravity = Gravity.END
+        }
         private val titleLabel = TextView(context).apply {
             text = "Cartão cadastrado"
             textSize = 14f
@@ -225,23 +238,17 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             //  labelsStack.trailing = container.trailing - 36; tudo centerY.
             // Reproduzimos com FrameLayout + gravity por filho (sem weight → labelsStack mede
             // na largura natural e "Cartão cadastrado" não trunca).
+            // dot.leading = 12; image.leading = dot.trailing + 10 (=> 12 + 10 + 10 do dot 10dp).
             container.addView(
                 defaultDot,
-                FrameLayout.LayoutParams(
-                    10f.dpToPx(context),
-                    10f.dpToPx(context),
-                    Gravity.START or Gravity.CENTER_VERTICAL,
-                ).apply { leftMargin = 12f.dpToPx(context) },
+                LinearLayout.LayoutParams(10f.dpToPx(context), 10f.dpToPx(context))
+                    .apply { leftMargin = 12f.dpToPx(context) },
             )
             container.addView(
                 cardImage,
-                FrameLayout.LayoutParams(
-                    70f.dpToPx(context),
-                    45f.dpToPx(context),
-                    Gravity.START or Gravity.CENTER_VERTICAL,
-                ).apply { leftMargin = 12f.dpToPx(context) + 10f.dpToPx(context) + 10f.dpToPx(context) },
+                LinearLayout.LayoutParams(70f.dpToPx(context), 45f.dpToPx(context))
+                    .apply { leftMargin = 10f.dpToPx(context) },
             )
-
             labelsStack.addView(titleLabel)
             labelsStack.addView(
                 lastFourLabel,
@@ -250,14 +257,15 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                 ).apply { topMargin = 2f.dpToPx(context) },
             )
-            // labelsStack wrap_content, encostado na trailing (-36), centerY. Linhas leading-aligned
-            // entre si (gravity default do LinearLayout vertical), igual ao `alignment = .leading` do iOS.
+            // width=WRAP_CONTENT + weight=1: o título é medido no conteúdo (404px) e SÓ DEPOIS
+            // expande p/ ocupar a sobra — nunca encolhe. (width=0+weight ou spacer de peso
+            // encolhiam o título p/ ~229px na 2ª passada de medição → "Cartão ca".)
             container.addView(
                 labelsStack,
-                FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    Gravity.END or Gravity.CENTER_VERTICAL,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f,
                 ).apply { rightMargin = 36f.dpToPx(context) },
             )
             // iOS: containerView.heightAnchor == 80 (altura fixa, não mínima).

@@ -205,6 +205,7 @@ class DSSScheduleCardListView @JvmOverloads constructor(
         private val container = RelativeLayout(context)
         private val defaultDot = View(context)
         private val cardImage = ImageView(context).apply {
+            id = View.generateViewId()
             scaleType = ImageView.ScaleType.FIT_CENTER
             // iOS: cardImageView.layer.cornerRadius = 6 + clipsToBounds
             clipToOutline = true
@@ -219,6 +220,10 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             // iOS: as duas linhas compartilham a borda esquerda (texto alinhado à esquerda
             // dentro do bloco; o bloco é que fica encostado na margem trailing).
             gravity = Gravity.START
+            layoutParams = LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT
+            )
         }
         private val titleLabel = TextView(context).apply {
             text = "Cartão cadastrado"
@@ -229,13 +234,15 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             // natural, ~960px disponíveis na linha) o título cabe inteiro sem cortar nem
             // virar "Cartão ca / dastrado".
             maxLines = 1
-            ellipsize = android.text.TextUtils.TruncateAt.END
+            isSingleLine = true
+            includeFontPadding = false
         }
         private val lastFourLabel = TextView(context).apply {
             textSize = 14f
             typeface = DSSFont.regular(context, 14f).typeface
             maxLines = 1
-            ellipsize = android.text.TextUtils.TruncateAt.END
+            isSingleLine = true
+            includeFontPadding = false
         }
 
         private var isDefaultCard = false
@@ -275,17 +282,17 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                 ).apply { topMargin = 2f.dpToPx(context) },
             )
-            // labelsStack: trailing = container.trailing - 36, centerY, WRAP (largura natural
-            // do texto → "Cartão cadastrado" nunca trunca).
+            // labelsStack: end of cardImage, centerY, MATCH_PARENT width with margins.
             container.addView(
                 labelsStack,
                 RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT,
                 ).apply {
-                    addRule(RelativeLayout.ALIGN_PARENT_END)
+                    addRule(RelativeLayout.END_OF, cardImage.id)
                     addRule(RelativeLayout.CENTER_VERTICAL)
-                    marginEnd = 36f.dpToPx(context)
+                    marginStart = 24f.dpToPx(context)
+                    marginEnd = 24f.dpToPx(context)
                 },
             )
             // iOS: containerView.heightAnchor == 80 (altura fixa, não mínima).

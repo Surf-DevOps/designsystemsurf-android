@@ -219,7 +219,7 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             orientation = LinearLayout.VERTICAL
             // iOS: as duas linhas compartilham a borda esquerda (texto alinhado à esquerda
             // dentro do bloco; o bloco é que fica encostado na margem trailing).
-            gravity = Gravity.END
+            gravity = Gravity.START
         }
         private val titleLabel = TextView(context).apply {
             text = "Cartão cadastrado"
@@ -232,8 +232,7 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             maxLines = 1
             isSingleLine = true
             includeFontPadding = false
-            gravity = Gravity.END
-            textAlignment = View.TEXT_ALIGNMENT_VIEW_END
+            // gravity and textAlignment removed to match iOS
         }
         private val lastFourLabel = TextView(context).apply {
             textSize = 14f
@@ -241,8 +240,7 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             maxLines = 1
             isSingleLine = true
             includeFontPadding = false
-            gravity = Gravity.END
-            textAlignment = View.TEXT_ALIGNMENT_VIEW_END
+            // gravity and textAlignment removed to match iOS
         }
 
         private var isDefaultCard = false
@@ -275,6 +273,7 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                 },
             )
             labelsStack.addView(titleLabel)
+            titleLabel.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
             labelsStack.addView(
                 lastFourLabel,
                 LinearLayout.LayoutParams(
@@ -292,9 +291,11 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                     addRule(RelativeLayout.ALIGN_PARENT_END)
                     addRule(RelativeLayout.CENTER_VERTICAL)
                     marginEnd = 36f.dpToPx(context)
+                    width = RelativeLayout.LayoutParams.WRAP_CONTENT
                 },
             )
             // iOS: containerView.heightAnchor == 80 (altura fixa, não mínima).
+            labelsStack.minimumWidth = titleLabel.measuredWidth
             addView(container, LayoutParams(LayoutParams.MATCH_PARENT, 80f.dpToPx(context)))
             refresh()
             setupThemeObserver()

@@ -59,8 +59,10 @@ class DSSActionCardButton @JvmOverloads constructor(
         setPadding(padH, padV, padH, padV)
         minWidth = DEFAULT_WIDTH_DP.dpToPx(context)
         minHeight = DEFAULT_HEIGHT_DP.dpToPx(context)
-        // Sombra iOS: black @ 0.08, radius 6, offset (0, 2) -> aproxima com elevation.
-        elevation = 4f.dpToPx(context).toFloat()
+        // Sem sombra: zera elevation e remove o stateListAnimator (AppCompatButton aplica
+        // elevação/sombra default via stateListAnimator — só elevation=0 não basta).
+        elevation = 0f
+        stateListAnimator = null
         refresh()
         setupThemeObserver()
     }

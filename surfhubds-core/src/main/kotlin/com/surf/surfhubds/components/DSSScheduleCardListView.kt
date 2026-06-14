@@ -242,20 +242,27 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                 ).apply { topMargin = 2f.dpToPx(context) },
             )
-            // iOS: labelsStack NÃO fica colado na imagem — é fixado na trailing
-            // (`labelsStack.trailing == container.trailing - 36`). Um spacer com weight=1
-            // empurra o grupo de labels para a borda direita; o stack fica wrap_content
-            // (internamente leading-aligned, como `alignment = .leading` do iOS).
-            container.addView(
-                View(context),
-                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f),
-            )
-            container.addView(
+            // iOS: labelsStack é fixado na trailing (`labelsStack.trailing == container.trailing - 36`)
+            // com as duas linhas leading-aligned entre si. Um wrapper com weight=1 ocupa TODO o
+            // espaço restante (então o texto nunca é truncado) e, via gravity END, empurra o grupo
+            // de labels (wrap, leading-aligned) para a borda direita. Um spacer width=0 + labelsStack
+            // wrap clipava a largura medida e truncava "Cartão cadastrado" → "Cartão ca".
+            val labelsWrapper = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.END or Gravity.CENTER_VERTICAL
+            }
+            labelsWrapper.addView(
                 labelsStack,
                 LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT,
-                ).apply { rightMargin = 36f.dpToPx(context) },
+                ),
+            )
+            container.addView(
+                labelsWrapper,
+                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f).apply {
+                    rightMargin = 36f.dpToPx(context)
+                },
             )
             // iOS: containerView.heightAnchor == 80 (altura fixa, não mínima).
             addView(container, LayoutParams(LayoutParams.MATCH_PARENT, 80f.dpToPx(context)))

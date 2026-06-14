@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
@@ -194,15 +195,14 @@ class DSSScheduleCardListView @JvmOverloads constructor(
     /** Linha visual do cartão. */
     private class CardRowView(context: Context) : FrameLayout(context), ThemeAware {
 
-        // LinearLayout horizontal com SPACER de peso (peso no spacer, labels em WRAP_CONTENT).
-        // Tentativas anteriores falharam: weight nos labels (width=0) colapsava p/ ~181px; e
-        // FrameLayout+gravity END dava AT_MOST insuficiente ao labelsStack (~229px), truncando
-        // "Cartão cadastrado" → "Cartão ca". O spacer de peso força a largura total e o
-        // labelsStack mede na largura natural do texto. (validado por teste instrumentado)
-        private val container = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-        }
+        // RelativeLayout espelhando as constraints ABSOLUTAS do iOS (sem weight!).
+        // Causa raiz das tentativas anteriores: todas usavam LinearLayout horizontal com
+        // `weight` no labelsStack. Na medição multi-passo do LinearLayout a redistribuição
+        // por peso ENCOLHE o filho com peso abaixo da largura natural do texto, cortando
+        // "Cartão cadastrado" → "Cartão ca". Sem peso (dot ancorado na leading, imagem após
+        // o dot, labelsStack ancorado na trailing) o labelsStack é medido na largura natural
+        // e nunca encolhe — o título não trunca em nenhuma condição de medição do host.
+        private val container = RelativeLayout(context)
         private val defaultDot = View(context)
         private val cardImage = ImageView(context).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
@@ -236,18 +236,27 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             // iOS (constraints absolutas no containerView, altura FIXA 80):
             //  dot.leading = container.leading + 12; image.leading = dot.trailing + 10 (=> 32);
             //  labelsStack.trailing = container.trailing - 36; tudo centerY.
-            // Reproduzimos com FrameLayout + gravity por filho (sem weight → labelsStack mede
-            // na largura natural e "Cartão cadastrado" não trunca).
-            // dot.leading = 12; image.leading = dot.trailing + 10 (=> 12 + 10 + 10 do dot 10dp).
+            // Mapeamento 1:1 em RelativeLayout (sem weight) — ver comentário em `container`.
+            val dotId = View.generateViewId()
+            defaultDot.id = dotId
+
+            // dot: leading = 12, centerY
             container.addView(
                 defaultDot,
-                LinearLayout.LayoutParams(10f.dpToPx(context), 10f.dpToPx(context))
-                    .apply { leftMargin = 12f.dpToPx(context) },
+                RelativeLayout.LayoutParams(10f.dpToPx(context), 10f.dpToPx(context)).apply {
+                    addRule(RelativeLayout.ALIGN_PARENT_START)
+                    addRule(RelativeLayout.CENTER_VERTICAL)
+                    marginStart = 12f.dpToPx(context)
+                },
             )
+            // image: leading = dot.trailing + 10, centerY, 70x45
             container.addView(
                 cardImage,
-                LinearLayout.LayoutParams(70f.dpToPx(context), 45f.dpToPx(context))
-                    .apply { leftMargin = 10f.dpToPx(context) },
+                RelativeLayout.LayoutParams(70f.dpToPx(context), 45f.dpToPx(context)).apply {
+                    addRule(RelativeLayout.END_OF, dotId)
+                    addRule(RelativeLayout.CENTER_VERTICAL)
+                    marginStart = 10f.dpToPx(context)
+                },
             )
             labelsStack.addView(titleLabel)
             labelsStack.addView(
@@ -257,16 +266,18 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                 ).apply { topMargin = 2f.dpToPx(context) },
             )
-            // width=WRAP_CONTENT + weight=1: o título é medido no conteúdo (404px) e SÓ DEPOIS
-            // expande p/ ocupar a sobra — nunca encolhe. (width=0+weight ou spacer de peso
-            // encolhiam o título p/ ~229px na 2ª passada de medição → "Cartão ca".)
+            // labelsStack: trailing = container.trailing - 36, centerY, WRAP (largura natural
+            // do texto → "Cartão cadastrado" nunca trunca).
             container.addView(
                 labelsStack,
-                LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1f,
-                ).apply { rightMargin = 36f.dpToPx(context) },
+                RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                ).apply {
+                    addRule(RelativeLayout.ALIGN_PARENT_END)
+                    addRule(RelativeLayout.CENTER_VERTICAL)
+                    marginEnd = 36f.dpToPx(context)
+                },
             )
             // iOS: containerView.heightAnchor == 80 (altura fixa, não mínima).
             addView(container, LayoutParams(LayoutParams.MATCH_PARENT, 80f.dpToPx(context)))

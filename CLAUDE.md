@@ -3,7 +3,7 @@
 - Port do SurfHubDS iOS (Swift/UIKit) para Android (Kotlin + Views programáticas).
 - Sem Compose. Sem layouts XML — UI 100% construída em Kotlin.
 - 1 módulo `:surfhubds-core` + 13 módulos `:surfhubds-brand-*`. Espelha o SPM iOS.
-- Distribuído via JitPack no padrão `com.github.Surf-DevOps.SurfHubDS-Android:<module>:<version>`.
+- Distribuído via JitPack no padrão `com.github.Surf-DevOps.designsystemsurf-android:<module>:<version>` (o repo foi renomeado de `SurfHubDS-Android` → `designsystemsurf-android`; o coordinate do JitPack segue o nome atual do repo).
 - Para releases, criar git tag `vX.Y.Z` — JitPack compila e publica.
 - Sempre que modificar código e o build passar com sucesso, fazer commit e push para origin na branch atual.
 

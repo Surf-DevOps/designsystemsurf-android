@@ -1,5 +1,6 @@
 package com.surf.surfhubds
 
+import android.app.Application
 import android.content.Context
 import com.surf.surfhubds.brand.Brand
 import com.surf.surfhubds.brand.BrandConfig
@@ -57,6 +58,10 @@ object SurfHubDS {
         registerFonts()
         ThemeManager.setTheme(themeFor(resolved))
         if (resolved == Brand.FLUXO) ThemeManager.setColorScheme(ColorScheme.BLACK)
+        // Liga o chrome automático dos bottom sheets (cantos superiores arredondados +
+        // blur atrás + dismiss ao tocar fora) para todas as Activities do app.
+        (context.applicationContext as? Application)
+            ?.let { com.surf.surfhubds.util.DSSBottomSheetChrome.register(it) }
     }
 
     /**

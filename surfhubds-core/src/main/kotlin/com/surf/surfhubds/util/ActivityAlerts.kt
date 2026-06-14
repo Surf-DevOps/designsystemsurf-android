@@ -6,6 +6,9 @@ import androidx.appcompat.app.AlertDialog
 /**
  * Port das extensions `UIViewController+Alerts.swift`. No Android, extension functions
  * em [Context].
+ *
+ * Os alerts aparecem com um blur do fundo (snapshot borrado atrás do dialog), igual ao
+ * iOS. O blur só é aplicado quando o [Context] é uma Activity.
  */
 
 fun Context.showSurfAlert(
@@ -14,15 +17,16 @@ fun Context.showSurfAlert(
     primaryButtonTitle: String = "OK",
     primaryAction: (() -> Unit)? = null,
 ) {
-    AlertDialog.Builder(this)
+    val dialog = AlertDialog.Builder(this)
         .setTitle(title)
         .setMessage(message)
-        .setPositiveButton(primaryButtonTitle) { dialog, _ ->
+        .setPositiveButton(primaryButtonTitle) { d, _ ->
             primaryAction?.invoke()
-            dialog.dismiss()
+            d.dismiss()
         }
         .setCancelable(true)
-        .show()
+        .create()
+    showWithBlur(dialog)
 }
 
 fun Context.showSurfAlert(
@@ -33,17 +37,35 @@ fun Context.showSurfAlert(
     secondaryButtonTitle: String,
     secondaryAction: () -> Unit,
 ) {
-    AlertDialog.Builder(this)
+    val dialog = AlertDialog.Builder(this)
         .setTitle(title)
         .setMessage(message)
-        .setPositiveButton(primaryButtonTitle) { dialog, _ ->
+        .setPositiveButton(primaryButtonTitle) { d, _ ->
             primaryAction()
-            dialog.dismiss()
+            d.dismiss()
         }
-        .setNegativeButton(secondaryButtonTitle) { dialog, _ ->
+        .setNegativeButton(secondaryButtonTitle) { d, _ ->
             secondaryAction()
-            dialog.dismiss()
+            d.dismiss()
         }
         .setCancelable(true)
-        .show()
+        .create()
+    showWithBlur(dialog)
+}
+
+/**
+ * Mostra um [AlertDialog] com blur do fundo. Adiciona um backdrop borrado na Activity
+ * por trás do dialog e o remove no dismiss. Sem Activity, mostra o alert normal.
+ */
+internal fun Context.showWithBlur(dialog: AlertDialog) {
+    val activity = DSSBlur.activityOf(this)
+    if (activity == null) {
+        dialog.show()
+        return
+    }
+    val backdrop = DSSBlur.addBlurBackdrop(activity)
+    dialog.setOnDismissListener { DSSBlur.removeBackdrop(backdrop) }
+    dialog.show()
+    // O backdrop já tem o blur+scrim; zera o dim do alert p/ não escurecer duas vezes.
+    dialog.window?.setDimAmount(0f)
 }

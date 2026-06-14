@@ -58,12 +58,15 @@ object DSSLoadingView {
         if (overlay != null) return
         val root = activity.window.decorView as ViewGroup
 
+        // Blur do fundo (snapshot da tela atual borrado), tirado ANTES de adicionar o
+        // overlay → captura só a tela por baixo. Fallback p/ a cor de overlay.
+        val blurBg = com.surf.surfhubds.util.DSSBlur.blurredWindowBackground(activity)
         val container = FrameLayout(activity).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
             )
-            setBackgroundColor(DSSColors.overlay())
+            if (blurBg != null) background = blurBg else setBackgroundColor(DSSColors.overlay())
             isClickable = true
             isFocusable = true
         }

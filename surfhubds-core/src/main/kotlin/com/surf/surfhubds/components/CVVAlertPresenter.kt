@@ -41,7 +41,7 @@ object CVVAlertPresenter {
             ).apply { gravity = Gravity.CENTER })
         }
 
-        AlertDialog.Builder(ctx)
+        val dialog = AlertDialog.Builder(ctx)
             .setTitle("Digite o CVV")
             .setMessage("Informe o código de segurança do cartão (3 dígitos).")
             .setView(container)
@@ -57,7 +57,16 @@ object CVVAlertPresenter {
                     completion(digits)
                 }
             }
-            .show()
+            .create()
+        showWithBlur(activity, dialog)
+    }
+
+    /** Mostra o alert com blur do fundo (backdrop borrado atrás), removendo no dismiss. */
+    private fun showWithBlur(activity: Activity, dialog: AlertDialog) {
+        val backdrop = com.surf.surfhubds.util.DSSBlur.addBlurBackdrop(activity)
+        dialog.setOnDismissListener { com.surf.surfhubds.util.DSSBlur.removeBackdrop(backdrop) }
+        dialog.show()
+        dialog.window?.setDimAmount(0f)
     }
 
     /**
@@ -77,11 +86,12 @@ object CVVAlertPresenter {
     private fun presentValidationError(
         activity: Activity, message: String, retry: () -> Unit,
     ) {
-        AlertDialog.Builder(activity)
+        val dialog = AlertDialog.Builder(activity)
             .setTitle("Atenção")
             .setMessage(message)
             .setPositiveButton("Tentar novamente") { _, _ -> retry() }
             .setNegativeButton("Cancelar", null)
-            .show()
+            .create()
+        showWithBlur(activity, dialog)
     }
 }

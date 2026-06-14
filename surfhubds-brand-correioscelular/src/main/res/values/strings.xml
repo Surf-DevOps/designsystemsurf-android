@@ -41,6 +41,7 @@
     <string name="sim_invalid_cpf_iccid">Digite um CPF (11 dígitos) ou ICCID (19 dígitos) válido</string>
     <string name="sim_no_chips_for_cpf">Nenhum chip encontrado para este CPF</string>
     <string name="sim_chip_already_active_login">Esse chip já está ativo. Clique em \"Acesse aqui\" para fazer login ou criar sua senha.</string>
+    <string name="sim_chip_wrong_mvno_format">Esse chip não pertence a %s.</string>
     <string name="login_cpf_placeholder">Digite seu CPF</string>
     <string name="login_password_label">Senha</string>
     <string name="login_password_placeholder">  x  x  x  x</string>

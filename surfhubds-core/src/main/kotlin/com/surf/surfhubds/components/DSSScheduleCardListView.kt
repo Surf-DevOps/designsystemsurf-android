@@ -216,17 +216,26 @@ class DSSScheduleCardListView @JvmOverloads constructor(
         }
         private val labelsStack = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            // Linhas alinhadas à direita (encostadas na margem trailing), como no iOS.
-            gravity = Gravity.END
+            // iOS: as duas linhas compartilham a borda esquerda (texto alinhado à esquerda
+            // dentro do bloco; o bloco é que fica encostado na margem trailing).
+            gravity = Gravity.START
         }
         private val titleLabel = TextView(context).apply {
             text = "Cartão cadastrado"
             textSize = 14f
             typeface = DSSFont.medium(context, 14f).typeface
+            // Uma linha só, como no iOS. Um TextView single-line NÃO quebra no meio da
+            // palavra; combinado com o RelativeLayout sem weight (bloco medido na largura
+            // natural, ~960px disponíveis na linha) o título cabe inteiro sem cortar nem
+            // virar "Cartão ca / dastrado".
+            maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
         }
         private val lastFourLabel = TextView(context).apply {
             textSize = 14f
             typeface = DSSFont.regular(context, 14f).typeface
+            maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
         }
 
         private var isDefaultCard = false

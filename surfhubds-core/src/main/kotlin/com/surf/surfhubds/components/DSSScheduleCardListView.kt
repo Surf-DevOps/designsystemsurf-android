@@ -219,11 +219,7 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             orientation = LinearLayout.VERTICAL
             // iOS: as duas linhas compartilham a borda esquerda (texto alinhado à esquerda
             // dentro do bloco; o bloco é que fica encostado na margem trailing).
-            gravity = Gravity.START
-            layoutParams = LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT
-            )
+            gravity = Gravity.END
         }
         private val titleLabel = TextView(context).apply {
             text = "Cartão cadastrado"
@@ -236,6 +232,8 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             maxLines = 1
             isSingleLine = true
             includeFontPadding = false
+            gravity = Gravity.END
+            textAlignment = View.TEXT_ALIGNMENT_VIEW_END
         }
         private val lastFourLabel = TextView(context).apply {
             textSize = 14f
@@ -243,6 +241,8 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             maxLines = 1
             isSingleLine = true
             includeFontPadding = false
+            gravity = Gravity.END
+            textAlignment = View.TEXT_ALIGNMENT_VIEW_END
         }
 
         private var isDefaultCard = false
@@ -282,17 +282,16 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                 ).apply { topMargin = 2f.dpToPx(context) },
             )
-            // labelsStack: end of cardImage, centerY, MATCH_PARENT width with margins.
+            // labelsStack: align to parent end, centerY, WRAP_CONTENT width with marginEnd.
             container.addView(
                 labelsStack,
                 RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT,
                 ).apply {
-                    addRule(RelativeLayout.END_OF, cardImage.id)
+                    addRule(RelativeLayout.ALIGN_PARENT_END)
                     addRule(RelativeLayout.CENTER_VERTICAL)
-                    marginStart = 24f.dpToPx(context)
-                    marginEnd = 24f.dpToPx(context)
+                    marginEnd = 36f.dpToPx(context)
                 },
             )
             // iOS: containerView.heightAnchor == 80 (altura fixa, não mínima).

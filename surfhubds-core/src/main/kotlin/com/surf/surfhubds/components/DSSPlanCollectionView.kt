@@ -261,6 +261,10 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             // Outer padding
             val pad = 16f.dpToPx(context)
             setPadding(pad, 8f.dpToPx(context), pad, 8f.dpToPx(context))
+            // A faixa "Oferta atual" precisa desenhar no topo REAL da célula (iOS: top =
+            // contentView.top, y=0). Sem isso, o `gravity = TOP` respeita o padding-top de 8dp
+            // e empurra a faixa 8dp p/ baixo — o card cobre a base do texto (recorte).
+            clipToPadding = false
 
             // Faixa "Oferta atual" — adicionada ANTES do container para ficar atrás dele.
             currentOfferBadge.apply {
@@ -282,7 +286,10 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                     // iOS: top = contentView.top; trailing = contentView.trailing - 16.
                     // O padding horizontal do cell (16) já posiciona a borda direita.
+                    // topMargin negativo cancela o padding-top de 8dp → faixa em y=0 (clipToPadding
+                    // = false permite o desenho na região do padding), igual ao iOS.
                     gravity = Gravity.TOP or Gravity.END
+                    topMargin = -8f.dpToPx(context)
                 },
             )
 

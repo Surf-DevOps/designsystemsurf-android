@@ -242,11 +242,20 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                 ).apply { topMargin = 2f.dpToPx(context) },
             )
+            // iOS: labelsStack NÃO fica colado na imagem — é fixado na trailing
+            // (`labelsStack.trailing == container.trailing - 36`). Um spacer com weight=1
+            // empurra o grupo de labels para a borda direita; o stack fica wrap_content
+            // (internamente leading-aligned, como `alignment = .leading` do iOS).
+            container.addView(
+                View(context),
+                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f),
+            )
             container.addView(
                 labelsStack,
-                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
-                    rightMargin = 36f.dpToPx(context)
-                },
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ).apply { rightMargin = 36f.dpToPx(context) },
             )
             // iOS: containerView.heightAnchor == 80 (altura fixa, não mínima).
             addView(container, LayoutParams(LayoutParams.MATCH_PARENT, 80f.dpToPx(context)))
@@ -288,7 +297,9 @@ class DSSScheduleCardListView @JvmOverloads constructor(
                 )
                 titleLabel.typeface = DSSFont.medium(context, 14f).typeface
             } else {
-                defaultDot.visibility = View.GONE
+                // iOS: `defaultDotView.isHidden = true` (sem colapsar). INVISIBLE preserva os
+                // 10dp reservados, então a imagem do cartão não desloca ao (de)selecionar.
+                defaultDot.visibility = View.INVISIBLE
                 titleLabel.typeface = DSSFont.light(context, 14f).typeface
             }
             titleLabel.setTextColor(DSSColors.textPrimary())

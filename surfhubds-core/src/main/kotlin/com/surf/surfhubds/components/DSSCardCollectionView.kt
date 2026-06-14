@@ -324,17 +324,36 @@ class DSSCardCollectionView @JvmOverloads constructor(
         }
 
         fun setSelectionBorder(borderEnabled: Boolean, isSelected: Boolean, colorInt: Int, widthDp: Float) {
-            // iOS aplica cornerRadius 8 + clipsToBounds sempre que a borda está habilitada
-            // (applySelectionBorder); a largura da borda é 0 quando não selecionado.
-            cardContainer.background = if (borderEnabled) {
-                DrawableFactory.rounded(
+            // iOS aplica cornerRadius 8 + clipsToBounds sempre que a borda está habilitada.
+            // No Android a imageView é MATCH_PARENT e fica DESENHADA POR CIMA do background:
+            // se a borda fosse só o stroke do background, a imagem full-bleed a cobriria e
+            // sobraria apenas uma listra no topo. Por isso:
+            //   - background = retângulo transparente arredondado → fornece o outline p/ o
+            //     clipToOutline arredondar a imagem (cantos do card);
+            //   - foreground = o stroke colorido → desenhado POR CIMA da imagem, então a
+            //     borda fecha o card inteiro nos 4 lados.
+            if (borderEnabled) {
+                cardContainer.background = DrawableFactory.rounded(
                     context = context,
                     backgroundColor = Color.TRANSPARENT,
                     cornerRadiusDp = 8f,
-                    strokeColor = colorInt,
-                    strokeWidthDp = if (isSelected) widthDp else 0f,
                 )
-            } else null
+                cardContainer.foregroundGravity = Gravity.FILL
+                cardContainer.foreground = if (isSelected) {
+                    DrawableFactory.rounded(
+                        context = context,
+                        backgroundColor = Color.TRANSPARENT,
+                        cornerRadiusDp = 8f,
+                        strokeColor = colorInt,
+                        strokeWidthDp = widthDp,
+                    )
+                } else {
+                    null
+                }
+            } else {
+                cardContainer.background = null
+                cardContainer.foreground = null
+            }
         }
 
         companion object {

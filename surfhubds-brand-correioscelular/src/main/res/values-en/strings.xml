@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Celular correios</string>
+    <string name="common_error_generic">Something went wrong. Please try again.</string>
+    <string name="login_phone_label">Phone</string>
+    <string name="login_create_access">Create account</string>
+    <string name="recharge_payment_pix">Pay with Pix</string>
+    <string name="recharge_payment_card">Credit card</string>
+    <string name="menu_title">More</string>
+    <string name="menu_logout">Sign out</string>
+</resources>

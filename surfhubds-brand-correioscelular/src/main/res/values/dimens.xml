@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_sm">8dp</dimen>
+    <dimen name="space_md">16dp</dimen>
+    <dimen name="space_lg">24dp</dimen>
+    <dimen name="space_xl">32dp</dimen>
+
+    <dimen name="corner_radius_button">22dp</dimen>
+    <dimen name="corner_radius_card">16dp</dimen>
+    <dimen name="corner_radius_field">12dp</dimen>
+    <dimen name="corner_radius_sheet">28dp</dimen>
+
+    <dimen name="height_button">44dp</dimen>
+    <dimen name="height_field">56dp</dimen>
+</resources>

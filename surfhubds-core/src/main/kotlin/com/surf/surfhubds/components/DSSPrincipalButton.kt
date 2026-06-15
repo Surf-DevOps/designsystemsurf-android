@@ -54,7 +54,9 @@ class DSSPrincipalButton @JvmOverloads constructor(
         isAllCaps = false
         textSize = 16f
         typeface = DSSFont.light(context, 16f).typeface
-        text = "Example"
+        // Preserva o android:text vindo do XML (já aplicado pelo super). Só usa o
+        // placeholder "Example" do iOS quando nenhum texto foi informado.
+        if (text.isNullOrBlank()) text = "Example"
         minWidth = defaultWidthDp.dpToPx(context)
         minHeight = defaultHeightDp.dpToPx(context)
         setOnClickListener { onTap?.invoke() }

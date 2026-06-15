@@ -492,24 +492,20 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
 
         fun relativeTime(item: Transacao): String {
             val executionDate = DateParser.parse(item.dtExecucao) ?: return ""
-            // iOS: Calendar.current.dateComponents([.day], from: executionDate, to: Date()) — diferença em dias-calendário
-            val startCal = Calendar.getInstance().apply {
-                time = executionDate
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-            val endCal = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-            val diffMillis = endCal.timeInMillis - startCal.timeInMillis
-            val days = (diffMillis / (1000L * 60 * 60 * 24)).toInt()
-            val clamped = max(0, days)
-            return "há ${clamped}D"
+            val nowMillis = Calendar.getInstance().timeInMillis
+            val diffMillis = max(0L, nowMillis - executionDate.time)
+
+            val days = diffMillis / (1000L * 60 * 60 * 24)
+            // Há 1 dia ou mais: mantém o formato em dias ("há 3D").
+            if (days >= 1) return "há ${days}D"
+
+            // Menos de um dia: mostra as horas decorridas desde a recarga até agora ("há 5H").
+            val hours = diffMillis / (1000L * 60 * 60)
+            if (hours >= 1) return "há ${hours}H"
+
+            // Menos de uma hora: mostra os minutos ("há 12min" / "agora").
+            val minutes = diffMillis / (1000L * 60)
+            return if (minutes >= 1) "há ${minutes}min" else "agora"
         }
     }
 

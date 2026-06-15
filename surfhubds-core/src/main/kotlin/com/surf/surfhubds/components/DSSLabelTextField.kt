@@ -42,6 +42,9 @@ class DSSLabelTextField @JvmOverloads constructor(
         object Cpf : Type(11)
         object Cnpj : Type(14)
         object CpfOrCnpj : Type(14)
+        // Formata como CPF enquanto houver até 11 dígitos; a partir daí vira ICCID
+        // (sem máscara), até 20 dígitos. Útil para o campo de ativação.
+        object CpfOrIccid : Type(20)
         object Phone : Type(11)
         data class Numeric(val length: Int) : Type(length)
         object Text : Type(null)
@@ -73,6 +76,10 @@ class DSSLabelTextField @JvmOverloads constructor(
     var text: CharSequence?
         get() = editText.text
         set(value) { editText.setText(value) }
+
+    /** Texto sem máscara (apenas dígitos) — use para enviar à API. */
+    val digitsOnly: String
+        get() = editText.text?.toString()?.filter { it.isDigit() }.orEmpty()
 
     var hint: CharSequence?
         get() = editText.hint
@@ -175,7 +182,7 @@ class DSSLabelTextField @JvmOverloads constructor(
         editText.hint = placeholder
 
         when (type) {
-            Type.Cpf, Type.Cnpj, Type.CpfOrCnpj, Type.Phone, is Type.Numeric, Type.Password -> {
+            Type.Cpf, Type.Cnpj, Type.CpfOrCnpj, Type.CpfOrIccid, Type.Phone, is Type.Numeric, Type.Password -> {
                 editText.inputType = InputType.TYPE_CLASS_NUMBER
             }
             Type.Text -> {
@@ -278,7 +285,7 @@ class DSSLabelTextField @JvmOverloads constructor(
         editText.filters = arrayOf<InputFilter>()
         val max = fieldType.maxLength
         if (max != null && fieldType !is Type.Phone && fieldType !is Type.Cpf && fieldType !is Type.Cnpj
-            && fieldType !is Type.CpfOrCnpj) {
+            && fieldType !is Type.CpfOrCnpj && fieldType !is Type.CpfOrIccid) {
             editText.filters = arrayOf(InputFilter.LengthFilter(max))
         }
         val watcher = MaskTextWatcher(editText, fieldType)
@@ -304,6 +311,9 @@ internal class MaskTextWatcher(
             DSSLabelTextField.Type.Cnpj -> formatCnpj(digits.take(14))
             DSSLabelTextField.Type.CpfOrCnpj ->
                 if (digits.length <= 11) formatCpf(digits.take(11)) else formatCnpj(digits.take(14))
+            // CPF formatado até 11 dígitos; acima disso, ICCID cru (sem máscara), até 20 dígitos.
+            DSSLabelTextField.Type.CpfOrIccid ->
+                if (digits.length <= 11) formatCpf(digits.take(11)) else digits.take(20)
             DSSLabelTextField.Type.Phone -> formatPhone(digits.take(11))
             else -> return
         }

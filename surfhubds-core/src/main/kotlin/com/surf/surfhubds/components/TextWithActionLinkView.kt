@@ -3,15 +3,20 @@ package com.surf.surfhubds.components
 import android.content.Context
 import android.graphics.Typeface
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
+import android.text.style.ImageSpan
 import android.text.style.UnderlineSpan
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.graphics.drawable.DrawableCompat
+import com.surf.surfhubds.R
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
@@ -47,6 +52,8 @@ class TextWithActionLinkView @JvmOverloads constructor(
     @ColorInt private var customLinkColor: Int? = null
     private var customTypeface: Typeface? = null
     private var customSizeSp: Float = 14f
+    /** Quando != null, anexa uma seta diagonal (↗) após o texto, tintada com essa cor (port do iOS `arrow.up.forward`). */
+    @ColorInt private var trailingArrowColor: Int? = null
 
     init {
         movementMethod = LinkMovementMethod.getInstance()
@@ -76,6 +83,7 @@ class TextWithActionLinkView @JvmOverloads constructor(
         sizeSp: Float = 14f,
         @ColorInt textColor: Int? = null,
         @ColorInt linkColor: Int? = null,
+        @ColorInt trailingArrowColor: Int? = null,
     ) {
         this.fullText = fullText
         this.linkText = linkText
@@ -83,6 +91,7 @@ class TextWithActionLinkView @JvmOverloads constructor(
         this.customSizeSp = sizeSp
         this.customTextColor = textColor
         this.customLinkColor = linkColor
+        this.trailingArrowColor = trailingArrowColor
 
         textSize = sizeSp
         setTypeface(typeface ?: DSSFont.light(context, sizeSp).typeface)
@@ -124,6 +133,33 @@ class TextWithActionLinkView @JvmOverloads constructor(
             )
             span.setSpan(UnderlineSpan(), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
-        text = span
+
+        val arrowColor = trailingArrowColor
+        if (arrowColor == null) {
+            text = span
+            return
+        }
+
+        // iOS: " " + UIImage(systemName: "arrow.up.forward") 14x14 tintada com a cor primária.
+        val arrow = arrowImageSpan(arrowColor)
+        if (arrow == null) {
+            text = span
+            return
+        }
+        val builder = SpannableStringBuilder(span).append("  ")
+        val iconStart = builder.length
+        builder.append(" ")
+        builder.setSpan(arrow, iconStart, builder.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        text = builder
+    }
+
+    private fun arrowImageSpan(@ColorInt color: Int): ImageSpan? {
+        val drawable = AppCompatResources.getDrawable(context, R.drawable.ic_arrow_up_forward)
+            ?.mutate() ?: return null
+        DrawableCompat.setTint(drawable, color)
+        // Dimensiona a seta para acompanhar o tamanho do texto (~14sp como no iOS).
+        val size = (customSizeSp * resources.displayMetrics.scaledDensity).toInt()
+        drawable.setBounds(0, 0, size, size)
+        return ImageSpan(drawable, ImageSpan.ALIGN_BASELINE)
     }
 }

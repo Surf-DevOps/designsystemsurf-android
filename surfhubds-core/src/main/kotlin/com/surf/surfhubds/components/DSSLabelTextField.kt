@@ -45,6 +45,8 @@ class DSSLabelTextField @JvmOverloads constructor(
         // Formata como CPF enquanto houver até 11 dígitos; a partir daí vira ICCID
         // (sem máscara), até 20 dígitos. Útil para o campo de ativação.
         object CpfOrIccid : Type(20)
+        // CEP brasileiro: 8 dígitos formatados como 00000-000.
+        object Cep : Type(8)
         object Phone : Type(11)
         data class Numeric(val length: Int) : Type(length)
         object Text : Type(null)
@@ -182,7 +184,7 @@ class DSSLabelTextField @JvmOverloads constructor(
         editText.hint = placeholder
 
         when (type) {
-            Type.Cpf, Type.Cnpj, Type.CpfOrCnpj, Type.CpfOrIccid, Type.Phone, is Type.Numeric, Type.Password -> {
+            Type.Cpf, Type.Cnpj, Type.CpfOrCnpj, Type.CpfOrIccid, Type.Cep, Type.Phone, is Type.Numeric, Type.Password -> {
                 editText.inputType = InputType.TYPE_CLASS_NUMBER
             }
             Type.Text -> {
@@ -285,7 +287,7 @@ class DSSLabelTextField @JvmOverloads constructor(
         editText.filters = arrayOf<InputFilter>()
         val max = fieldType.maxLength
         if (max != null && fieldType !is Type.Phone && fieldType !is Type.Cpf && fieldType !is Type.Cnpj
-            && fieldType !is Type.CpfOrCnpj && fieldType !is Type.CpfOrIccid) {
+            && fieldType !is Type.CpfOrCnpj && fieldType !is Type.CpfOrIccid && fieldType !is Type.Cep) {
             editText.filters = arrayOf(InputFilter.LengthFilter(max))
         }
         val watcher = MaskTextWatcher(editText, fieldType)
@@ -314,6 +316,7 @@ internal class MaskTextWatcher(
             // CPF formatado até 11 dígitos; acima disso, ICCID cru (sem máscara), até 20 dígitos.
             DSSLabelTextField.Type.CpfOrIccid ->
                 if (digits.length <= 11) formatCpf(digits.take(11)) else digits.take(20)
+            DSSLabelTextField.Type.Cep -> formatCep(digits.take(8))
             DSSLabelTextField.Type.Phone -> formatPhone(digits.take(11))
             else -> return
         }
@@ -338,6 +341,13 @@ internal class MaskTextWatcher(
             if (i == 2 || i == 5) append('.')
             if (i == 8) append('/')
             if (i == 12) append('-')
+            append(c)
+        }
+    }
+
+    private fun formatCep(d: String): String = buildString {
+        d.forEachIndexed { i, c ->
+            if (i == 5) append('-')
             append(c)
         }
     }

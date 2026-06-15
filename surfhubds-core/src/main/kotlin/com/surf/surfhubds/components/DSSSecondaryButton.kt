@@ -85,13 +85,14 @@ class DSSSecondaryButton @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
+        // Default do projeto: borda e texto usam a cor de borda (borderDefault). Overrides seguem valendo.
         setBackground(DrawableFactory.rounded(
             context = context,
             backgroundColor = android.graphics.Color.TRANSPARENT,
             cornerRadiusDp = cornerRadiusDp,
-            strokeColor = borderColorOverride ?: DSSColors.primary(),
+            strokeColor = borderColorOverride ?: DSSColors.borderDefault(),
             strokeWidthDp = borderWidthDp,
         ))
-        setTextColor(customTitleColor ?: DSSColors.buttonText())
+        setTextColor(customTitleColor ?: DSSColors.borderDefault())
     }
 }

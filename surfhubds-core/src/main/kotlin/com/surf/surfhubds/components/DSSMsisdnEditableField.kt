@@ -99,9 +99,11 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
     }
     private val editButton = ImageButton(context).apply {
         background = null
-        // ImageButton herda padding do tema, encolhendo o ícone dentro dos 32dp.
-        // Zera o padding pra o lápis preencher toda a área do botão.
-        setPadding(0, 0, 0, 0)
+        // ImageButton herda padding do tema. Zera e aplica um padding pequeno
+        // controlado pra o lápis ficar proporcional (nem minúsculo, nem ocupando
+        // todo o botão de 32dp).
+        val p = 5f.dpToPx(context)
+        setPadding(p, p, p, p)
         minimumWidth = 0
         minimumHeight = 0
         scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
@@ -118,6 +120,13 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
         textSize = 16f
         typeface = DSSFont.regular(context, 16f).typeface
         setTextColor(Color.WHITE)
+        // AppCompatButton herda padding horizontal e minWidth do tema, que comem
+        // a largura de 95dp e cortam "Confirmar". Zera pra o texto caber centrado.
+        setPadding(0, 0, 0, 0)
+        minWidth = 0
+        minimumWidth = 0
+        gravity = Gravity.CENTER
+        maxLines = 1
     }
 
     init {

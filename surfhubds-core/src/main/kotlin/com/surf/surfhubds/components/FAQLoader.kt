@@ -69,11 +69,12 @@ object FAQLoader {
     }
 
     /**
-     * Nome do arquivo de FAQ em `assets/` para uma brand (ex.: [Brand.UBER] -> "faq_uber.json").
-     * Espelha o esquema iOS de resolver o `FAQList` por brand.
+     * Nome do arquivo de FAQ em `assets/`. Nome genérico (igual ao `FAQList` do iOS):
+     * cada módulo de brand embarca o seu próprio `faq.json`, sem risco de colisão.
      */
+    @Suppress("UNUSED_PARAMETER")
     @JvmStatic
-    fun assetName(brand: Brand): String = "faq_${brand.raw}.json"
+    fun assetName(brand: Brand): String = "faq.json"
 
     /**
      * Carrega o FAQ da brand informada. Espelha `FAQLoader.categories(for:)` do iOS, que

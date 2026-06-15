@@ -419,6 +419,23 @@ class DSSCardScannerActivity : AppCompatActivity() {
             }
         }
 
+        // 1b. Fallback: o número costuma vir quebrado em várias linhas (grupos de 4 dígitos),
+        // e aí nenhuma linha isolada tem 13-19 dígitos. Juntamos os dígitos das linhas
+        // "numéricas" (na ordem de leitura) e procuramos um trecho 13-19 dígitos Luhn-válido.
+        if (foundNumber == null) {
+            val numericObjs = objects
+                .filter { o ->
+                    val digitsOnly = o.text.filter(Char::isDigit)
+                    digitsOnly.length in 3..19 && o.text.all { it.isDigit() || it.isWhitespace() }
+                }
+                .sortedWith(compareBy({ it.rect.top }, { it.rect.left }))
+            val joined = numericObjs.joinToString("") { it.text.filter(Char::isDigit) }
+            findLuhnSubstring(joined)?.let {
+                foundNumber = it
+                numberBox = numericObjs.firstOrNull()?.rect
+            }
+        }
+
         // 2. Filtrar nome por posição espacial (CHAVE do Stripe/iOS!)
         // O nome deve estar ABAIXO do número (minY = topo do número - altura, ou topo da data).
         val minY: Float? = numberBox?.let { it.top - it.height() } ?: expiryBox?.top
@@ -499,6 +516,22 @@ class DSSCardScannerActivity : AppCompatActivity() {
         if (digits.length !in 13..19) return null
         if (!luhnCheck(digits)) return null
         return digits
+    }
+
+    /**
+     * Procura, numa sequência de dígitos, o primeiro trecho de 13-19 dígitos que passe no
+     * Luhn (prioriza 16, o tamanho mais comum). Usado no fallback quando o número vem
+     * quebrado em várias linhas do OCR.
+     */
+    private fun findLuhnSubstring(digits: String): String? {
+        for (len in intArrayOf(16, 15, 14, 13, 19, 18, 17)) {
+            if (digits.length < len) continue
+            for (start in 0..digits.length - len) {
+                val sub = digits.substring(start, start + len)
+                if (luhnCheck(sub)) return sub
+            }
+        }
+        return null
     }
 
     /** Validade: extrai MM/YY de uma linha (igual iOS extractExpiry). Retorna (month, year). */

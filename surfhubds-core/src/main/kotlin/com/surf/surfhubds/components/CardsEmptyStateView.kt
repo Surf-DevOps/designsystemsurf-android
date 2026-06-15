@@ -77,7 +77,9 @@ class CardsEmptyStateView @JvmOverloads constructor(
     private fun setupTree() {
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER_HORIZONTAL
+            // CENTER (e não só CENTER_HORIZONTAL) pra centralizar o conteúdo verticalmente
+            // no espaço disponível (a view de "sem cartão" fica no meio da tela).
+            gravity = Gravity.CENTER
         }
         val pad32 = 32f.dpToPx(context)
 

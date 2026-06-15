@@ -243,6 +243,7 @@
     <string name="credit_card_delete_button">Excluir \ncartão</string>
     <string name="credit_card_edit_button">Editar cartão \nda cobrança</string>
     <string name="credit_card_schedule_recharge_button">Programar \nrecarga</string>
+    <string name="credit_card_manage_schedule_button">Gerenciar \nprogramada</string>
     <string name="credit_card_edit_billing_card_button">Editar cartão \nda cobrança</string>
     <string name="credit_card_cannot_delete_scheduled_card">Este cartão está vinculado à sua recarga programada e não pode ser excluído.</string>
     <string name="credit_card_change_card_button">Alterar cartão</string>

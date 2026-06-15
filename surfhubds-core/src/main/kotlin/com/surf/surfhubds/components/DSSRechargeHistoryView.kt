@@ -496,7 +496,9 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
             val diffMillis = max(0L, nowMillis - executionDate.time)
 
             val days = diffMillis / (1000L * 60 * 60 * 24)
-            // Há 1 dia ou mais: mantém o formato em dias ("há 3D").
+            // Acima de 30 dias: mostra em meses ("há 2M").
+            if (days >= 30) return "há ${days / 30}M"
+            // Entre 1 e 29 dias: mostra em dias ("há 3D").
             if (days >= 1) return "há ${days}D"
 
             // Menos de um dia: mostra as horas decorridas desde a recarga até agora ("há 5H").

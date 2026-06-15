@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string name="app_name">iFood chip</string>
     <string name="surfhubds_brand_name">ifood</string>
     <string name="common_confirm">Confirmar</string>
     <string name="common_cancel">Cancelar</string>

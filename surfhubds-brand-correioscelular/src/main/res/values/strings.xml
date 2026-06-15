@@ -551,4 +551,8 @@
     <string name="profile_copied">Copiado!</string>
     <string name="credit_card_no_cards">Não há cartões cadastrados, cadastre no +</string>
     <string name="benefits_loterico_empty_fields">Preencha a data e o código lotérico.</string>
+    <string name="reset_current_password_invalid">Senha atual incorreta. Verifique e tente novamente.</string>
+    <string name="reset_current_password_label">Senha atual</string>
+    <string name="reset_current_password_required">Informe sua senha atual.</string>
+    <string name="schedule_manage_title">Gerência programada</string>
 </resources>

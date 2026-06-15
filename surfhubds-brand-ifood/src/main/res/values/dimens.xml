@@ -14,7 +14,7 @@
     <dimen name="height_button">44dp</dimen>
     <dimen name="height_field">56dp</dimen>
 
-    <!-- BottomNav responsivo (sobrescrito em values-sw320dp / values-sw411dp). -->
+    <!-- BottomNav (espaçamento ajustado no app via styleBottomNav) -->
     <dimen name="bottom_nav_height">64dp</dimen>
     <dimen name="bottom_nav_label_size">12dp</dimen>
     <dimen name="bottom_nav_icon_size">32dp</dimen>

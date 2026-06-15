@@ -19,7 +19,8 @@ android {
 }
 
 dependencies {
-    // Brand modules são resource-only; sem deps obrigatórias.
+    // Tema Theme.App herda de Theme.Material3.* → precisa do Material no classpath de link.
+    api(libs.material)
 }
 
 afterEvaluate {

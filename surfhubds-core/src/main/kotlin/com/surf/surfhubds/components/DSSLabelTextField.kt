@@ -105,10 +105,14 @@ class DSSLabelTextField @JvmOverloads constructor(
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
                 val next = nextField
-                if (next != null) {
-                    next.editText.requestFocus()
-                } else {
-                    editText.clearFocus()
+                when {
+                    // 1) nextField explícito.
+                    next != null -> next.editText.requestFocus()
+                    else -> {
+                        // 2) fallback: avança pro próximo campo focável abaixo (OK/Next -> próximo campo).
+                        val down = editText.focusSearch(View.FOCUS_DOWN)
+                        if (down != null && down !== editText) down.requestFocus() else editText.clearFocus()
+                    }
                 }
                 true
             } else false

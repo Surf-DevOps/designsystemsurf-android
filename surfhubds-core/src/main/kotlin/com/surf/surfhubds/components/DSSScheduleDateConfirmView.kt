@@ -31,6 +31,11 @@ class DSSScheduleDateConfirmView @JvmOverloads constructor(
 
     var delegate: Delegate? = null
 
+    companion object {
+        /** Título da navbar desta tela (texto fica no DSS, usado pelo app ao configurar a navbar). */
+        const val TITLE = "Data da programada"
+    }
+
     private val questionLabel = TextView(context).apply {
         text = "Confirma a troca da data de cobrança da recarga programada?"
         textSize = 14f

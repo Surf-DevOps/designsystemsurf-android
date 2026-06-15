@@ -21,9 +21,7 @@ class CorreiosCelularTheme : DefaultTheme() {
         textTertiary = ColorValue.fromHex("#9E9E9E", "#808080"),
         textLink = ColorValue.fromHex("#1D4ED8", "#0A84FF"),
         textOnPrimary = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
-        // Borda suavizada (pedido do produto): #595959 era forte demais; usa um
-        // cinza claro estilo iOS systemGray4. Dark mantém branco suave.
-        borderDefault = ColorValue.fromHex("#D1D1D6", "#FFFFFF"),
+        borderDefault = ColorValue.fromHex("#595959", "#FFFFFF"),
         borderFocus = ColorValue.fromHex("#EB0033", "#EA1E2C"),
         borderError = ColorValue.fromHex("#DC3545", "#E74C3C"),
         overlay = colorValueWithAlpha("#000000", "#000000", 0.5f, 0.7f),

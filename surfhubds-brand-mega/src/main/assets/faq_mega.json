@@ -1,0 +1,239 @@
+{
+  "hasCategories": true,
+  "categories": [
+    {
+      "title": "Recarga",
+      "items": [
+        {
+          "question": "Onde recarregar meu chip?",
+          "answer": ""
+        },
+        {
+          "question": "Onde recarregar o meu chip?",
+          "answer": "Você pode realizar a recarga do seu Mega Surf pelos seguintes canais:\n\n• Pelo nosso site: https://pagtel.com.br/megasurf/recarga/acoes/qrcode\n• Site: surfpay.com.br/rapida (apenas pagamento via PIX)\n• Aplicativo: Mega Surf\n• Recarga para operadora Surf Telecom através dos aplicativos:\n\n– Caixa Econômica;\n\n– Bradesco;\n\n– Mercado Pago;\n\n– PicPay;\n\n– Recarga Pay."
+        },
+        {
+          "question": "Quais são os valores de recarga?",
+          "answer": "MEGA 30 – POR R$30,00\n\nAté 15GB de internet\n\n10GB de base + 3GB de portabilidade + 2GB de recarga programada\n\nMinutos ilimitados para qualquer operadora\n\n100 SMS\n\nWhatsApp ilimitado\n\nAplicativo Skeelo Light\n\nInternet sem cortes por 30 dias\n\n\n\nMEGA 40 – POR R$40,00\n\nAté 30GB de internet\n\n20GB de base + 5GB de portabilidade + 5GB de recarga programada\n\nMinutos ilimitados para qualquer operadora\n\n100 SMS\n\nWhatsApp ilimitado\n\nAplicativo Skeelo Regular\n\nInternet sem cortes por 30 dias\n\n\n\nMEGA 50 – POR R$50,00\n\nAté 40GB de internet\n\n25GB de base + 5GB de portabilidade + 10GB de recarga programada\n\nMinutos ilimitados para qualquer operadora\n\n100 SMS\n\nWhatsApp ilimitado\n\nAplicativo Skeelo Regular Waze Ilimitado Internet sem cortes por 30 dias\n\n\n\nMEGA 75 – POR R$75,00\n\nAté 55GB de internet\n\n35GB de base + 5GB de portabilidade + 15GB de recarga programada\n\nMinutos ilimitados para qualquer operadora\n\n100 SMS\n\nWhatsApp ilimitado\n\nAplicativo Skeelo Premium Waze Ilimitado Internet sem cortes por 30 dias"
+        },
+        {
+          "question": "O que é recarga programada?",
+          "answer": "A recarga automática (programada) pode ser solicitada através do site de recarga https://pagtel.com.br/megasurf/recarga ou aplicativo Mega Surf no momento que for feita uma recarga."
+        },
+        {
+          "question": "Quais são as principais vantagens?",
+          "answer": "Com a Mega Surf, é possível navegar no WhatsApp sem gastar sua internet móvel*, na rede 4G de maior cobertura do Brasil, além de ligações locais e interurbanas para qualquer operadora, usando o código 41.\n*A gratuidade aplica-se para o envio/recebimento de mensagens de texto, arquivos de foto e arquivos de áudio; As ligações (chamadas) de voz ou vídeo realizadas do WhatsApp são cobradas (deduzidas do pacote de dados) normalmente\n\nPara mais informações acessar a página: https://megasurfcelular.com.br/."
+        },
+        {
+          "question": "Como fazer renovação automática?",
+          "answer": "A recarga programada pode ser solicitada através do site de recarga https://megasurfcelular.com.br/recarga ou aplicativo Mega Surf no momento que for feita uma recarga."
+        },
+        {
+          "question": "E se eu não recarregar o meu chip?",
+          "answer": "Se não houver recarga ou renovação após a expiração da recarga, o titular passa por 3 estágios até a desativação da linha:\n\n1º estágio (após expiração da recarga): o cliente continua a receber chamadas e SMS, porém não terá os benefícios de voz e dados.\n\n2º estágio (45 dias após o 1º estágio): o cliente poderá apenas originar chamadas, enviar mensagens de textos aos serviços públicos de emergência definidos na regulamentação da Anatel, contatar o Call Center através do *288 e realizar recarga. Ficará por 30 dias neste estágio até a desativação total do serviço.\n\n3º estágio (até 75 dias após o 1º estágio): Após o período de 75 dias do segundo estágio sem plano ativo a linha é expirada no 76º dia."
+        },
+        {
+          "question": "Quais são as formas de pagamento?",
+          "answer": "As formas de pagamento na compra de um novo chip ou eSIM Mega pelo site são cartão de crédito e PIX. Já para recargas via aplicativo próprio são aceitos cartão de crédito, cartão de débito e PIX."
+        },
+        {
+          "question": "É possível realizar uma recarga com valores diferentes do que o ofertado nos planos de venda do site e/ou aplicativo?",
+          "answer": "Sim, é possível fazer recarga em casas lotéricas, bancos, supermercados, entre outros locais autorizados.\nOs valores disponíveis para recarga nos canais autorizados são:\n\n• R$20,00;\n• R$25,00;\n• R$30,00;\n• R$40,00;\n• R$50,00;\n• R$75,00."
+        }
+      ]
+    },
+    {
+      "title": "Chip virtual",
+      "items": [
+        {
+          "question": "O que é o chip virtual (E-SIM)?",
+          "answer": "O eSIM é um chip virtual incorporado diretamente nos dispositivos. Ele elimina a necessidade de um cartão SIM físico para se conectar a redes móveis. Ou seja, é uma tecnologia que te permite comprar um chip ao invés de colocá-lo na bandeja do celular você ativa diretamente através de um QR Code."
+        },
+        {
+          "question": "Como funciona?",
+          "answer": "O eSIM funciona como um chip tradicional, mas está embutido diretamente nos aparelhos. Ao invés de inserir um cartão físico, você baixa eletronicamente as informações da operadora para o eSIM. Isso permite ativar, trocar e gerenciar planos de maneira ágil, sem a necessidade de trocar de chip manualmente."
+        },
+        {
+          "question": "Principais vantagens",
+          "answer": "• Diferenciais eSIM Mega Surf\n\nAlgumas operadoras podem cobrar pela ativação do seu eSIM e levam dias para ativar. Com o eSIM Mega Surf você tem sua linha ativa em menos de 24h e só paga o valor da sua recarga.\n\n• Facilidade de Ativação\n\nNão é necessário um cartão SIM físico. A ativação é feita eletronicamente em até 24h através de um QR Code, permitindo uma configuração rápida e sem a necessidade de inserir um chip.\n\n• Flexibilidade\n\nÉ possível alterar entre operadoras e planos sem precisar trocar fisicamente o chip, mesmo para aparelhos com apenas uma bandeja de cartão SIM.\n\n• Conveniência\n\nNão há risco de perder ou danificar um cartão SIM físico. As configurações do eSIM estão armazenadas eletronicamente no dispositivo e podem ser restauradas facilmente."
+        },
+        {
+          "question": "Como adquirir um eSIM?",
+          "answer": "Você pode adquirir o seu eSIM pelo site https://megasurfcelular.com.br/chipvirtual/\n\nAo entrar no site, você deverá validar se o seu aparelho é compatível com o modelo de chip eSIM, sendo valido, aparecerá abaixo os planos disponíveis para aquisição."
+        },
+        {
+          "question": "Qual o prazo para receber o meu eSIM?",
+          "answer": "Você recebe o eSIM em seu e-mail em até 24 horas."
+        },
+        {
+          "question": "O QR Code pode ser lido mais de uma vez?",
+          "answer": "Sim, o eSIM pode ser lido novamente, desde que o cliente ainda possua QR Code adquirido e que remova do aparelho anterior, antes de fazer uma nova leitura.\n\nNo entanto, se der algum problema ao fazer esse processo, entre em contato pelo telefone, discando *288 do seu celular ou 10543 de qualquer operadora. Fique tranquilo! Estamos 24h por dia, 7 dias por semana disponíveis para ajudar você no que precisar."
+        },
+        {
+          "question": "Quais celulares são compatíveis?",
+          "answer": "Atualmente a compatibilidade com o eSIM ainda não abrange todos os modelos de celulares populares. No entanto, a tecnologia está avançando rapidamente neste sentido. Muitos dos novos lançamentos já incluem suporte para eSIM, oferecendo aos usuários toda comodidade e benefícios de um chip virtual. Embora muitos aparelhos ainda não sejam compatíveis com o eSIM, a tendência é que ele se torne cada vez mais comum.\n\nAPPLE\n\nIphone XS\n\nIphone XS Max\n\nIphone XR\n\nIphone SE (2020)\n\nIphone SE (2022)\n\nIphone 11 (modelo A2221 de 2019)\n\niPhone 11 Pro (modelo A2215, de 2019)\n\niPhone 11 Pro Max\n\niPhone SE 2 (modelo 2020)\n\niPhone 12 Mini\n\niPhone 12\n\niPhone 12 Pro\n\niPhone 12 Pro Max\n\niPhone 13 Mini\n\niPhone 13\n\niPhone 13 Pro\n\niPhone 13 Pro Max\n\niPhone SE 3 (modelo 2022)\n\niPhone 14\n\niPhone 14 Pro\n\niPhone 14 Plus\n\niPhone 14 Pro Max\n\niPhone 15\n\niPhone 15 Pro\n\niPhone 15 Plus\n\niPhone 15 Pro Max\n\niPhone 16\n\niPhone 16 Plus\n\niPhone 16 Pro Max\n\nObservação: Dois eSIM podem ser ativados simultaneamente no iPhone 13, 14 e 15.\n\nSAMSUNG\n\nSamsung Galaxy A34 5G\n\nSamsung Galaxy A54\n\nSamsung Galaxy S20\n\nSamsung Galaxy S20+\n\nSamsung Galaxy S20 Ultra\n\nSamsung Galaxy S21\n\nSamsung Galaxy S21+ 5G\n\nSamsung Galaxy S21+ Ultra 5G\n\nSamsung Galaxy S22\n\nSamsung Galaxy S22+\n\nSamsung Galaxy S22 Ultra\n\nSamsung Galaxy S23 Ultra\n\nSamsung Galaxy S23+\n\nSamsung Galaxy S23\n\nSamsung Galaxy S23 FE\n\nSamsung Galaxy Note 20\n\nSamsung Galaxy Note 20 Ultra 5G\n\nSamsung Galaxy Fold\n\nSamsung Galaxy Z Fold2 5G\n\nSamsung Galaxy Z Fold3 5G\n\nSamsung Galaxy Z Flip\n\nSamsung Galaxy Z Flip 3 5G\n\nSamsung Galaxy Z Fold4\n\nSamsung Galaxy Z Flip4\n\nSamsung Galaxy S20 Ultra 5G\n\nSamsung Watch (app Samsung Wearable\n\nGOOGLE\n\nGoogle Pixel 3 & 3 XL\n\nGoogle Pixel 3a & 3a XL\n\nGoogle Pixel 4, 4a & 4 XL\n\nGoogle Pixel 5\n\nGoogle Pixel 6\n\nGoogle Pixel 6 Pro\n\nGoogle Pixel 6a\n\nGoogle Pixel 7\n\nGoogle Pixel 7 Pro\n\nGoogle Pixel Fold\n\nGoogle Pixel 8\n\nGoogle Pixel 8 Pro\n\nHUAWEI\n\nHuawei P40\n\nHuawei P40+\n\nHuawei Mate 40 Pro\n\nMOTOROLA\n\nMotorola Razr 2019\n\nMotorola Razr 5G\n\nMotorola Razr 40\n\nMotorola Razr 40 Ultra\n\nMotorola Razr+\n\nMotorola Edge +\n\nMotorola Edge 40\n\nMotorola Edge 40 Pro\n\nMotorola Edge 40 Neo\n\nMotorola G52J 5G\n\nMotorola G52J 5GⅡ\n\nMotorola G53J 5G\n\nMotorola G84\n\nMotorola G53 5G\n\nOPPO\n\nOppo Find X3 Pro\n\nOppo Reno 5A\n\nOppo Find X5\n\nOppo Find X5 Pro\n\nOppo A55s 5G\n\nOppo Reno 6 Pro 5G\n\nObservação: o Oppo Find X5 Lite não suporta o eSIM.\n\nXIAOMI\nXiaomi 12T Pro\n\nXiaomi 13\n\nXiaomi 13 Lite\n\nXiaomi 13 Pro\n\nXiaomi 13T\n\nXiaomi 13T Pro\n\nOUTROS CELULARES\n\nNuu Mobile X5\n\nGemini PDA 4G+Wi-Fi\n\nRakuten Mini\n\nXperia 10 III Lite\n\nXperia 1 IV\n\nXperia 5 IV\n\nXperia 10 IV\n\nSony Xperia 1 V\n\nSony Xperia 5 v\n\nRakuten Big-S\n\nRakuten Big\n\nRakuten Mini\n\nHonor Magic 4 Pro\n\nHonor Magic5 Pro\n\nHonor X8\n\nOppo Find X3 Pro\n\nOppo Find X5\n\nOppo Find X5 Pro\n\nOppo Reno 5 A\n\nOppo A55s 5G\n\nOppo Reno 6 Pro 5G\n\nOppo Reno 9A\n\nDOOGEE V30\n\nFairphone 4\n\nNokia G60 5G\n\nNokia X30 5G\n\nSurface Duo\n\nSurface Pro X\n\nVivo X80\n\nVivo X90 PRO\n\nOneplus 11\n\nOneplus 11 5G\n\nOneplus 12\n\nOneplus Open\n\nHAMMER Blade 3\n\nHAMMER Blade 5G\n\nHAMMER Explorer PRO\n\nNokia XR21\n\nNokia X30\n\nNokia G60 5G\n\nNokia X30 5G\n\nNokia XR21"
+        },
+        {
+          "question": "Como ativar um chip virtual?",
+          "answer": "Se você comprou um e-SIM, veja abaixo como ativar:\n\ncom o QR Code\n\nSe o seu aparelho é da marca SAMSUNG\n\n1. Acesse “Configurações”;\n2. Toque em “Conexões”;\n3. Selecione “Gerenciamento de cartão SIM”;\n4. Toque em “Adicionar plano móvel”;\n5. Toque em “Ler código QR da operadora”;\n6. Aponte a câmera para o QRcode do seu eSIM;\n7. Selecione “Adicionar” e pronto! Seu eSIM está ativo.\n\nSe o seu aparelho é da marca APPLE:\n\n1. Vá em “Ajustes”;\n2. Clique em “Celular”;\n3. Em seguida, vá em “Adicionar eSIM”;\n4. Clique em “Usar Código QR”;\n5. Aponte a câmera para o QRcode do seu eSIM;\n\nSe o seu aparelho é da marca MOTOROLA:\n\n1. Acesse “Configurar”;\n2. Toque em “Rede e Internet”;\n3. Depois, vá em “Rede móvel”;\n4. Toque em “Adicionar um número usando o eSIM” e em seguida toque em “Próximo”;\n5. Faça a leitura do QRcode e confirme para seguir com a ativação.\n\nAtivação manual\n\nSe o seu aparelho é da marca SAMSUNG\n\n1. Acesse “Configurações”;\n2. Toque em “Conexões”;\n3. Selecione “Gerenciamento de cartão SIM”;\n4. Toque em “Adicionar plano móvel”;\n5. Toque em “Ler o código QR da operadora”;\n6. Toque em “Inserir código”;\n7. Cole o código copiado no campo indicado e toque em “Conectar”.\n\nSe o seu aparelho é da marca APPLE:\n\n1. Vá em “Ajustes”;\n2. Clique em “Celular”;\n3. Em seguida, vá em “Adicionar eSIM”;\n4. Clique em “Usar Código QR”;\n5. Toque em “Inserir Detalhes Manualmente”;\n6. No campo “Código de Ativação” cole o código copiado;\n7. Toque em “Seguinte” para finalizar o processo.\n\nSe o seu aparelho é da marca MOTOROLA:\n\n1. Acesse “Configurar”;\n2. Toque em “Rede e Internet”;\n3. Depois, vá em “Cartões SIM (chips)”;\n4. Toque no ícone ao lado de “eSIM” e em seguida toque em “Leve-me até lá”;\n5. Toque em “Fazer o download de um chip” e em seguida vá em “Próximo”;\n6. Na tela de leitura do QRcode, vá em “Precisa de ajuda?”;\n7. No texto apresentado toque em “Insira o código manualmente”;\n8. Cole o código copiado no campo indicado e toque em “Continuar”;\n9. Após o carregamento, vá em “Configurar” e selecione o eSIM;\n10. Toque em “Usar chip” e em seguida selecione “Sim” para ativar."
+        },
+        {
+          "question": "Posso ativar o mesmo Chip virtual em mais de um aparelho?",
+          "answer": "Não, o eSIM funciona da mesma forma que um chip físico, sendo assim só pode funcionar em um único aparelho, ou seja, se for conectado em um aparelho e depois ser conectado em outro, o primeiro aparelho que foi inserido o chip virtual será desconectado e conectado no novo aparelho."
+        },
+        {
+          "question": "Como transferir o meu Chip Virtual para outro celular?",
+          "answer": "IOS\n\n• No novo Iphone, acesse “Ajustes > Celular > Adicionar Plano Celular”;\n• Escolha o plano (operadora) celular para transferir de outro iPhone. Se você não vir uma lista de números, toque em “Transferir de outro iPhone”. Para esse processo, os dois dispositivos devem ter o iOS 16 ou posterior;\n• Verifique as instruções no iPhone anterior para confirmar a transferência. Para confirmar, toque em Transferir ou insira o código de verificação exibido no novo iPhone, caso solicitado;\n• Aguarde a ativação do plano celular no novo iPhone. O cartão SIM anterior será desativado quando o plano celular for ativado no novo iPhone;\n• Se um banner for exibido no novo iPhone com a mensagem “Termine a Configuração do Plano Celular Mega Surf“, toque nele. Você será redirecionado para o site da Mega Surf para transferir o eSIM;\n• Se precisar de ajuda entre em contato pelo telefone, discando *288 do seu celular ou 10543 de qualquer operadora. Fique tranquilo! Estamos 24h por dia, 7 dias por semana disponíveis para ajudar você no que precisar.\n\nANDROID\n\n\n\n• No novo aparelho, acesse “Configurações > Conexões > Gerenciamento de cartão SIM > adicionar plano móvel”;\n• Escolha a forma que vai ativar o seu plano:\n\nOPÇÃO 1: Lendo o QR Code da operadora;\n\nOPÇÃO2: Traga o plano do aparelho antigo.\n\n• Aguarde a ativação do plano celular no novo aparelho. O cartão SIM anterior será desativado quando o plano celular for ativado no novo aparelho."
+        },
+        {
+          "question": "A tecnologia eSIM é segura?",
+          "answer": "Sim, a tecnologia eSIM contém diversos benefícios e segurança é o maior deles.\n\nCaso o aparelho seja roubado, o eSIM não pode ser retirado, impedindo o criminoso de revender ou utilizar o seu telefone. Além disso, não há interrupção da conexão de dados, facilitando a localização em caso de perda ou mesmo de furto.\n\nO chip eSIM não quebra ou se desgasta, como pode acontecer nas versões físicas, sem contar que você pode adquirir um eSIM muito mais rápido que um chip físico, não sendo necessário a ida até uma loja física ou aguardando a entrega do chip, mas sim, ativando seu eSIM por um simples QR Code."
+        },
+        {
+          "question": "E se eu mudar meu aparelho para um que não suporta eSIM?",
+          "answer": "É importante se atentar aos aparelhos compatíveis antes de realizar a compra do seu chip!\n\nCaso já possua o eSIM ativado e troque de aparelho é necessário que seja realizado uma nova compra de chip e entre em contato conosco discando *288 do seu celular ou 10543 para apenas realizar a sua troca de chip.\n\nCaso tenha comprador o eSIM por engano, pois o aparelho não é compatível, entre em contato na central para enviar o chip físico ao invés do eSIM."
+        },
+        {
+          "question": "O eSIM funciona apenas em telefonia móvel?",
+          "answer": "Sim, tanto o eSIM como o chip físico é somente compatível com aparelhos móveis."
+        },
+        {
+          "question": "O eSIM é compatível com o sinal 5G?",
+          "answer": "O eSIM é compatível com o sinal 5G, precisando apenas ser verificado se o seu aparelho é compatível com a rede."
+        },
+        {
+          "question": "Posso usar um eSIM e um chip físico ao mesmo tempo?",
+          "answer": "IOS\n\nTodos os modelos de iPhone compatíveis com eSIM podem ter vários eSIM e usar o Dual SIM com dois SIM ativos ao mesmo tempo. Você pode usar o Dual SIM sendo um SIM físico e um eSIM. Nos modelos de iPhone 13 e posteriores, também é possível usar dois eSIM ativos.\n\nANDROID\n\nNo Android ainda não podemos ter dois eSIM em um único aparelho, somente um eSIM e, dependendo do aparelho, dois chips físicos."
+        },
+        {
+          "question": "Se eu perder o QR Code do meu eSIM como posso recuperar?",
+          "answer": "Em caso de perca do QR Code primeiramente verifique na caixa de lixo do e-mail, e caso não encontre entre em contato na central discando *288 do seu celular ou 10543 de qualquer operadora junto com o comprovante da venda do eSIM."
+        }
+      ]
+    },
+    {
+      "title": "Ativação",
+      "items": [
+        {
+          "question": "Como ativar o chip Mega Surf?",
+          "answer": "• Desligue o seu celular e coloque o chip Mega Surf;\n• Ligue o aparelho e aguarde aparecer “MEGA SURF” na parte superior da tela;\n• Faça a primeira chamada e siga as orientações."
+        }
+      ]
+    },
+    {
+      "title": "Portabilidade",
+      "items": [
+        {
+          "question": "O que é portabilidade?",
+          "answer": "A Portabilidade é a possibilidade do cliente que já possui um número telefônico manter o seu número mesmo trocando de operadora. Na Mega Surf, você pode fazer a portabilidade do seu número pelo site https://megasurfcelular.com.br/nova-portabilidade/ ou pelo telefone, discando *288 do seu celular ou 10543 do chip de qualquer operadora."
+        },
+        {
+          "question": "Como faço a portabilidade para a Mega Surf?",
+          "answer": "O titular da conta deve acessar o site https://megasurfcelular.com.br/nova-portabilidade/ portando CPF ou CNPJ e informar:\n\n• Número novo\n• Número da operadora antiga\n• CPF ou CNPJ\n• Nome da operadora\n\nApós finalizar a solicitação, você receberá um SMS em que deve responder para que a portabilidade ocorra. Após isso basta aguardar o processo de portabilidade ser realizado.\n\nApós finalizar a solicitação, basta aguardar o processo de portabilidade ser realizado.\n\nEnquanto isso, o seu Mega Surf terá o plano ativo, benefícios disponíveis e um número temporário (pode ser consultado discando *221#)."
+        },
+        {
+          "question": "Não recebi SMS para confirmar a portabilidade. Como faço?",
+          "answer": "O SMS pode levar até 15 minutos para chegar, caso não receba o SMS é necessário entrar em contato com a sua outra operadora e verificar se consta bloqueio ou algum outro problema na linha. Importante o SMS é enviado para o número que deseja portar."
+        },
+        {
+          "question": "Qual o prazo para portabilidade?",
+          "answer": "O prazo para efetivar a portabilidade é de até 72 horas úteis e tanto o seu chip antigo quanto o Mega Surf funcionarão normalmente nesse período. Você poderá ficar com a sua linha indisponível no dia da portabilidade por, no máximo, 2 horas."
+        },
+        {
+          "question": "Posso portar o número de um DDD diferente?",
+          "answer": "Não. A portabilidade numérica somente é possível dentro da mesma área de registro (mesmo DDD) – para os clientes de telefonia móvel – e dentro da mesma localidade (mesmo município ou localidade com continuidade urbana)."
+        },
+        {
+          "question": "Posso portar o número de um plano pós-pago?",
+          "answer": "Sim. Na telefonia móvel, a portabilidade numérica será possível mesmo em distintas modalidades de serviços, desde que realizada dentro de uma mesma área de registro (mesmo DDD)."
+        },
+        {
+          "question": "A portabilidade tem custo adicional?",
+          "answer": "Atualmente a portabilidade para o Mega Surf não tem custo, contudo, conforme prevê o regulamento da Anatel, é possível a cobrança de taxas ao receber um novo cliente."
+        },
+        {
+          "question": "O pedido de portabilidade pode ser negado?",
+          "answer": "Sim. Embora seja um direito do usuário e um dever das operadoras, o pedido de portabilidade pode ser recusado nas seguintes situações:\n\n• Quando os dados enviados pelo usuário estiverem incorretos ou incompletos;\n• Se houver em andamento outra solicitação de portabilidade para o mesmo número;\n• Se o número do telefone for inexistente, não pertencer a nenhum cliente, for temporário ou for designado a um Telefone de Uso Público (orelhão);\n• Se o número do telefone for de uma operadora fixa e a portabilidade for para uma operadora móvel e vice-versa;\n• Por razões técnicas, por exemplo, se a operadora de destino (receptora) não tiver serviço na área solicitada ou se tratar de Serviço Móvel Especializado (SME)."
+        },
+        {
+          "question": "Como funciona a bonificação para portabilidade?",
+          "answer": "O cliente que trouxer o seu número para a operadora Mega Surf terá o benefício de receber GB adicionais ao seu plano todos os meses a cada nova recarga. Nas informações do seu plano consulte gigas de portabilidade.  A atribuição dos bônus de portabilidade ocorre até 3 dias úteis após a finalização da portabilidade."
+        }
+      ]
+    },
+    {
+      "title": "Internet",
+      "items": [
+        {
+          "question": "Como configurar sua internet Mega Surf",
+          "answer": "• Depois de ativar seu número Mega Surf, vá em “Configurações” no seu celular e selecione “Redes” ou “Redes Móveis”;\n• Ative a opção de “Dados em Roaming” e selecione a banda 5G, 4G ou LTE;\n• Clique em “Pontos de Acesso” e em seguida “+” ou “adicionar”;\n• Insira no campo “nome” a palavra “Mega Surf” e no campo APN o endereço surf.br;\n• Clique na seta de retorno, salve e selecione a rede “Mega Surf”."
+        },
+        {
+          "question": "Como funciona o WhatsApp grátis?",
+          "answer": "O uso do WhatsApp para mensagens de texto e fotos não será descontado da franquia de dados, durante o período de validade do Plano, independentemente de haver saldo ou não na franquia de dados. Para baixar ou enviar vídeos via WhatsApp, chamadas de voz e chamadas de vídeo haverá consumo de dados de sua franquia."
+        },
+        {
+          "question": "Como funciona a internet sem cortes?",
+          "answer": "Após o consumo de 100% de sua franquia de dados, o acesso à internet não será cortado e sua internet poderá ser utilizada em velocidade reduzida (32 Kbps) até o final do prazo de validade do Plano."
+        },
+        {
+          "question": "Como funciona a velocidade de navegação?",
+          "answer": "A velocidade de referência de navegação na rede 3G é de até 1 Mbps para download e de até 100 kbps para upload. A velocidade de referência na rede 4G é de até 5 Mbps para download e de até 500 kbps para upload."
+        },
+        {
+          "question": "Como funciona o acúmulo de benefícios não utilizados no mês?",
+          "answer": "Os benefícios de minutos/SMS ou dados não utilizados no período de validade do Plano, que é de 30 dias, são acumulados, desde que o cliente tenha feito uma recarga dentro do prazo de validade de seu plano."
+        },
+        {
+          "question": "Como funciona o benefício Skeelo?",
+          "answer": "Na aquisição de cada plano/benefício tem o benefício de 1 (um) e-book grátis no aplicativo Skeelo. Para resgatar seu livro, basta baixar o aplicativo e fazer seu cadastro.\n\nEsse benefício não acarreta de nenhuma cobrança adicional ao cliente, sendo incluso no plano."
+        }
+      ]
+    },
+    {
+      "title": "Outros",
+      "items": [
+        {
+          "question": "O que é a Mega Surf?",
+          "answer": "Mega Surf é uma marca de serviço móvel pessoal. Uma operadora digital que oferece planos de celular com benefícios especiais para o cliente."
+        },
+        {
+          "question": "O saldo de internet acabou antes do vencimento do plano, e agora?",
+          "answer": "O novo saldo de internet será renovado na data da nova recarga realizada."
+        },
+        {
+          "question": "Onde consultar meu saldo?",
+          "answer": "Você pode consultar seu saldo em uma das opções abaixo:\n\n• Disque *225# e veja o saldo na tela do seu celular\n• Site: https://pagtel.com.br/megasurf/recarga\n• Aplicativo Mega Surf\n• Se preferir, consulte pelo WhatsApp (11)93300-3030 ou pelo telefone discando *288 do seu Mega Surf ou ligando 10543 de qualquer operadora."
+        },
+        {
+          "question": "Quais modelos de celulares são compatíveis com a Mega Surf?",
+          "answer": "O correto funcionamento e desempenho do Mega Surf somente será possível por meio do uso de equipamentos homologados pela ANATEL e compatíveis com as frequências autorizadas e em uso pelo prestador parceiro Surf Telecom cujo IMEI não esteja bloqueado por autoridades competentes."
+        },
+        {
+          "question": "O Roaming Nacional tem custos?",
+          "answer": "O Roaming é gratuito para o cliente. Não haverá cobrança adicional para o encaminhamento das chamadas de longa distância em todo o território nacional. Não haverá cobrança de taxa de deslocamento para as chamadas recebidas fora de sua localidade."
+        },
+        {
+          "question": "É possível fazer ligações internacionais (DDI)?",
+          "answer": "Não, a Mega Surf no momento não faz chamadas internacionais."
+        },
+        {
+          "question": "Perdeu ou danificou a Mega Surf? Veja como pedir a 2ª via.",
+          "answer": "Em caso de roubo, perda ou defeito, é necessário adquirir um novo chip na loja ou no site e contatar a central pelo número *288 para realizar a troca."
+        },
+        {
+          "question": "Alguma outra dúvida sobre a Mega Surf?",
+          "answer": "Solicite a 2ª via do seu Mega Surf pelo WhatsApp 11 93300-3030 ou pelo telefone discando *288 de um outro telefone Mega Surf ou 10543 de qualquer operadora. O seu novo chip será enviado para o endereço de sua preferência."
+        },
+        {
+          "question": "Tenho que pagar a 2ª via do chip?",
+          "answer": "Nos casos de perda ou roubo, é necessário adquirir um novo chip no site e contatar a central pelo número *288 para realizar a troca.\n\nEm caso de defeito constatado pela nossa equipe técnica, enviaremos a 2ª via do chip sem custo."
+        },
+        {
+          "question": "Alguma outra dúvida sobre a Mega Surf?",
+          "answer": "Para obter ajuda sobre os detalhes do seu plano pré-pago Mega Surf entre em contato pelo WhatsApp (11)93300-3030 ou pelo telefone, discando *288 do seu Mega Surf ou 10543 de qualquer operadora. Fique tranquilo! Estamos 24h por dia, 7 dias por semana disponíveis para ajudar você no que precisar."
+        }
+      ]
+    }
+  ]
+}

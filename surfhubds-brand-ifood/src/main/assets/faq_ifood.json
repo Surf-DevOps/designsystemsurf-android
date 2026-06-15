@@ -1,0 +1,86 @@
+{
+  "hasCategories": true,
+  "categories": [
+    {
+      "title": "Dúvidas frequentes",
+      "items": [
+        {
+          "question": "O que é o iFood Chip?",
+          "answer": "O iFood Chip é a operadora de celular oficial para entregadores do iFood. Inclui WhatsApp, Waze e o app iFood para Entregadores sem descontar da franquia, internet cumulativa e ligações ilimitadas. Entregadores Super Diamante ganham (15GB + 5GB de bônus) com mensalidade gratuita, enquanto outros entregadores podem contratar a oferta de 15GB por R$25 mensais."
+        },
+        {
+          "question": "Quem tem direito ao iFood Chip?",
+          "answer": "Todos os entregadores que ativos no iFood podem contratar o iFood Chip. Entregadores Super Diamante do mês vigente têm direito à gratuidade na oferta."
+        },
+        {
+          "question": "Ainda não sou Super Entregador. Posso solicitar o chip?",
+          "answer": "Sim! O iFood Chip já está liberado para todos os entregadores do iFood. Você pode contratar a oferta por R$25 mensais. Apenas entregadores Super Diamante têm a mensalidade gratuita."
+        },
+        {
+          "question": "Como me torno Super Diamante?",
+          "answer": "Mantenha Score 3 por pelo menos 8 semanas nos últimos 3 meses e complete 650 pedidos no mesmo período. Para Ouro, são 250 pedidos."
+        },
+        {
+          "question": "Com que frequência a elegibilidade é revisada?",
+          "answer": "A cada 30 dias verifi camos se você ainda atende aos critérios do programa."
+        },
+        {
+          "question": "Como resgato meu iFood Chip?",
+          "answer": "No app iFood para Entregadores: Perfi l > SUPER > Aproveite as vantagens > Plano de celular. Siga as instruções para solicitar.\n\nPara entregadores que não são Super, no seu app do entregador:\n\nToque em “Mais”> “Vantagens”> “iFood Chip: Ative seu plano” ou “Plano de Celular”:\n1. Na página do iFood Chip, clique em “Comprar agora”;\n2. Preencha seus CPF e em seguida os dados de entrega;\n3. Confirmar as informações de pagamento e entrega;\n4. Quando receber o chip em casa, é só ativar e começar a usar."
+        },
+        {
+          "question": "Quais são as características de cada oferta?",
+          "answer": "• Diamante (gratuito): 20GB (15GB + 5GB bônus), ligações ilimitadas, 100 SMS, WhatsApp e Waze livres, Skeelo.\n• Entregadores Super Ouro e demais entregadores (R$ 25/mês): 15GB, ligações ilimitadas, 100 SMS, WhatsApp e Waze livres, Skeelo."
+        },
+        {
+          "question": "Em quanto tempo recebo meu chip?",
+          "answer": "O prazo de entrega pode variar conforme a região. Em geral, o chip é entregue em poucos dias úteis."
+        },
+        {
+          "question": "Como ativo o iFood Chip?",
+          "answer": "Desligue o celular, insira o chip do iFood. Ligue o aparelho e aguarde a rede “IFOOD” aparecer na parte superior do seu aparelho, em seguida faça uma ligação para qualquer número e você será direcionado para um atendimento eletrônico. Siga as orientações do atendimento para ativar seu Chip. Após ativação você pode ligar para*221#, para descobrir o número do seu iFood Chip."
+        },
+        {
+          "question": "Como configurar minha internet?",
+          "answer": "• Depois de ativar seu número do Chip do ENTREGADOR, vá em “Configurações” no seu celular e selecione “Redes” ou “Redes Móveis”;\n• Ative a opção de “Dados em Roaming” e selecione a banda 5G, 4G ou LTE;\n• Clique em “Pontos de Acesso” e em seguida “+” ou “adicionar”;\n• Insira no campo “nome” a palavra “iFood” e no campo APN o endereço surf.br;\n• Clique na seta de retorno, salve e selecione a rede “iFood”"
+        },
+        {
+          "question": "O que acontece se eu sair do nível Diamante?",
+          "answer": "Se virar Ouro ou sair do Super, mas continuar ativo no app, a oferta custará R$ 25/mês com 15GB."
+        },
+        {
+          "question": "O que acontece com os apps ilimitados se acabar minha franquia de internet?",
+          "answer": "Quando você consome toda a sua franquia de dados e entra no modo velocidade reduzida, os apps ilimitados (WhatsApp, Waze e app iFood para entregadores) também ficam com velocidade reduzida. Embora esses aplicativos não consumam seus GBs, eles seguem a mesma velocidade da sua conexão principal."
+        },
+        {
+          "question": "Como cancelo a oferta?",
+          "answer": "O iFood Chip funciona no sistema pré-pago, ou seja, você paga antecipadamente para usar. Se não quiser mais a oferta, é simples: basta não fazer novas recargas quando o saldo acabar. Não há fidelidade nem multa por cancelamento."
+        },
+        {
+          "question": "O que é portabilidade?",
+          "answer": "Portabilidade é o processo que permite você manter seu número de telefone atual mesmo mudando de operadora."
+        },
+        {
+          "question": "Como solicitar portabilidade?",
+          "answer": "Para trazer seu número para o iFood Chip, você precisa:\n\n• Ativar o iFood Chip usando o mesmo CPF cadastrado na sua operadora atual.\n• Verificar se seu número está ativo (consegue fazer ligações normalmente).\n• Confirmar que não tem nenhuma conta em aberto na operadora atual.\n• Solicitar a portabilidade através do app iFood Chip ou ligando *288.\n• A portabilidade só pode ser feita para números com o mesmo DDD."
+        },
+        {
+          "question": "Quanto tempo demora a portabilidade?",
+          "answer": "O processo leva até 72 horas úteis (3 dias úteis) para ser concluído. Durante esse período, você pode usar normalmente tanto o seu chip atual quanto o iFood Chip – os dois vão funcionar sem problema. Quando a portabilidade for finalizada, seu número antigo passa automaticamente a funcionar no iFood Chip."
+        },
+        {
+          "question": "Existe app exclusivo para o iFood Chip?",
+          "answer": "Sim. Baixe o app “iFood Chip” na Google Play (Android) ou App Store (iOS) para ativar, recarregar, consultar saldo e solicitar portabilidade."
+        },
+        {
+          "question": "Qual a cobertura do iFood Chip?",
+          "answer": "Cobertura nacional em parceria com a TIM. Consulte: https://tim.img.com.br/mapa-cobertura/"
+        },
+        {
+          "question": "Como entro em contato com o suporte?",
+          "answer": "Para o programa Super: App iFood > Ajuda > Ver mais categorias > Programa Super > Problema com o Programa Super Entregadores.\n\nPara o iFood Chip: Ligue *288 ou 10543"
+        }
+      ]
+    }
+  ]
+}

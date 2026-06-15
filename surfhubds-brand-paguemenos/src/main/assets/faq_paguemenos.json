@@ -1,0 +1,219 @@
+{
+  "hasCategories": true,
+  "categories": [
+    {
+      "title": "Recarga",
+      "items": [
+        {
+          "question": "Onde recarregar meu chip?",
+          "answer": "• Farmácias Pague Menos em todo Brasil;\n• Pelo nosso site https://pagtel.com.br/paguemenos/recarga/acoes/qrcode#verify-client\n• Através do aplicativo Pague Menos Celular (disponível para Android e iOS);\n• www.surfpay.com.br/rapida (apenas para recargas com pagamento via pix);\n• Recarga para operadora Surf Telecom através dos aplicativos:\n\n– Caixa Econômica;\n\n– Bradesco;\n\n– Mercado Pago;\n\n– PicPay;\n\n– Recarga Pay."
+        },
+        {
+          "question": "Quais são os valores de recarga?",
+          "answer": "As recargas disponíveis são:\n\n\n\nPlano de até 15GB de internet por R$30,00/mês\n\nPlano de até 25GB de internet por R$40,00/mês"
+        },
+        {
+          "question": "O que é recarga programada?",
+          "answer": "Recarga Programada é uma facilidade para o cliente Pague Menos Celular, que deseja fazer o pagamento automático e recorrente da sua recarga com seu cartão de crédito.\n\nA Recarga Programada pode ser solicitada através do site de recarga https://pagtel.com.br/paguemenos/recarga ou aplicativo Pague Menos Celular."
+        },
+        {
+          "question": "Como fazer renovação automática?",
+          "answer": "A recarga programada pode ser solicitada através do site de recarga http://pagtel.com.br/paguemenos/recarga ou aplicativo Pague Menos Celular no momento que for feita uma recarga."
+        },
+        {
+          "question": "O que acontece se o plano não receber uma recarga ou for renovado?",
+          "answer": "Se não houver recarga ou renovação após a expiração da recarga, o titular passa por 2 estágios até a desativação da linha:\n\n\n\n1º estágio (após expiração da recarga): o cliente recebe chamadas e SMS, porém não terá os benefícios de voz e dados.\n\n\n\n2º estágio (45 dias após o 1º estágio): o cliente poderá apenas originar chamadas, enviar mensagens de textos aos serviços públicos de emergência definidos na regulamentação da Anatel, contatar o Call Center através do *288 e realizar recarga. Ficará por 30 dias neste estágio até a desativação total do serviço."
+        }
+      ]
+    },
+    {
+      "title": "Chip virtual",
+      "items": [
+        {
+          "question": "O que é o chip virtual (E-SIM)?",
+          "answer": "Um eSIM é um chip digital que permite o uso de um plano celular de sua operadora sem precisar de um chip físico."
+        },
+        {
+          "question": "Quais celulares são compatíveis?",
+          "answer": "APPLE\n\nIphone XS\n\nIphone XS Max\n\nIphone XR\n\nIphone SE (2020)\n\nIphone SE (2022)\n\nIphone 11 (modelo A2221 de 2019)\n\niPhone 11 Pro (modelo A2215, de 2019)\n\niPhone 11 Pro Max\n\niPhone SE 2 (modelo 2020)\n\niPhone 12 Mini\n\niPhone 12\n\niPhone 12 Pro\n\niPhone 12 Pro Max\n\niPhone 13 Mini\n\niPhone 13\n\niPhone 13 Pro\n\niPhone 13 Pro Max\n\niPhone SE 3 (modelo 2022)\n\niPhone 14\n\niPhone 14 Pro\n\niPhone 14 Plus\n\niPhone 14 Pro Max\n\n\n\nObservação: Dois E-SIM podem ser ativados simultaneamente no iPhone 13 e 14.\n\n\n\nSAMSUNG\n\nSamsung Galaxy A54\n\nSamsung Galaxy S20\n\nSamsung Galaxy S20+\n\nSamsung Galaxy S20 Ultra\n\nSamsung Galaxy S21\n\nSamsung Galaxy S21+ 5G\n\nSamsung Galaxy S21+ Ultra 5G\n\nSamsung Galaxy S22\n\nSamsung Galaxy S22+\n\nSamsung Galaxy S22 Ultra\n\nSamsung Galaxy S23 Ultra\n\nSamsung Galaxy S23+\n\nSamsung Galaxy S23\n\nSamsung Galaxy Note 20\n\nSamsung Galaxy Note 20 Ultra 5G\n\nSamsung Galaxy Fold\n\nSamsung Galaxy Z Fold2 5G\n\nSamsung Galaxy Z Fold3 5G\n\nSamsung Galaxy Z Flip\n\nSamsung Galaxy Z Flip 3 5G\n\nSamsung Galaxy Z Fold4\n\nSamsung Galaxy Z Flip4\n\nSamsung Galaxy S20 Ultra 5G\n\nSamsung Watch (app Samsung Wearable)\n\n\n\nGOOGLE\n\nGoogle Pixel 3 & 3 XL\n\nGoogle Pixel 3a & 3a XL\n\nGoogle Pixel 4, 4a & 4 XL\n\nGoogle Pixel 5\n\nGoogle Pixel 6\n\nGoogle Pixel 6 Pro\n\nGoogle Pixel 6a\n\nGoogle Pixel 7\n\n\n\nGoogle Pixel 7 Pro\n\n\n\nHUAWEI\n\nHuawei P40\n\nHuawei P40+\n\nHuawei Mate 40 Pro\n\n\n\nMOTOROLA\n\nMotorola Razr 2019\n\nMotorola Razr 5G\n\n\n\nOPPO\n\nOppo Find X3 Pro\n\nOppo Reno 5A\n\nOppo Find X5\n\nOppo Find X5 Pro\n\nOppo A55s 5G\n\nOppo Reno 6 Pro 5G\n\n\n\nObservação: o Oppo Find X5 Lite não suporta o E-SIM.\n\n\n\nOUTROS CELULARES\n\nNuu Mobile X5\n\nGemini PDA\n\nSony Xperia 10 III Lite\n\nSony Xperia 1 IV\n\nSony Xperia 5 IV\n\nSony Xperia 10 IV\n\nRakuten Mini\n\nRakuten Big-S\n\nRakuten Big\n\nRakuten Mini\n\nHonor Magic 4 Pro\n\nXiaomi 12T Pro\n\nSharp AQUOS sense4 lite\n\nDOOGEE V30\n\nFairphone 4\n\nNokia G60 5G\n\nNokia X30 5G\n\nSurface Duo\n\nVivo X80\n\nOnePlus 11\n\nOne Plus 11 5G\n\nHAMMER Blade 3\n\nHAMMER Blade 5G\n\nHAMMER Explorer PRO"
+        },
+        {
+          "question": "Como ativar um chip virtual?",
+          "answer": "Se você comprou um e-SIM, veja abaixo como ativar:\n\nSe o seu aparelho é da marca SAMSUNG\n\n• Acesse “CONFIGURAÇÕES”;\n• Toque em “CONEXÕES”;\n• Selecione “Gerenciamento de cartão “SIM”;\n• Toque em “Adicionar plano móvel”;\n• Clique em Ler QR CODE ou selecione copie e cole para copiar o código manualmente.\n• Selecione “ADICIONAR” e pronto!\n\nPRONTO! Seu Chip Virtual está ativo.\n\nSe o seu aparelho é da marca APPLE:\n\n• Vá em “Ajustes”;\n• Clique em “CELULAR”;\n• Em seguida , vá em “ADICIONAR e-SIM”;\n• Clique em “USAR CÓDIGO QR”;\n• Aponte a câmera para o código QR CODE e faça a leitura ou\n\nclique em “INSERIR DETALHES MANUALMENTE” e cole o código no campo “Endereço SM-DP+”.\n\nPRONTO! Seu Chip Virtual está ativo.\n\nSe o seu aparelho é da marca MOTOROLA:\n\n• Acesse “CONFIGURAÇÕES”;\n• Clique em “REDE E INTERNET”;\n• Depois, vá em “REDE MÓVEL”;\n• Em seguida acesse “OPERADORA”;\n• Depois, clique em “ADICIONAR OPERADORA”;\n• Aparecera a tela para leitura de QR CODE, aponte a câmera ou clique em copiar e colar para colar o código manualmente.\n• Clique concluído.\n\nPRONTO! Seu Chip está ativo."
+        }
+      ]
+    },
+    {
+      "title": "Ativação",
+      "items": [
+        {
+          "question": "Como ativar o chip Pague Menos Celular?",
+          "answer": "• Desligue o seu aparelho e coloque o chip Pague Menos Celular;\n\n• Ligue o aparelho e aguarde aparecer “PAGUE MENOS CELULAR” na parte superior da tela;\n\n• Faça a primeira chamada para qualquer número e siga as orientações."
+        }
+      ]
+    },
+    {
+      "title": "Portabilidade",
+      "items": [
+        {
+          "question": "O que é portabilidade?",
+          "answer": "A Portabilidade é a possibilidade do cliente que já possui um número telefônico manter o seu número mesmo trocando de operadora. No Pague Menos Celular, você pode fazer a portabilidade do seu número nas pelo site https://paguemenoscelular.com.br/portabilidade/ pelo telefone, discando *288 do seu celular ou 10543 do chip de qualquer operadora."
+        },
+        {
+          "question": "Como faço a portabilidade para o Pague Menos Celular?",
+          "answer": "O titular da conta deve acessar o site https://paguemenoscelular.com.br/portabilidade/ portando CPF, RG ou CNH e informar:\n\nNome\n\nCPF\n\nNúmero que deseja manter\n\nOperadora antiga\n\nApós finalizar a solicitação, basta aguardar o processo de portabilidade ser realizado.\n\nEnquanto isso, o seu Pague Menos Celular terá o plano ativo, benefícios disponíveis e um número temporário (pode ser consultado discando *221#)."
+        },
+        {
+          "question": "Não recebi SMS para confirmar a portabilidade. Como faço?",
+          "answer": "Caso o SMS não chegue em até 5 minutos, será possível solicitar novamente. Se mesmo assim persistir sem o recebimento do SMS entre em contato conosco. Para obter ajuda sobre os entre em contato pelo telefone, discando *288 do seu celular ou 10543 de qualquer operadora. Fique tranquilo! Estamos 24h por dia, 7 dias por semana disponíveis para ajudar você no que precisar."
+        },
+        {
+          "question": "Qual o prazo para portabilidade?",
+          "answer": "O prazo para efetivar a portabilidade é de até 72 horas úteis e tanto o seu chip antigo quanto o (nome do chip) funcionarão normalmente nesse período. Você poderá ficar com a sua linha indisponível no dia da portabilidade por, no máximo, 2 horas."
+        },
+        {
+          "question": "Posso fazer portabilidade entre regiões com DDD diferentes?",
+          "answer": "Não. A portabilidade numérica somente é possível dentro da mesma área de registro (mesmo DDD) – para os clientes de telefonia móvel – e dentro da mesma localidade (mesmo município ou localidade com continuidade urbana)."
+        },
+        {
+          "question": "Posso transferir o número do meu celular pós-pago para outra operadora móvel como pré-pago?",
+          "answer": "Sim. Na telefonia móvel, a portabilidade numérica será possível mesmo em distintas modalidades de serviços, desde que realizada dentro de uma mesma área de registro (mesmo DDD)."
+        },
+        {
+          "question": "A portabilidade tem custo adicional?",
+          "answer": "Atualmente a portabilidade para o Pague Menos Celular não tem custo, contudo, conforme prevê o regulamento da Anatel, é possível a cobrança de taxas ao receber um novo cliente."
+        },
+        {
+          "question": "O pedido de portabilidade pode ser negado?",
+          "answer": "Sim. Embora seja um direito do usuário e um dever das operadoras, o pedido de portabilidade pode ser recusado nas seguintes situações:\n\n• Quando os dados enviados pelo usuário estiverem incorretos ou incompletos;\n• Se houver em andamento outra solicitação de portabilidade para o mesmo número;\n• Se o número do telefone for inexistente, não pertencer a nenhum cliente, for temporário ou for designado a um Telefone de Uso Público (orelhão);\n• Se o número do telefone for de uma operadora fixa e a portabilidade for para uma operadora móvel e vice-versa;\n• Por razões técnicas, por exemplo, se a operadora de destino (receptora) não tiver serviço na área solicitada ou se tratar de Serviço Móvel Especializado (SME)."
+        },
+        {
+          "question": "Como funciona o bônus por portabilidade?",
+          "answer": "O cliente que trouxer o seu número para a operadora Pague Menos Celular terá o benefício de receber gigas adicionais ao seu plano todos os meses a cada nova recarga. Nas informações do seu plano consulte gigas de portabilidade."
+        }
+      ]
+    },
+    {
+      "title": "Internet",
+      "items": [
+        {
+          "question": "Como configurar sua internet Pague Menos Celular",
+          "answer": "• Depois de ativar seu número Pague Menos Celular, vá em “Configurações” no seu celular e selecione “Redes” ou “Redes Móveis”;\n\n• Ative a opção de “Dados em Roaming” e selecione a banda 5G, 4G ou LTE;\n\n• Clique em “Pontos de Acesso” e em seguida “+” ou “adicionar”;\n\n• Insira no campo “nome” o nome “PAGUE MENOS CELULAR” e no campo APN o endereço surf.br;\n\n• Clique na seta de retorno, salve e selecione a rede “Pague Menos Celular”."
+        },
+        {
+          "question": "Como funciona o WhatsApp grátis?",
+          "answer": "O uso do WhatsApp para mensagens de texto, fotos e chamadas de voz não será descontado da franquia de dados, durante o período de validade do Plano, independentemente de haver saldo ou não na franquia de dados. Para baixar ou enviar vídeos via WhatsApp, haverá consumo de dados de sua franquia."
+        },
+        {
+          "question": "Como funciona a internet sem cortes?",
+          "answer": "Após o consumo de 100% de sua franquia de dados, o acesso à internet não será cortado e sua internet poderá ser utilizada em velocidade reduzida (32 Kbps) até o final do prazo de validade do Plano."
+        },
+        {
+          "question": "Como funciona a velocidade de navegação?",
+          "answer": "A velocidade de referência de navegação na rede 3G é de até 1 Mbps para download e de até 100 kbps para upload. A velocidade de referência na rede 4G é de até 5 Mbps para download e de até 500 kbps para upload."
+        },
+        {
+          "question": "Como funciona o acúmulo de benefícios não utilizados no mês?",
+          "answer": "Os benefícios de minutos/SMS ou dados não utilizados no período de validade do Plano, que é de 30 dias, são acumulados, desde que o cliente tenha feito uma recarga dentro do prazo de validade de seu plano."
+        },
+        {
+          "question": "Como funciona o benefício Skeelo?",
+          "answer": "Na aquisição de cada plano/benefício tem o benefício de 1 (um) e-book grátis no aplicativo Skeelo.\n\nPara resgatar seu livro, basta baixar o aplicativo e fazer seu cadastro.\n\nEsse benefício não acarreta de nenhuma cobrança adicional ao cliente, sendo incluso no plano."
+        }
+      ]
+    },
+    {
+      "title": "Outros",
+      "items": [
+        {
+          "question": "O saldo de internet acabou antes do vencimento do plano, e agora?",
+          "answer": "O novo saldo de internet será renovado na data da nova recarga realizada."
+        },
+        {
+          "question": "Como consultar o meu saldo?",
+          "answer": "Você pode consultar seu saldo:\n\n\n\n• Ligando para *225# e visualizar seu saldo na tela do seu celular.\n\n• Acessando o site https://pagtel.com.br/paguemenoscelular/recarga através da área logada de recarga.\n\nSe preferir, consulte pelo telefone discando *288 do seu Pague Menos Celular ou ligando 10543 de qualquer operadora."
+        },
+        {
+          "question": "Onde consultar meu saldo?",
+          "answer": "Você pode consultar seu saldo em uma das opções abaixo:\n\n\n\n• Disque *225# e veja o saldo na tela do seu celular.\n• Site: https://pagtel.com.br/paguemenoscelular/recarga\n• Aplicativo Pague Menos Celular\n• Se preferir, consulte pelo WhatsApp (85) 92000-2288 ou pelo telefone discando *288 do seu Pague Menos Celular ou ligando 10543 de qualquer operadora."
+        },
+        {
+          "question": "Que aparelhos celulares podem ser utilizados no Pague Menos Celular?",
+          "answer": "O correto funcionamento e desempenho do Pague Menos Celular somente será possível por meio do uso de equipamentos homologados pela ANATEL e compatíveis com as frequências autorizadas e em uso pelo prestador parceiro Surf Telecom cujo IMEI não esteja bloqueado por autoridades competentes."
+        },
+        {
+          "question": "O Roaming Nacional tem custos?",
+          "answer": "O Roaming é gratuito para o cliente. Não haverá cobrança adicional para o encaminhamento das chamadas de longa distância em todo o território nacional. Não haverá cobrança de taxa de deslocamento para as chamadas recebidas fora de sua localidade"
+        },
+        {
+          "question": "É possível fazer ligações internacionais (DDI)?",
+          "answer": "Não, o Pague Menos Celular no momento não faz chamadas internacionais."
+        },
+        {
+          "question": "Perdeu ou danificou seu chip? Veja como pedir a 2ª via.",
+          "answer": "Em caso de roubo, perda ou defeito, é necessário adquirir um novo chip na loja e contatar a central em *288 para realizar a troca."
+        },
+        {
+          "question": "Alguma outra dúvida?",
+          "answer": "Solicite a 2ª via do seu Pague Menos Celular pelo WhatsApp (85) 92000-2288 ou pelo telefone discando *288 de um outro telefone Pague Menos Celular ou 10543 de qualquer operadora. O seu novo chip será enviado para o endereço de sua preferência."
+        },
+        {
+          "question": "Perdeu ou danificou seu chip? Veja como pedir a 2ª via.",
+          "answer": "Em caso de roubo, perda ou defeito, é necessário adquirir um novo chip na loja e contatar a central em *288 para realizar a troca."
+        },
+        {
+          "question": "O que é o Pague Menos Celular?",
+          "answer": "Pague Menos Celular é uma marca de Serviço Móvel Pessoal operada pela Surf Telecom que oferece planos de celular pré-pagos com benefícios especiais:\n\n• Navegação gratuita no WhatsApp\n• Acúmulo de benefícios para o mês seguinte\n• Internet sem cortes\n• Sem taxas de deslocamento para ligações realizadas fora do seu DDD"
+        },
+        {
+          "question": "Quais são as formas de pagamento?",
+          "answer": "As formas de pagamento aceitas para recargas no Pague Menos Celular são cartão de crédito e PIX."
+        },
+        {
+          "question": "Quais as principais vantagens?",
+          "answer": "Com o Pague Menos Celular, é possível navegar no WhatsApp sem gastar sua internet móvel e você ainda navega na maios cobertura 4G e 5G do Brasil, além de ligações locais e interurbanas ilimitadas para qualquer operadora, usando o código 41 e 100 SMS por mês."
+        },
+        {
+          "question": "Como funciona a oferta do 2º chip?",
+          "answer": "Ao adquirir um chip nos planos pré-pago o custo do 2º chip é R$5 com a mesma oferta adquirida no primeiro chip no momento da compra."
+        },
+        {
+          "question": "O que é a Campanha Mês das Mães Pague Menos Celular?",
+          "answer": "É uma promoção da Surf que oferece desconto no primeiro mês para clientes que comprarem Pague Menos Celular dentro do período de 04/05/2026 e 31/05/2026."
+        },
+        {
+          "question": "Quem pode participar da Campanha Mês das Mães Pague Menos Celular?",
+          "answer": "Qualquer pessoa física que comprar no site https://paguemenoscelular.com.br/ entre 04/05/2026 e 31/05/2026;"
+        },
+        {
+          "question": "Quais são os preços promocionais da Campanha Mês das Mães Pague Menos Celular?",
+          "answer": "OFERTA PRÉ\n15GB → R$14,90"
+        },
+        {
+          "question": "O chip e o frete estão incluídos no valor na Campanha Mês das Mães Pague Menos Celular?",
+          "answer": "Não. O chip e o frete são cobrados separadamente no momento da compra."
+        },
+        {
+          "question": "Posso combinar a Campanha Mês das Mães Pague Menos Celular com outras promoções?",
+          "answer": "Não. A Campanha Mês das Mães Pague Menos Celular não é cumulativa com outras promoções."
+        },
+        {
+          "question": "Onde posso comprar para participar da Campanha Mês das Mães Pague Menos Celular?",
+          "answer": "Não. A campanha de Páscoa 2026 não é cumulativa com outras promoções."
+        },
+        {
+          "question": "Onde posso comprar para participar da campanha?",
+          "answer": "No Site Oficial: https://paguemenoscelular.com.br/"
+        },
+        {
+          "question": "Quem é elegível à Campanha Mês das Mães Pague Menos Celular?",
+          "answer": "Clientes que adquirirem a oferta e ativarem no período de 04/05/2026 à 31/05/2026."
+        },
+        {
+          "question": "Até quando estou elegível à Campanha Mês das Mães Pague Menos Celular?",
+          "answer": "Até 31/05/2026 às 23h59."
+        }
+      ]
+    }
+  ]
+}

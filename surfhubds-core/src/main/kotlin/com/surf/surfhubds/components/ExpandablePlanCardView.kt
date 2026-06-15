@@ -189,10 +189,19 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         }
         planNameLabel.text = plan.planName
 
+        // iOS: no plano DIAMANTE o valor é ocultado (oferta sem preço exibido).
+        val isDiamante = plan.planName.trim().lowercase().contains("diamante")
+        // Preço chega em centavos (ex.: 6999 == R$ 69,99). formatPrice divide por 100.
         val finalPriceCents = if (plan.parcelas > 1) plan.priceCents / plan.parcelas else plan.priceCents
-        val reais = finalPriceCents / 100
-        val cs = finalPriceCents % 100
-        priceLabel.text = if (cs == 0) "R$$reais/mês" else "R$${DSSPlanCollectionView.formatPrice(finalPriceCents)}/mês"
+        if (isDiamante) {
+            priceLabel.visibility = View.GONE
+            priceLabel.text = ""
+        } else {
+            priceLabel.visibility = View.VISIBLE
+            val reais = finalPriceCents / 100
+            val cs = finalPriceCents % 100
+            priceLabel.text = if (cs == 0) "R$$reais/mês" else "R$${DSSPlanCollectionView.formatPrice(finalPriceCents)}/mês"
+        }
         validityDateLabel.text = validityDate
 
         // Benefits checkmarks
@@ -233,7 +242,8 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         addFeature(Feature("Internet que acumula", "A internet que você não utilizou acumula para o próximo mês. Basta manter sua oferta ativa."))
         addFeature(Feature("Ligações ilimitadas", "Ligações ilimitadas para qualquer operadora e em todo Brasil utilizando o código 41."))
         addFeature(Feature("Internet sem cortes", "Durante a validade da sua oferta você não fica sem internet (mesmo se consumir todos os GB do seu plano). Nós mantemos sua navegação liberada porém com velocidade reduzida até a próxima recarga."))
-        addFeature(Feature("Validade do plano $validityDays dias", ""))
+        // Sempre exibir os dias de validade com -1 (regra de negócio: desconta o dia corrente).
+        addFeature(Feature("Validade do plano ${validityDays - 1} dias", ""))
         if (hasScheduledRechargeBonus) {
             addFeature(Feature("Bônus recarga programada", "Os ${scheduleGB}GB bônus por recarga programada são adicionados todo mês ao seu plano enquanto tiver uma recarga programada ativa."))
         }

@@ -3,6 +3,7 @@ package com.surf.surfhubds.components
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -17,6 +18,8 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
+import com.surf.surfhubds.theme.ThemeManager
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
@@ -64,11 +67,28 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         val ctx = requireContext()
-        // iOS: containerView.layer.cornerRadius = 24 (cantos superiores), fundo = .systemBackground.
+        val scheme = ThemeManager.colorScheme
+        // iOS containerView: fundo por scheme (.black → preto; .dark → rgb(28,28,30);
+        // default → .systemBackground), cantos superiores 24 e borda 1pt por scheme
+        // (.black → branco; .dark → branco 40%; default → systemGray4).
+        val containerColor = when (scheme) {
+            ColorScheme.BLACK -> Color.BLACK
+            ColorScheme.DARK -> Color.rgb(28, 28, 30)
+            else -> DSSColors.background()
+        }
+        val borderColor = when (scheme) {
+            ColorScheme.BLACK -> Color.WHITE
+            ColorScheme.DARK -> Color.argb(0x66, 0xFF, 0xFF, 0xFF) // branco 40%
+            else -> Color.rgb(209, 209, 214) // iOS systemGray4 (light)
+        }
         val scroll = ScrollView(ctx).apply {
-            background = DrawableFactory.rounded(
-                context = ctx, backgroundColor = DSSColors.background(), cornerRadiusDp = 24f,
-            )
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                setColor(containerColor)
+                val r = 24f.dpToPx(ctx).toFloat()
+                cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
+                setStroke(1f.dpToPx(ctx), borderColor)
+            }
         }
 
         val root = LinearLayout(ctx).apply {
@@ -78,10 +98,15 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
             gravity = Gravity.CENTER_HORIZONTAL
         }
 
-        // Handle
+        // Handle — iOS: .black → branco 40%; .dark → branco 30%; default → systemGray4.
+        val handleColor = when (scheme) {
+            ColorScheme.BLACK -> Color.argb(0x66, 0xFF, 0xFF, 0xFF) // branco 40%
+            ColorScheme.DARK -> Color.argb(0x4D, 0xFF, 0xFF, 0xFF) // branco 30%
+            else -> Color.rgb(209, 209, 214) // systemGray4 (light)
+        }
         val handle = View(ctx).apply {
             background = com.surf.surfhubds.util.DrawableFactory.rounded(
-                context = ctx, backgroundColor = DSSColors.divider(), cornerRadiusDp = 2.5f,
+                context = ctx, backgroundColor = handleColor, cornerRadiusDp = 2.5f,
             )
         }
         root.addView(handle, LinearLayout.LayoutParams(40f.dpToPx(ctx), 5f.dpToPx(ctx)))

@@ -99,6 +99,11 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
     }
     private val editButton = ImageButton(context).apply {
         background = null
+        // ImageButton herda padding do tema, encolhendo o ícone dentro dos 32dp.
+        // Zera o padding pra o lápis preencher toda a área do botão.
+        setPadding(0, 0, 0, 0)
+        minimumWidth = 0
+        minimumHeight = 0
         scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
     }
     private val msisdnTextfield = AppCompatEditText(context).apply {

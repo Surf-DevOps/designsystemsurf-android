@@ -5,8 +5,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
@@ -301,22 +303,47 @@ class DSSCardScannerActivity : AppCompatActivity() {
     private inner class CardAnalyzer : ImageAnalysis.Analyzer {
         @ExperimentalGetImage
         override fun analyze(imageProxy: ImageProxy) {
-            val mediaImage = imageProxy.image
-            if (mediaImage == null || hasDeliveredResult) {
+            if (hasDeliveredResult || imageProxy.image == null) {
                 imageProxy.close()
                 return
             }
             val rotation = imageProxy.imageInfo.rotationDegrees
-            val input = InputImage.fromMediaImage(mediaImage, rotation)
-            // Dimensões do buffer (sem rotação) — usadas para colocar as boxes "em pé".
-            val bufferW = mediaImage.width
-            val bufferH = mediaImage.height
+            // Igual ao iOS (regionOfInterest): em vez de rodar OCR no frame inteiro (cheio de
+            // ruído de fundo), recortamos a faixa central onde fica o cartão. Isso aumenta o
+            // tamanho relativo dos dígitos e melhora MUITO a leitura do número.
+            val upright = try {
+                rotateBitmap(imageProxy.toBitmap(), rotation)
+            } catch (_: Throwable) {
+                null
+            }
+            if (upright == null) {
+                imageProxy.close()
+                return
+            }
+            val roi = cropToCardBand(upright)
+            val input = InputImage.fromBitmap(roi, 0)
             recognizer.process(input)
                 .addOnSuccessListener { text ->
-                    handleOcrResult(text, rotation, bufferW, bufferH)
+                    // A imagem já está "em pé" (rotation 0) e recortada na faixa do cartão.
+                    handleOcrResult(text, 0, roi.width, roi.height)
                 }
                 .addOnCompleteListener { imageProxy.close() }
         }
+    }
+
+    private fun rotateBitmap(src: Bitmap, degrees: Int): Bitmap {
+        if (degrees == 0) return src
+        val matrix = Matrix().apply { postRotate(degrees.toFloat()) }
+        return Bitmap.createBitmap(src, 0, 0, src.width, src.height, matrix, true)
+    }
+
+    /** Recorta a faixa central (largura cheia) onde o cartão é posicionado — espelha o ROI do iOS. */
+    private fun cropToCardBand(src: Bitmap): Bitmap {
+        val topFrac = 0.24f
+        val bottomFrac = 0.70f
+        val y = (src.height * topFrac).toInt().coerceIn(0, src.height - 1)
+        val h = (src.height * (bottomFrac - topFrac)).toInt().coerceIn(1, src.height - y)
+        return Bitmap.createBitmap(src, 0, y, src.width, h)
     }
 
     /** Converte o resultado do ML Kit em [OcrObject]s e roda a análise do iOS. */

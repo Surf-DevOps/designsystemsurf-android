@@ -380,6 +380,9 @@ class DSSPixPendentCardView @JvmOverloads constructor(
             context = context,
             backgroundColor = if (isDark) Color.BLACK else Color.WHITE,
             cornerRadiusDp = cornerRadiusDp,
+            // Borda fininha ao redor do card de PIX pendente.
+            strokeColor = DSSColors.borderDefault(),
+            strokeWidthDp = 1f,
         )
         elevation = 2f.dpToPx(context).toFloat()
 

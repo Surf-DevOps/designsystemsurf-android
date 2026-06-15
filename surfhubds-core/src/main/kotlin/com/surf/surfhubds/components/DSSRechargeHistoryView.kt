@@ -237,7 +237,9 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         }
 
         init {
-            previousButton.setImageDrawable(loadDrawable("ic_chevron_left"))
+            // O drawable de "voltar" é nomeado `ic_chevron_back` nas brands/app (não `ic_chevron_left`),
+            // então sem o fallback o botão anterior ficava sem imagem (seta da esquerda some).
+            previousButton.setImageDrawable(loadDrawable("ic_chevron_back", "ic_chevron_left"))
             nextButton.setImageDrawable(loadDrawable("ic_chevron_right"))
 
             addView(
@@ -270,14 +272,16 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
 
         fun setTitle(text: String) { titleLabel.text = text }
 
+        // As setas só aparecem quando há navegação pertinente: no mês vigente (mais recente)
+        // some a seta da direita (avançar); no mês mais antigo some a da esquerda (voltar).
         fun setPreviousEnabled(enabled: Boolean) {
             previousButton.isEnabled = enabled
-            previousButton.alpha = if (enabled) 1.0f else 0.35f
+            previousButton.visibility = if (enabled) View.VISIBLE else View.INVISIBLE
         }
 
         fun setNextEnabled(enabled: Boolean) {
             nextButton.isEnabled = enabled
-            nextButton.alpha = if (enabled) 1.0f else 0.35f
+            nextButton.visibility = if (enabled) View.VISIBLE else View.INVISIBLE
         }
 
         override fun applyTheme(theme: Theme) { refresh() }
@@ -292,9 +296,12 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
             nextButton.setColorFilter(primary, PorterDuff.Mode.SRC_IN)
         }
 
-        private fun loadDrawable(name: String): android.graphics.drawable.Drawable? {
-            val resId = resources.getIdentifier(name, "drawable", context.packageName)
-            return if (resId != 0) AppCompatResources.getDrawable(context, resId) else null
+        private fun loadDrawable(vararg names: String): android.graphics.drawable.Drawable? {
+            for (name in names) {
+                val resId = resources.getIdentifier(name, "drawable", context.packageName)
+                if (resId != 0) return AppCompatResources.getDrawable(context, resId)
+            }
+            return null
         }
     }
 

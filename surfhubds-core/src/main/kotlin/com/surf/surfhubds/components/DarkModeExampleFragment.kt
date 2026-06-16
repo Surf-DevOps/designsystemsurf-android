@@ -1,6 +1,5 @@
 package com.surf.surfhubds.components
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -82,7 +81,9 @@ class DarkModeExampleFragment : Fragment() {
             gravity = Gravity.CENTER
             textSize = 16f
             typeface = DSSFont.medium(ctx, 16f).typeface
-            setTextColor(Color.WHITE)
+            // iOS usa .white literal sobre fundo primary; buttonText() evita branco-no-branco
+            // quando a primary da brand é clara (dark/black).
+            setTextColor(DSSColors.buttonText())
             background = DrawableFactory.rounded(
                 context = ctx,
                 backgroundColor = DSSColors.primary(),

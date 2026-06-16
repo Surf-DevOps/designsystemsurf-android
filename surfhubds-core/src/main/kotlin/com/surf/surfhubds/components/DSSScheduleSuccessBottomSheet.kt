@@ -184,9 +184,9 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             text = "Inicio da programada"
             typeface = DSSFont.light(ctx, 13f).typeface
             textSize = 13f
-            // buttonText (conteúdo sobre a primary), não branco fixo: em brand com primary
-            // clara (Uber) o branco some no badge de fundo primary.
-            setTextColor(DSSColors.buttonText())
+            // contraste sobre o fill primary: branco em primary saturado (=iOS), escuro
+            // quando o primary vira branco no dark/black -> não some no badge.
+            setTextColor(DSSColors.contrastOnPrimary())
             background = DrawableFactory.rounded(
                 context = ctx, backgroundColor = DSSColors.primary(), cornerRadiusDp = 14f,
             )

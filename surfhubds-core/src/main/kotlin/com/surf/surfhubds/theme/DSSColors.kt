@@ -1,6 +1,8 @@
 package com.surf.surfhubds.theme
 
+import android.graphics.Color
 import androidx.annotation.ColorInt
+import androidx.core.graphics.ColorUtils
 
 /**
  * Atalho pros tokens semânticos da brand atual (`ThemeManager.theme`).
@@ -31,4 +33,19 @@ object DSSColors {
     @ColorInt fun borderError(): Int = c.borderError.resolved(scheme)
     @ColorInt fun overlay(): Int = c.overlay.resolved(scheme)
     @ColorInt fun divider(): Int = c.divider.resolved(scheme)
+
+    /**
+     * Cor de conteúdo (texto/ícone/knob) desenhado SOBRE o fill [primary]. No iOS o primary
+     * é sempre escuro/saturado, então lá usa-se `.white` fixo; no Android algumas brands
+     * deixam o primary BRANCO no dark/black (ex.: CorreiosCelular), e o branco fixo sumiria.
+     *
+     * Regra: mantém branco (como o iOS) quando o primary é escuro/saturado; só vira escuro
+     * quando o primary é claro (luminância alta). Assim não há regressão nas brands de
+     * primary colorido e resolve o "branco no branco" das de primary branco.
+     */
+    @ColorInt fun contrastOnPrimary(): Int = contrastOn(primary())
+
+    /** Branco ou quase-preto, o que contrasta com [background] (limiar de luminância). */
+    @ColorInt fun contrastOn(@ColorInt background: Int): Int =
+        if (ColorUtils.calculateLuminance(background) > 0.6) Color.BLACK else Color.WHITE
 }

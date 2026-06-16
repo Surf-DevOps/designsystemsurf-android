@@ -511,9 +511,9 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
         private val scheduledBadgeLabel = paddingLabel(context).apply {
             typeface = DSSFont.medium(context, 12f).typeface
             textSize = 12f
-            // buttonText (conteúdo sobre a primary), não branco fixo: em brand com primary
-            // clara (Uber) o branco some no badge de fundo primary.
-            setTextColor(DSSColors.buttonText())
+            // contraste sobre o fill primary: branco em primary saturado (=iOS), escuro
+            // quando o primary vira branco no dark/black -> não some no badge.
+            setTextColor(DSSColors.contrastOnPrimary())
             gravity = Gravity.CENTER
         }
         private val phoneLabel = TextView(context).apply {

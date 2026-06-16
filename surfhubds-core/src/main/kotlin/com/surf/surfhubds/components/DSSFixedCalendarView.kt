@@ -194,8 +194,9 @@ class DSSFixedCalendarView @JvmOverloads constructor(
         }
         when {
             selected -> {
-                // iOS: setTitleColor(.white) hardcoded para o dia selecionado.
-                label.setTextColor(android.graphics.Color.WHITE)
+                // iOS: setTitleColor(.white) sobre o fundo primary. primary pode ser branco
+                // no dark/black -> contrastOnPrimary evita texto sumindo.
+                label.setTextColor(DSSColors.contrastOnPrimary())
                 label.background = DrawableFactory.rounded(
                     context = context,
                     backgroundColor = DSSColors.primary(),

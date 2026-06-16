@@ -140,7 +140,8 @@ class DSSHelpCardView @JvmOverloads constructor(
     private fun refresh() {
         // iOS: borderWidth=1 sempre; cor = systemGray5 (light) / .white (dark e black).
         // `borderDefault()` pintava a borda de #595959 no light; usamos systemGray5 (#E5E5EA).
-        val borderColor = if (ThemeManager.colorScheme == ColorScheme.LIGHT) {
+        val scheme = ThemeManager.colorScheme
+        val borderColor = if (scheme == ColorScheme.LIGHT) {
             SYSTEM_GRAY5_LIGHT
         } else {
             Color.WHITE
@@ -153,14 +154,17 @@ class DSSHelpCardView @JvmOverloads constructor(
             strokeWidthDp = 1f,
         )
 
-        val title = DSSColors.primary()
+        // iOS applyColors(): no light o título/ícone/seta usam DSSColors.primary (acento da brand);
+        // no dark/black o iOS força .white (acento da brand viraria branco-no-branco sobre a
+        // surface escura). Aqui usamos textPrimary() em dark/black (= .white nesses schemes),
+        // evitando que primary() branco/saturado fique ilegível sobre a surface.
+        val accent = if (scheme == ColorScheme.LIGHT) DSSColors.primary() else DSSColors.textPrimary()
         val description = DSSColors.textPrimary()
-        val tint = DSSColors.primary()
 
-        titleLabel.setTextColor(title)
+        titleLabel.setTextColor(accent)
         descriptionLabel.setTextColor(description)
-        arrowImageView.setColorFilter(tint, PorterDuff.Mode.SRC_IN)
-        iconImageView.setColorFilter(tint, PorterDuff.Mode.SRC_IN)
+        arrowImageView.setColorFilter(accent, PorterDuff.Mode.SRC_IN)
+        iconImageView.setColorFilter(accent, PorterDuff.Mode.SRC_IN)
     }
 
     private fun loadChevronRight(): Drawable? {

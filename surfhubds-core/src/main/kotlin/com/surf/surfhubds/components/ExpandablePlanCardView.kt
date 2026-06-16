@@ -392,7 +392,10 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             backgroundColor = DSSColors.primary(),
             cornerRadiusDp = 12f,
         )
-        validityBadge.setTextColor(DSSColors.textOnPrimary())
+        // iOS: badgeLabel.textColor = (isBlack || isDark) ? .black : .white sobre o fill primary
+        // (badge, não botão). Em brands com primary BRANCO no dark/black o textOnPrimary podia
+        // ficar branco -> branco no branco. contrastOnPrimary reproduz a regra do iOS.
+        validityBadge.setTextColor(DSSColors.contrastOnPrimary())
 
         // iOS: toggleButton.borderColor = (isBlack || isDark) ? systemGray4 : .gray
         val toggleStroke = if (scheme == ColorScheme.LIGHT) SYSTEM_GRAY else SYSTEM_GRAY4_DARK

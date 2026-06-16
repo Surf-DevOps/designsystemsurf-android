@@ -273,7 +273,9 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 text = "Oferta atual"
                 textSize = 14f
                 typeface = DSSFont.medium(context, 14f).typeface
-                setTextColor(android.graphics.Color.WHITE)
+                // iOS: .white sobre fill primary/primaryButton. No dark/black de algumas brands
+                // o primary fica branco -> texto sumia. contrastOnPrimary garante contraste.
+                setTextColor(DSSColors.contrastOnPrimary())
                 gravity = Gravity.CENTER
                 setPadding(
                     20f.dpToPx(context),

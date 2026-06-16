@@ -168,7 +168,9 @@ class DSSScheduleDateConfirmView @JvmOverloads constructor(
         newPlanBadge.setTextColor(DSSColors.textPrimary())
 
         // Badge da nova data em destaque (primary), igual ao iOS/print.
+        // Badge (não botão) sobre fill primary: no dark/black o primary vira branco -> usa
+        // contraste p/ o texto não sumir (mesma regra do badge "Programada" dos demais sheets).
         newDateBadge.background = DrawableFactory.rounded(context, DSSColors.primary(), 6f)
-        newDateBadge.setTextColor(DSSColors.textOnPrimary())
+        newDateBadge.setTextColor(DSSColors.contrastOnPrimary())
     }
 }

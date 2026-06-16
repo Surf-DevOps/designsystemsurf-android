@@ -296,7 +296,8 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
             backgroundColor = DSSColors.primary(),
             cornerRadiusDp = 14f,
         )
-        renewalBadge.setTextColor(DSSColors.textOnPrimary())
+        // badge tem fundo primary; contrastOnPrimary evita texto branco no badge branco (dark/black).
+        renewalBadge.setTextColor(DSSColors.contrastOnPrimary())
         anteciparLink.setTextColor(DSSColors.textLink())
         trocarPlanoButton.setTextColor(DSSColors.textPrimary())
         alterarCartaoButton.setTextColor(DSSColors.textPrimary())

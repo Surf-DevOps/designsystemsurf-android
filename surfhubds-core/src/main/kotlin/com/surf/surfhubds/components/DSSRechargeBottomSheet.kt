@@ -199,7 +199,13 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
             val trackH = (18 * density).toInt()
             val thumbD = (22 * density).toInt()
 
-            // Trilha (pílula) recolorida por estado: ligado = primária; desligado = cinza.
+            // iOS applyScheduleSwitchTheme(): no dark/black a trilha ligada usa um cinza
+            // escuro (white 0.22) em vez de DSSColors.primary — em brands cujo primary fica
+            // BRANCO no dark/black, a trilha branca + bolinha branca davam "branco no branco".
+            val isDarkScheme = scheme == ColorScheme.DARK || scheme == ColorScheme.BLACK
+            val trackOn = if (isDarkScheme) Color.rgb(56, 56, 56) /* white 0.22 */ else DSSColors.primary()
+
+            // Trilha (pílula) recolorida por estado: ligado = primária (ou cinza no dark); desligado = cinza.
             trackDrawable = android.graphics.drawable.GradientDrawable().apply {
                 shape = android.graphics.drawable.GradientDrawable.RECTANGLE
                 cornerRadius = trackH / 2f
@@ -208,7 +214,7 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
             }
             trackTintList = android.content.res.ColorStateList(
                 arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                intArrayOf(DSSColors.primary(), trackOff),
+                intArrayOf(trackOn, trackOff),
             )
 
             // Bolinha branca com borda cinza bem clara, pra destacar no fundo branco.

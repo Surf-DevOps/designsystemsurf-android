@@ -340,8 +340,10 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         when {
             selected -> {
                 label.typeface = DSSFont.bold(context, 15f).typeface
-                // iOS: setTitleColor(.white) hardcoded para o dia selecionado.
-                label.setTextColor(android.graphics.Color.WHITE)
+                // iOS: setTitleColor(.white) sobre o círculo primary. Aqui o primary pode
+                // virar branco no dark/black (algumas brands) -> contrastOnPrimary evita
+                // texto branco sumindo no círculo branco.
+                label.setTextColor(DSSColors.contrastOnPrimary())
                 label.background = DrawableFactory.rounded(
                     context = context,
                     backgroundColor = DSSColors.primary(),

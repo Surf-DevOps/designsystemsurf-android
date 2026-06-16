@@ -99,10 +99,13 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
             strokeColor = strokeColor,
             strokeWidthDp = strokeWidth,
         )
+        // iOS: track=primary, knob/texto brancos, seta preta (funciona pq primary é escuro
+        // no iOS). Aqui primary pode virar branco no dark/black -> amarramos tudo aos pares
+        // que sempre contrastam: knob/texto = contraste do track; seta = cor do track.
         renewButtonSlider.outerColor = DSSColors.primary()
-        renewButtonSlider.innerColor = Color.WHITE
-        renewButtonSlider.iconColor = Color.BLACK
-        renewButtonSlider.labelTextColor = Color.WHITE
+        renewButtonSlider.innerColor = DSSColors.contrastOnPrimary()
+        renewButtonSlider.iconColor = DSSColors.primary()
+        renewButtonSlider.labelTextColor = DSSColors.contrastOnPrimary()
     }
 
     private fun setupTree() {

@@ -10,7 +10,9 @@ class CorreiosCelularTheme : DefaultTheme() {
         primary = ColorValue.fromHex("#00416B", "#FFFFFF"),
         secondary = ColorValue.fromHex("#FFD400", "#FFFFFF"),
         primaryButton = ColorValue.fromHex("#00416B", "#FFFFFF"),
-        buttonText = ColorValue.fromHex("#FFD400", "#FFFFFF"),
+        // dark/black: primary/primaryButton viram branco -> conteúdo precisa ser escuro
+        // (antes #FFFFFF = branco no branco). Azul da marca contrasta no botão branco.
+        buttonText = ColorValue.fromHex("#FFD400", "#00416B", "#00416B"),
         surface = ColorValue.fromHex("#FFFFFF", "#1C1C1E"),
         background = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
         backgroundSecondary = ColorValue.fromHex("#F8F8F8", "#FFFFFF"),
@@ -20,7 +22,7 @@ class CorreiosCelularTheme : DefaultTheme() {
         textSecondary = ColorValue.fromHex("#757575", "#B0B0B0"),
         textTertiary = ColorValue.fromHex("#9E9E9E", "#808080"),
         textLink = ColorValue.fromHex("#1D4ED8", "#0A84FF"),
-        textOnPrimary = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
+        textOnPrimary = ColorValue.fromHex("#FFFFFF", "#00416B", "#00416B"),
         borderDefault = ColorValue.fromHex("#595959", "#FFFFFF"),
         borderFocus = ColorValue.fromHex("#EB0033", "#EA1E2C"),
         borderError = ColorValue.fromHex("#DC3545", "#E74C3C"),

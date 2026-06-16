@@ -167,8 +167,8 @@ class DSSCarouselView @JvmOverloads constructor(
     private class CarouselCellView(context: Context) : FrameLayout(context) {
         private val imageView = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
         private val label = TextView(context).apply {
-            textSize = 12f
-            typeface = DSSFont.light(context, 12f).typeface
+            textSize = 14f
+            typeface = DSSFont.light(context, 14f).typeface
             // iOS: numberOfLines = 0 (ilimitado). No Android, maxLines = 0 esconde o texto;
             // o equivalente a "ilimitado" é Int.MAX_VALUE.
             maxLines = Int.MAX_VALUE
@@ -185,10 +185,13 @@ class DSSCarouselView @JvmOverloads constructor(
             stack.addView(imageView, LinearLayout.LayoutParams(300.dpToPx(context), 300.dpToPx(context)))
             stack.addView(
                 label,
-                LinearLayout.LayoutParams(350.dpToPx(context), 100.dpToPx(context)).apply {
+                // Altura WRAP_CONTENT (não fixa 100dp): com fonte maior + \n o texto crescia
+                // além de 100dp e a parte de baixo ficava cortada. minHeight mantém o respiro.
+                LinearLayout.LayoutParams(350.dpToPx(context), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                     topMargin = 10.dpToPx(context)
                 },
             )
+            label.minHeight = 100.dpToPx(context)
             val lp = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
                 gravity = Gravity.CENTER
                 leftMargin = 20.dpToPx(context)

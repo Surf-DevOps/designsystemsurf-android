@@ -97,12 +97,11 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = 24f.dpToPx(ctx) })
 
-        // iOS: backgroundColor = isBlack ? DSSColors.primaryButton : DSSColors.primary,
-        //      textColor = .white, font = DSSFont.regular(16)
+        // Botão primário: bg = primaryButton, texto = buttonText (tokens da brand); font regular(16).
         val keepButton = DSSPrincipalButton(ctx).apply {
             text = "Manter benefícios"
-            customBackgroundColor = if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
-            customTextColor = Color.WHITE
+            customBackgroundColor = DSSColors.primaryButton()
+            customTextColor = DSSColors.buttonText()
             typeface = DSSFont.regular(ctx, 16f).typeface
             textSize = 16f
             onTap = { dismiss() }

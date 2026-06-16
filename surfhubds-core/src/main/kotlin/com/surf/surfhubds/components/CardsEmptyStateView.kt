@@ -160,19 +160,12 @@ class CardsEmptyStateView @JvmOverloads constructor(
         titleView.setTextColor(DSSColors.textPrimary())
         subtitleView.setTextColor(DSSColors.textSecondary())
 
-        // iOS: colorScheme == .black ? DSSColors.primaryButton : DSSColors.primary
         addCardButton.background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = if (isBlack) DSSColors.primaryButton() else DSSColors.primary(),
+            backgroundColor = DSSColors.primaryButton(),
             cornerRadiusDp = 28f,
         )
-        // iOS: .black -> .white ; senão (dark -> .black, light -> .white)
-        val buttonTitleColor = when (scheme) {
-            ColorScheme.BLACK -> Color.WHITE
-            ColorScheme.DARK -> Color.BLACK
-            ColorScheme.LIGHT -> Color.WHITE
-        }
-        addCardButton.setTextColor(buttonTitleColor)
+        addCardButton.setTextColor(DSSColors.buttonText())
 
         // iOS: colorScheme == .black ? .systemRed : DSSColors.primary  (.systemRed -> #FF3B30)
         val benefitColor = if (isBlack) Color.parseColor("#FF3B30") else DSSColors.primary()

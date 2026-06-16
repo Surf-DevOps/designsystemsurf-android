@@ -206,7 +206,7 @@ class PortabilityCardView @JvmOverloads constructor(
         actionButton.setTextColor(DSSColors.buttonText())
         actionButton.background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.primary(),
+            backgroundColor = DSSColors.primaryButton(),
             cornerRadiusDp = 25f,
         )
     }

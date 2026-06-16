@@ -87,7 +87,7 @@ class DSSPrincipalButton @JvmOverloads constructor(
     private fun refresh() {
         setBackground(DrawableFactory.rounded(
             context = context,
-            backgroundColor = customBackgroundColor ?: DSSColors.primary(),
+            backgroundColor = customBackgroundColor ?: DSSColors.primaryButton(),
             cornerRadiusDp = cornerRadiusDp,
         ))
         setTextColor(customTextColor ?: DSSColors.buttonText())

@@ -119,15 +119,13 @@ class DSSScheduleCancelledBottomSheet : BottomSheetDialogFragment() {
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = 24f.dpToPx(ctx) })
 
-        // iOS: DSSPrincipalButton(title:"Finalizar", backgroundColor: isBlack ? primaryButton : primary,
-        // textColor:.white, font: DSSFont.regular(16)).
-        val isBlack = ThemeManager.colorScheme == ColorScheme.BLACK
+        // Botão primário: bg = primaryButton, texto = buttonText (tokens da brand).
         val finishButton = DSSPrincipalButton(ctx).apply {
             text = "Finalizar"
             typeface = DSSFont.regular(ctx, 16f).typeface
             textSize = 16f
-            customBackgroundColor = if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
-            customTextColor = android.graphics.Color.WHITE // iOS: textColor: .white (literal)
+            customBackgroundColor = DSSColors.primaryButton()
+            customTextColor = DSSColors.buttonText()
             onTap = { finishTapped() }
         }
         root.addView(finishButton, LinearLayout.LayoutParams(

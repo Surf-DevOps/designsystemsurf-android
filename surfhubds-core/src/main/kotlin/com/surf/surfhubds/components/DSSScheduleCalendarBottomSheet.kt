@@ -57,7 +57,6 @@ class DSSScheduleCalendarBottomSheet : BottomSheetDialogFragment(), DSSScheduleC
     ): View {
         val ctx = requireContext()
         val scheme = ThemeManager.colorScheme
-        val isBlack = scheme == ColorScheme.BLACK
 
         // Container com cantos superiores arredondados (iOS: cornerRadius 24 nos cantos de topo).
         val containerBg = GradientDrawable().apply {
@@ -116,11 +115,11 @@ class DSSScheduleCalendarBottomSheet : BottomSheetDialogFragment(), DSSScheduleC
         maxDateISO?.let { calendar.configure(maxDateIso = it, daysBack = daysBack) }
         maxDate?.let { calendar.configure(maxDate = it, daysBack = daysBack) }
 
-        // iOS: backgroundColor = isBlack ? primaryButton : primary; textColor = .white; font = regular(16).
+        // Botão primário: bg = primaryButton, texto = buttonText (tokens da brand); font regular(16).
         val confirmButton = DSSPrincipalButton(ctx).apply {
             text = AppStrings.brand(ctx, "schedule_calendar_confirm", "Confirmar")
-            customBackgroundColor = if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
-            customTextColor = android.graphics.Color.WHITE
+            customBackgroundColor = DSSColors.primaryButton()
+            customTextColor = DSSColors.buttonText()
             typeface = DSSFont.regular(ctx, 16f).typeface
             onTap = { confirmTapped() }
         }

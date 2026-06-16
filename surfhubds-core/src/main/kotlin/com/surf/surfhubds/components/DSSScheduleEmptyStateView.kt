@@ -141,13 +141,7 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
             (benefitsStack.getChildAt(i) as? TextView)?.setTextColor(benefitsColor)
         }
 
-        // iOS: background `.black ? primaryButton : primary`; texto `.black ? .white : (dark? .black : .white)`.
-        scheduleButton.customBackgroundColor =
-            if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
-        scheduleButton.customTextColor = when (scheme) {
-            ColorScheme.BLACK -> Color.WHITE
-            ColorScheme.DARK -> Color.BLACK
-            ColorScheme.LIGHT -> Color.WHITE
-        }
+        scheduleButton.customBackgroundColor = DSSColors.primaryButton()
+        scheduleButton.customTextColor = DSSColors.buttonText()
     }
 }

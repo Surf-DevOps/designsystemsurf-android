@@ -81,12 +81,11 @@ class DarkModeExampleFragment : Fragment() {
             gravity = Gravity.CENTER
             textSize = 16f
             typeface = DSSFont.medium(ctx, 16f).typeface
-            // iOS usa .white literal sobre fundo primary; buttonText() evita branco-no-branco
-            // quando a primary da brand é clara (dark/black).
+            // Botão primário: bg = primaryButton, texto = buttonText (tokens da brand).
             setTextColor(DSSColors.buttonText())
             background = DrawableFactory.rounded(
                 context = ctx,
-                backgroundColor = DSSColors.primary(),
+                backgroundColor = DSSColors.primaryButton(),
                 cornerRadiusDp = 8f,
             )
             setOnClickListener { validateFields() }

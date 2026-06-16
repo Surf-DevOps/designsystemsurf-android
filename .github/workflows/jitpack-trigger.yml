@@ -1,0 +1,57 @@
+name: Trigger JitPack build
+
+# JitPack só compila quando alguém REQUISITA o artefato pela 1ª vez — por isso a versão
+# fica "parada"/cinza no site até alguém abrir. Este workflow requisita o POM a cada tag
+# vX.Y.Z, disparando o build automaticamente e esperando ficar publicado (HTTP 200).
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar e aguardar build do JitPack
+        env:
+          TAG: ${{ github.ref_name }}
+          BASE: https://jitpack.io/com/github/Surf-DevOps/designsystemsurf-android
+          # core dispara o build do projeto inteiro (install: ./gradlew publishToMavenLocal
+          # publica todos os módulos); os demais só "esquentam" a página de cada módulo.
+          MODULES: >-
+            surfhubds-core
+            surfhubds-brand-default surfhubds-brand-matizconecta surfhubds-brand-uber
+            surfhubds-brand-ifood surfhubds-brand-bandsports surfhubds-brand-flachip
+            surfhubds-brand-conecta surfhubds-brand-mega surfhubds-brand-fluxo
+            surfhubds-brand-pafer surfhubds-brand-paguemenos surfhubds-brand-carrefourchip
+            surfhubds-brand-correioscelular surfhubds-brand-pernambucanaschip
+        run: |
+          set -u
+          pom() { echo "$BASE/$1/$TAG/$1-$TAG.pom"; }
+
+          echo "Disparando build do JitPack para $TAG (módulo core)..."
+          core_pom="$(pom surfhubds-core)"
+          code=000
+          for i in $(seq 1 40); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$core_pom")
+            echo "[$i] surfhubds-core POM HTTP $code"
+            [ "$code" = "200" ] && break
+            sleep 15
+          done
+          if [ "$code" != "200" ]; then
+            echo "::error::JitPack não publicou surfhubds-core em $TAG a tempo (último HTTP $code)."
+            echo "----- build.log (fim) -----"
+            curl -s "$BASE/surfhubds-core/$TAG/build.log" | tail -40 || true
+            exit 1
+          fi
+          echo "core publicado. Esquentando os demais módulos..."
+          for m in $MODULES; do
+            [ "$m" = "surfhubds-core" ] && continue
+            c=$(curl -s -o /dev/null -w "%{http_code}" "$(pom "$m")")
+            echo "  $m -> HTTP $c"
+          done
+          echo "JitPack pronto para $TAG."

@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.surf.surfhubds.brand.Brand
@@ -21,7 +22,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -92,9 +95,17 @@ class DSSCarouselView @JvmOverloads constructor(
     }
 
     private fun applyColors() {
-        val bg = customBackgroundColor ?: DSSColors.surface()
+        val bg = customBackgroundColor ?: carouselSurface()
         setBackgroundColor(bg)
     }
+
+    /**
+     * No scheme BLACK várias brands não definem o token `surface` em black, então ele
+     * cai no valor do `dark` (cinza, ex.: #1C1C1E) — daí o carousel "ficar com a cor do
+     * dark no black". Nesses casos usamos `background()` (preto puro) pra honrar o black.
+     */
+    private fun carouselSurface(): Int =
+        if (ThemeManager.colorScheme == ColorScheme.BLACK) DSSColors.background() else DSSColors.surface()
 
     fun configure(items: List<DSSCarouselItem>, textColor: Int = Color.BLACK, textTypeface: Typeface? = null) {
         this.items.clear()
@@ -202,11 +213,17 @@ class DSSCarouselView @JvmOverloads constructor(
 
         private fun rebuild() {
             removeAllViews()
+            // No dark/black o `primary` (e o cinza claro do inativo) somem sobre a surface
+            // escura; nesses schemes os dots viram brancos (ativo cheio, inativo translúcido).
+            val darkLike = ThemeManager.colorScheme != ColorScheme.LIGHT
+            val activeColor = if (darkLike) Color.WHITE else DSSColors.primary()
+            val inactiveColor =
+                if (darkLike) ColorUtils.setAlphaComponent(Color.WHITE, 0x59) else Color.LTGRAY
             repeat(count) { i ->
                 val dot = View(context).apply {
                     background = GradientDrawable().apply {
                         shape = GradientDrawable.OVAL
-                        setColor(if (i == currentPage) DSSColors.primary() else Color.LTGRAY)
+                        setColor(if (i == currentPage) activeColor else inactiveColor)
                     }
                 }
                 addView(

@@ -92,6 +92,9 @@ class DSSCarouselView @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) {
         applyColors()
         pageControl.refresh()
+        // iOS reavalia a cor do texto por célula no traitCollectionDidChange; aqui rebindamos
+        // as células pra elas recalcularem (ex.: texto branco no dark/black).
+        pager.adapter?.notifyDataSetChanged()
     }
 
     private fun applyColors() {
@@ -186,7 +189,9 @@ class DSSCarouselView @JvmOverloads constructor(
         fun configure(item: DSSCarouselItem, textColor: Int, typeface: Typeface?) {
             imageView.setImageDrawable(item.image)
             label.text = item.text
-            label.setTextColor(textColor)
+            // iOS: no dark/black o label fica branco; no light usa a cor informada.
+            val darkLike = ThemeManager.colorScheme != ColorScheme.LIGHT
+            label.setTextColor(if (darkLike) Color.WHITE else textColor)
             typeface?.let { label.typeface = it }
             // iOS: brand .flachip alinha à esquerda; demais centralizam.
             label.gravity = if (BrandResolver.current(context) == Brand.FLACHIP) {

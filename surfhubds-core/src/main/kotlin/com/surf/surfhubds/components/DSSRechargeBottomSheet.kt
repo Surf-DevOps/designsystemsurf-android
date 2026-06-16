@@ -194,31 +194,32 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
         scheduleSwitch = SwitchCompat(ctx).apply {
             isChecked = true
             val density = resources.displayMetrics.density
-            val trackGray = 0xFFE0E0E0.toInt() // cinza claro: trilha sempre
-            val knobOff = 0xFF616161.toInt()   // cinza escuro: bolinha desligada
-            val knobOn = DSSColors.primaryButton() // bolinha ligada
+            val knobBorder = 0xFFE0E0E0.toInt() // cinza bem claro: borda da bolinha branca
+            val trackOff = 0xFFBDBDBD.toInt()   // cinza: trilha desligada
+            val trackOn = DSSColors.primaryButton() // trilha ligada
             val trackH = (18 * density).toInt()
             val thumbD = (22 * density).toInt()
 
-            // Trilha (pílula) sempre cinza claro, independente do estado/tema.
+            // Trilha (pílula) recolorida por estado: ligado = primaryButton; desligado = cinza.
             trackDrawable = android.graphics.drawable.GradientDrawable().apply {
                 shape = android.graphics.drawable.GradientDrawable.RECTANGLE
                 cornerRadius = trackH / 2f
                 setColor(android.graphics.Color.WHITE) // recolorido pelo trackTintList
                 setSize((40 * density).toInt(), trackH)
             }
-            trackTintList = android.content.res.ColorStateList.valueOf(trackGray)
+            trackTintList = android.content.res.ColorStateList(
+                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+                intArrayOf(trackOn, trackOff),
+            )
 
-            // Bolinha recolorida por estado: ligado = primaryButton; desligado = cinza escuro.
+            // Bolinha sempre branca (com borda cinza clara pra destacar na trilha).
             thumbDrawable = android.graphics.drawable.GradientDrawable().apply {
                 shape = android.graphics.drawable.GradientDrawable.OVAL
-                setColor(android.graphics.Color.WHITE) // recolorido pelo thumbTintList
+                setColor(android.graphics.Color.WHITE)
+                setStroke((1.5f * density).toInt(), knobBorder)
                 setSize(thumbD, thumbD)
             }
-            thumbTintList = android.content.res.ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                intArrayOf(knobOn, knobOff),
-            )
+            thumbTintList = null
 
             setOnCheckedChangeListener { _, on ->
                 isScheduled = on

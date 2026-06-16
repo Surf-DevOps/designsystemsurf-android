@@ -40,7 +40,9 @@ class DSSScheduleCancelledBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         val ctx = requireContext()
-        val scroll = ScrollView(ctx).apply { setBackgroundColor(DSSColors.background()) }
+        // iOS: containerView cornerRadius 24 nos cantos de topo + borderLayer (lineWidth 1)
+        // só em black/dark (black -> branco; dark -> branco @40%; light -> sem borda).
+        val scroll = ScrollView(ctx).apply { background = roundedTopBorderedBackground(ctx, DSSColors.background()) }
 
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
@@ -167,6 +169,24 @@ class DSSScheduleCancelledBottomSheet : BottomSheetDialogFragment() {
             sheet.illustration = illustration
             sheet.show(activity.supportFragmentManager, "DSSScheduleCancelledBottomSheet")
             return sheet
+        }
+    }
+}
+
+/**
+ * Fundo com cantos superiores arredondados (24dp) + borda do iOS.
+ * iOS: borderLayer (lineWidth 1) só em black/dark — black -> branco; dark -> branco @40%.
+ */
+private fun roundedTopBorderedBackground(ctx: android.content.Context, @androidx.annotation.ColorInt color: Int): Drawable {
+    val r = 24f.dpToPx(ctx).toFloat()
+    return android.graphics.drawable.GradientDrawable().apply {
+        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+        setColor(color)
+        cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
+        when (ThemeManager.colorScheme) {
+            ColorScheme.BLACK -> setStroke(1f.dpToPx(ctx), android.graphics.Color.WHITE)
+            ColorScheme.DARK -> setStroke(1f.dpToPx(ctx), android.graphics.Color.argb(102, 255, 255, 255))
+            else -> {}
         }
     }
 }

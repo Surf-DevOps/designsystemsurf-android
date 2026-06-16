@@ -493,7 +493,8 @@ class PortabilityCardView @JvmOverloads constructor(
         context = context,
         backgroundColor = DSSColors.surface(),
         cornerRadiusDp = 16f,
-        strokeColor = DSSColors.borderDefault(),
+        // iOS: cardView.borderColor = systemGray5 (constante, sem ramo por aparência/black).
+        strokeColor = SYSTEM_GRAY5,
         strokeWidthDp = 0.5f,
     )
 
@@ -541,7 +542,8 @@ class PortabilityCardView @JvmOverloads constructor(
                     context = ctx,
                     backgroundColor = DSSColors.surface(),
                     cornerRadiusDp = 16f,
-                    strokeColor = DSSColors.borderDefault(),
+                    // iOS: createCarouselCard borderColor = systemGray5 (constante).
+                    strokeColor = SYSTEM_GRAY5,
                     strokeWidthDp = 0.5f,
                 )
                 layoutParams = androidx.recyclerview.widget.RecyclerView.LayoutParams(
@@ -598,6 +600,11 @@ class PortabilityCardView @JvmOverloads constructor(
         }
 
         override fun getItemCount(): Int = pages.size
+    }
+
+    private companion object {
+        /** iOS UIColor.systemGray5 (light) = (229,229,234) — borda dos cards de portabilidade. */
+        val SYSTEM_GRAY5 = android.graphics.Color.argb(255, 229, 229, 234)
     }
 
     /** Simples conjunto de dots para acompanhar o pager. */

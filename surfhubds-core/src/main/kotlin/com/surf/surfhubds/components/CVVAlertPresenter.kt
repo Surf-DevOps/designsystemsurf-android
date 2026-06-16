@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
+import com.surf.surfhubds.util.applyDssTheme
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -67,6 +68,8 @@ object CVVAlertPresenter {
         dialog.setOnDismissListener { com.surf.surfhubds.util.DSSBlur.removeBackdrop(backdrop) }
         dialog.show()
         dialog.window?.setDimAmount(0f)
+        // Tematiza pelo DSS (sem isso o dialog fica branco e o texto some no dark/black).
+        dialog.applyDssTheme()
     }
 
     /**

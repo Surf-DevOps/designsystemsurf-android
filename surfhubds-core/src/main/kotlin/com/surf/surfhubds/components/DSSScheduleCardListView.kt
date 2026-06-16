@@ -14,6 +14,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -317,7 +318,17 @@ class DSSScheduleCardListView @JvmOverloads constructor(
         override fun applyTheme(theme: Theme) { refresh() }
 
         private fun refresh() {
-            val borderColor = if (isSelected) DSSColors.success() else DSSColors.borderDefault()
+            // iOS: borda não-selecionada = UIColor.systemGray4 (cor dinâmica), não DSSColors.borderDefault.
+            // systemGray4: light = rgb(209,209,214); dark/black = rgb(58,58,60). Com borderDefault()
+            // (branco no dark/black) a borda divergia do iOS.
+            val scheme = com.surf.surfhubds.theme.ThemeManager.colorScheme
+            val isDark = scheme == ColorScheme.DARK || scheme == ColorScheme.BLACK
+            val systemGray4 = if (isDark) {
+                android.graphics.Color.argb(255, 58, 58, 60)
+            } else {
+                android.graphics.Color.argb(255, 209, 209, 214)
+            }
+            val borderColor = if (isSelected) DSSColors.success() else systemGray4
             val borderWidth = if (isSelected) 2f else 1f
             container.background = DrawableFactory.rounded(
                 context = context,

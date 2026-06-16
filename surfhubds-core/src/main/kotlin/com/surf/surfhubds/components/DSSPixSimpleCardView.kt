@@ -19,7 +19,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.util.concurrent.TimeUnit
@@ -268,17 +270,17 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
 
     private fun refresh() {
         // iOS applyContainerColors():
-        //  .black  -> backgroundColor secundário, sem borda
-        //  .dark   -> backgroundColor secundário, borda 2pt (cinza)
-        //  .light  -> backgroundColor padrão, sem borda
-        // Borda fininha em todos os schemes (no DARK o iOS já usava borda; aqui padronizamos
-        // 1dp com a cor de borda da brand para o card simples de PIX em qualquer tema).
+        //  .black  -> backgroundColor secundário, SEM borda
+        //  .dark   -> backgroundColor secundário, borda 2pt systemGray3 (#48484A)
+        //  .light  -> backgroundColor padrão, SEM borda
+        val isDark = ThemeManager.colorScheme == ColorScheme.DARK
         background = DrawableFactory.rounded(
             context = context,
             backgroundColor = DSSColors.surface(),
             cornerRadiusDp = cornerRadiusDp,
-            strokeColor = DSSColors.borderDefault(),
-            strokeWidthDp = 1f,
+            // iOS: borda só no DARK (systemGray3 = #48484A, 2pt). LIGHT/BLACK sem borda.
+            strokeColor = if (isDark) SYSTEM_GRAY3_DARK else null,
+            strokeWidthDp = if (isDark) 2f else 0f,
         )
         // Título: vermelho-escuro literal do iOS UIColor(red:0.65, green:0.16, blue:0.16) = #A62929
         // (cor literal, não semântica). Override de configureStyle tem prioridade.
@@ -413,6 +415,9 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
     companion object {
         // iOS UIColor(red: 0.65, green: 0.16, blue: 0.16, alpha: 1.0) — literal hardcoded, não token.
         @ColorInt private val PIX_DARK_RED: Int = android.graphics.Color.rgb(166, 41, 41)
+
+        // iOS UIColor.systemGray3 no dark mode = #48484A — borda do container só no scheme DARK.
+        @ColorInt private val SYSTEM_GRAY3_DARK: Int = android.graphics.Color.rgb(72, 72, 74)
 
         private const val KEY_IS_PENDING = "DSSPixSimpleCard_isPixPending"
         private const val KEY_TARGET = "DSSPixSimpleCard_targetDate"

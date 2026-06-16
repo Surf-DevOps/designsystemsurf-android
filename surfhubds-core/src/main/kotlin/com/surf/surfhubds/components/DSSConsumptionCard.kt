@@ -144,11 +144,13 @@ class DSSConsumptionCard @JvmOverloads constructor(
         val isDark = scheme == ColorScheme.DARK || scheme == ColorScheme.BLACK
         container.background = if (isDark) {
             val showBorder = scheme != ColorScheme.BLACK
+            // iOS: layer.borderColor = UIColor.separator. O token `divider()` é o .separator
+            // (#38383A no dark); `borderDefault()` pintava a borda de branco no dark.
             DrawableFactory.rounded(
                 context = context,
                 backgroundColor = DSSColors.surface(),
                 cornerRadiusDp = 16f,
-                strokeColor = if (showBorder) DSSColors.borderDefault() else null,
+                strokeColor = if (showBorder) DSSColors.divider() else null,
                 strokeWidthDp = if (showBorder) 2f else 0f,
             )
         } else {

@@ -12,6 +12,8 @@ import android.widget.ProgressBar
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.DateHelpers
 import com.surf.surfhubds.util.DrawableFactory
@@ -78,10 +80,24 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
+        // iOS updateDarkModeBorder(): black -> bg secondary, sem borda; dark -> borda 2pt
+        // systemGray3; light -> sem borda.
+        val scheme = ThemeManager.colorScheme
+        val strokeColor: Int?
+        val strokeWidth: Float
+        if (scheme == ColorScheme.DARK) {
+            strokeColor = SYSTEM_GRAY3_DARK
+            strokeWidth = 2f
+        } else {
+            strokeColor = null
+            strokeWidth = 0f
+        }
         background = DrawableFactory.rounded(
             context = context,
             backgroundColor = DSSColors.backgroundSecondary(),
             cornerRadiusDp = 16f,
+            strokeColor = strokeColor,
+            strokeWidthDp = strokeWidth,
         )
         renewButtonSlider.outerColor = DSSColors.primary()
         renewButtonSlider.innerColor = Color.WHITE
@@ -237,5 +253,10 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
 
     fun resetSlider() {
         renewButtonSlider.resetState(animated = true)
+    }
+
+    private companion object {
+        /** iOS UIColor.systemGray3 (dark) = (72,72,74) — borda do card no modo dark. */
+        val SYSTEM_GRAY3_DARK = Color.argb(255, 72, 72, 74)
     }
 }

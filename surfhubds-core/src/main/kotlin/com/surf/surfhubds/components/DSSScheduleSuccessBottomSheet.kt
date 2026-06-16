@@ -82,7 +82,9 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         val ctx = requireContext()
-        val scroll = ScrollView(ctx).apply { setBackgroundColor(DSSColors.background()) }
+        // iOS: containerView cornerRadius 24 nos cantos de topo + borderLayer (lineWidth 1)
+        // só em black/dark (black -> branco; dark -> branco @40%; light -> sem borda).
+        val scroll = ScrollView(ctx).apply { background = roundedTopBorderedBackground(ctx, DSSColors.background()) }
 
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
@@ -182,7 +184,9 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             text = "Inicio da programada"
             typeface = DSSFont.light(ctx, 13f).typeface
             textSize = 13f
-            setTextColor(Color.WHITE)
+            // buttonText (conteúdo sobre a primary), não branco fixo: em brand com primary
+            // clara (Uber) o branco some no badge de fundo primary.
+            setTextColor(DSSColors.buttonText())
             background = DrawableFactory.rounded(
                 context = ctx, backgroundColor = DSSColors.primary(), cornerRadiusDp = 14f,
             )
@@ -424,6 +428,24 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             sheet.configure(content)
             sheet.show(activity.supportFragmentManager, "DSSScheduleSuccessBottomSheet")
             return sheet
+        }
+    }
+}
+
+/**
+ * Fundo com cantos superiores arredondados (24dp) + borda do iOS.
+ * iOS: borderLayer (lineWidth 1) só em black/dark — black -> branco; dark -> branco @40%.
+ */
+private fun roundedTopBorderedBackground(ctx: Context, @androidx.annotation.ColorInt color: Int): Drawable {
+    val r = 24f.dpToPx(ctx).toFloat()
+    return android.graphics.drawable.GradientDrawable().apply {
+        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+        setColor(color)
+        cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
+        when (ThemeManager.colorScheme) {
+            ColorScheme.BLACK -> setStroke(1f.dpToPx(ctx), Color.WHITE)
+            ColorScheme.DARK -> setStroke(1f.dpToPx(ctx), Color.argb(102, 255, 255, 255))
+            else -> {}
         }
     }
 }

@@ -19,7 +19,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.Utility
@@ -724,9 +726,21 @@ class DSSPlanCollectionView @JvmOverloads constructor(
 
         private fun refresh() {
             val bg = DSSColors.surface()
-            // iOS setSelectedStyle: selecionado -> borda 2pt primary; colapsado (light) -> sem borda.
-            val stroke = if (selectedStyle) DSSColors.primary() else android.graphics.Color.TRANSPARENT
-            val strokeWidth = if (selectedStyle) 2f else 0f
+            // iOS setSelectedStyle: selecionado -> borda 2pt primary (primaryButton no black).
+            // Não selecionado: black -> sem borda; dark -> borda 2pt systemGray3; light -> sem borda.
+            val scheme = ThemeManager.colorScheme
+            val stroke: Int
+            val strokeWidth: Float
+            if (selectedStyle) {
+                stroke = if (scheme == ColorScheme.BLACK) DSSColors.primaryButton() else DSSColors.primary()
+                strokeWidth = 2f
+            } else if (scheme == ColorScheme.DARK) {
+                stroke = SYSTEM_GRAY3_DARK
+                strokeWidth = 2f
+            } else {
+                stroke = android.graphics.Color.TRANSPARENT
+                strokeWidth = 0f
+            }
             container.background = DrawableFactory.rounded(
                 context = context,
                 backgroundColor = bg,
@@ -760,6 +774,9 @@ class DSSPlanCollectionView @JvmOverloads constructor(
     companion object {
         /** Altura extra (dp) reservada para a faixa "Oferta atual" (iOS currentOfferExtraHeight = 20). */
         internal const val CURRENT_OFFER_EXTRA_HEIGHT = 20f
+
+        /** iOS UIColor.systemGray3 (dark) = (72,72,74) — borda do card no modo dark não selecionado. */
+        internal val SYSTEM_GRAY3_DARK = android.graphics.Color.argb(255, 72, 72, 74)
 
         // Espelha `Utility.formatPrice` do iOS: NumberFormatter .decimal pt_BR
         // (separador de milhar "." e decimal ","), 2 casas. Ex.: 1234567 -> "12.345,67".

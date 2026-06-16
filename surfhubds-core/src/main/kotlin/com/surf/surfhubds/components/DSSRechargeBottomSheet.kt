@@ -1,5 +1,7 @@
 package com.surf.surfhubds.components
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -13,6 +15,8 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
+import com.surf.surfhubds.theme.ThemeManager
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -74,8 +78,28 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         val ctx = requireContext()
+        // iOS containerView: fundo por scheme (.black → preto; .dark → rgb(28,28,30);
+        // .light → backgroundSecondary), cantos superiores 24 e borda 1pt (lineWidth=1)
+        // adicionada só nos schemes black/dark (.black → branco; .dark → branco 40%).
+        val scheme = ThemeManager.colorScheme
+        val containerColor = when (scheme) {
+            ColorScheme.BLACK -> Color.BLACK
+            ColorScheme.DARK -> Color.rgb(28, 28, 30)
+            else -> DSSColors.backgroundSecondary()
+        }
+        val borderColor = when (scheme) {
+            ColorScheme.BLACK -> Color.WHITE
+            ColorScheme.DARK -> Color.argb(0x66, 0xFF, 0xFF, 0xFF) // branco 40%
+            else -> null // default não tem borda no iOS
+        }
         val scroll = ScrollView(ctx).apply {
-            setBackgroundColor(DSSColors.backgroundSecondary())
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                setColor(containerColor)
+                val r = 24f.dpToPx(ctx).toFloat()
+                cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
+                if (borderColor != null) setStroke(1f.dpToPx(ctx), borderColor)
+            }
         }
 
         // iOS: contentStackView spacing = 20, alignment = .center, padding 16/20.
@@ -261,6 +285,13 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
         updateConfirmButtonState()
         updateScheduleVisibility()
         return scroll
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Deixa o background padrão do BottomSheet transparente para que os cantos
+        // arredondados (24dp) e a borda do container apareçam, como no iOS.
+        (view?.parent as? View)?.setBackgroundColor(Color.TRANSPARENT)
     }
 
     private fun applyConfiguration() {

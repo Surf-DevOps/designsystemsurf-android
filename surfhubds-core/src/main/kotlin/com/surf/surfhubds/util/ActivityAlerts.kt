@@ -1,7 +1,10 @@
 package com.surf.surfhubds.util
 
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import com.surf.surfhubds.theme.DSSColors
 
 /**
  * Port das extensions `UIViewController+Alerts.swift`. No Android, extension functions
@@ -68,4 +71,24 @@ internal fun Context.showWithBlur(dialog: AlertDialog) {
     dialog.show()
     // O backdrop já tem o blur+scrim; zera o dim do alert p/ não escurecer duas vezes.
     dialog.window?.setDimAmount(0f)
+    dialog.applyDssTheme()
+}
+
+/**
+ * Tematiza o AlertDialog pelo DSS (a camada Material da brand é light-only, então sem
+ * isso o dialog fica branco e, no scheme dark/black, o texto some). Fundo = surface;
+ * título, mensagem e botões de ação = textPrimary.
+ *
+ * Pública para que presenters com `show()` próprio (ex.: CVVAlertPresenter,
+ * DSSImagePickerManager) chamem `dialog.applyDssTheme()` logo após `dialog.show()`.
+ */
+fun AlertDialog.applyDssTheme() {
+    val surface = DSSColors.surface()
+    val textPrimary = DSSColors.textPrimary()
+    window?.setBackgroundDrawable(ColorDrawable(surface))
+    findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(textPrimary)
+    findViewById<TextView>(android.R.id.message)?.setTextColor(textPrimary)
+    getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(textPrimary)
+    getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(textPrimary)
+    getButton(AlertDialog.BUTTON_NEUTRAL)?.setTextColor(textPrimary)
 }

@@ -13,7 +13,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -359,12 +361,22 @@ class ExpandablePlanCardView @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
+        // iOS applyColors(): black -> sem borda; dark -> borda 1pt systemGray4;
+        // light -> borda 1pt systemGray5.
+        val scheme = ThemeManager.colorScheme
+        val cardStrokeColor: Int?
+        val cardStrokeWidth: Float
+        when (scheme) {
+            ColorScheme.BLACK -> { cardStrokeColor = null; cardStrokeWidth = 0f }
+            ColorScheme.DARK -> { cardStrokeColor = SYSTEM_GRAY4_DARK; cardStrokeWidth = 1f }
+            ColorScheme.LIGHT -> { cardStrokeColor = SYSTEM_GRAY5_LIGHT; cardStrokeWidth = 1f }
+        }
         cardBackground.background = DrawableFactory.rounded(
             context = context,
             backgroundColor = DSSColors.surface(),
             cornerRadiusDp = 15f,
-            strokeColor = DSSColors.borderDefault(),
-            strokeWidthDp = 1f,
+            strokeColor = cardStrokeColor,
+            strokeWidthDp = cardStrokeWidth,
         )
         // iOS: currentOfferLabel/planNameLabel/priceLabel/validityDateLabel compartilham o mesmo
         // labelColor (.gray no light, .white no dark/black) — não usam textPrimary.
@@ -382,13 +394,22 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         )
         validityBadge.setTextColor(DSSColors.textOnPrimary())
 
+        // iOS: toggleButton.borderColor = (isBlack || isDark) ? systemGray4 : .gray
+        val toggleStroke = if (scheme == ColorScheme.LIGHT) SYSTEM_GRAY else SYSTEM_GRAY4_DARK
         toggleButton.background = DrawableFactory.rounded(
             context = context,
             backgroundColor = android.graphics.Color.TRANSPARENT,
             cornerRadiusDp = 20f,
-            strokeColor = DSSColors.borderDefault(),
+            strokeColor = toggleStroke,
             strokeWidthDp = 1f,
         )
         toggleButton.setTextColor(DSSColors.textSecondary())
+    }
+
+    private companion object {
+        // iOS UIColor.systemGray4 (dark) = (58,58,60); systemGray5 (light) = (229,229,234); .gray.
+        val SYSTEM_GRAY4_DARK = android.graphics.Color.argb(255, 58, 58, 60)
+        val SYSTEM_GRAY5_LIGHT = android.graphics.Color.argb(255, 229, 229, 234)
+        val SYSTEM_GRAY = android.graphics.Color.argb(255, 142, 142, 147)
     }
 }

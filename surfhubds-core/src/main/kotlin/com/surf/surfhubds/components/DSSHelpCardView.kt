@@ -1,6 +1,7 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
@@ -14,7 +15,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -135,12 +138,18 @@ class DSSHelpCardView @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
-        // Background + border
+        // iOS: borderWidth=1 sempre; cor = systemGray5 (light) / .white (dark e black).
+        // `borderDefault()` pintava a borda de #595959 no light; usamos systemGray5 (#E5E5EA).
+        val borderColor = if (ThemeManager.colorScheme == ColorScheme.LIGHT) {
+            SYSTEM_GRAY5_LIGHT
+        } else {
+            Color.WHITE
+        }
         background = DrawableFactory.rounded(
             context = context,
             backgroundColor = DSSColors.surface(),
             cornerRadiusDp = 8f,
-            strokeColor = DSSColors.borderDefault(),
+            strokeColor = borderColor,
             strokeWidthDp = 1f,
         )
 
@@ -158,5 +167,10 @@ class DSSHelpCardView @JvmOverloads constructor(
         // Procura `ic_chevron_right` em recursos do app, sem falhar se ausente.
         val resId = resources.getIdentifier("ic_chevron_right", "drawable", context.packageName)
         return if (resId != 0) AppCompatResources.getDrawable(context, resId) else null
+    }
+
+    companion object {
+        /** iOS: UIColor.systemGray5 (light) — borda sutil do card no claro. */
+        private const val SYSTEM_GRAY5_LIGHT = 0xFFE5E5EA.toInt()
     }
 }

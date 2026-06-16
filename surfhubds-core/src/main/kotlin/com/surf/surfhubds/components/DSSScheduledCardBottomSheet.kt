@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
+import com.surf.surfhubds.theme.ThemeManager
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
@@ -509,7 +511,9 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
         private val scheduledBadgeLabel = paddingLabel(context).apply {
             typeface = DSSFont.medium(context, 12f).typeface
             textSize = 12f
-            setTextColor(Color.WHITE)
+            // buttonText (conteúdo sobre a primary), não branco fixo: em brand com primary
+            // clara (Uber) o branco some no badge de fundo primary.
+            setTextColor(DSSColors.buttonText())
             gravity = Gravity.CENTER
         }
         private val phoneLabel = TextView(context).apply {
@@ -842,5 +846,12 @@ private fun roundedTopBackground(ctx: Context, @androidx.annotation.ColorInt col
         shape = android.graphics.drawable.GradientDrawable.RECTANGLE
         setColor(color)
         cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
+        // iOS: borderLayer (lineWidth 1) adicionado só em black/dark.
+        // black -> branco; dark -> branco @40%; light -> sem borda.
+        when (ThemeManager.colorScheme) {
+            ColorScheme.BLACK -> setStroke(1f.dpToPx(ctx), Color.WHITE)
+            ColorScheme.DARK -> setStroke(1f.dpToPx(ctx), Color.argb(102, 255, 255, 255))
+            else -> {}
+        }
     }
 }

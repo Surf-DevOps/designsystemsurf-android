@@ -17,7 +17,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -411,8 +413,21 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
 
         private fun refresh() {
             val bg = DSSColors.surface()
-            val stroke = if (selectedStyle) DSSColors.primary() else DSSColors.borderDefault()
-            val width = if (selectedStyle) 2f else 1f
+            // iOS setSelectedStyle: selecionado -> borda 2pt primary (primaryButton no black).
+            // Não selecionado: black -> sem borda; dark -> borda 2pt systemGray3; light -> sem borda.
+            val scheme = ThemeManager.colorScheme
+            val stroke: Int
+            val width: Float
+            if (selectedStyle) {
+                stroke = if (scheme == ColorScheme.BLACK) DSSColors.primaryButton() else DSSColors.primary()
+                width = 2f
+            } else if (scheme == ColorScheme.DARK) {
+                stroke = DSSPlanCollectionView.SYSTEM_GRAY3_DARK
+                width = 2f
+            } else {
+                stroke = android.graphics.Color.TRANSPARENT
+                width = 0f
+            }
             container.background = DrawableFactory.rounded(
                 context = context,
                 backgroundColor = bg,

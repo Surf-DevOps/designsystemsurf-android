@@ -231,11 +231,16 @@ class DSSUsageCard @JvmOverloads constructor(
             ColorScheme.DARK -> 2f
             ColorScheme.BLACK -> 0f
         }
+        // iOS: cor da borda = UIColor(white:0.9) no claro / UIColor.separator no escuro.
+        // O token `divider()` é exatamente o .separator (#C6C6C8/#38383A); usar `borderDefault()`
+        // pintava a borda de branco no dark (borderDefault dark = #FFFFFF). No claro mapeamos
+        // white:0.9 (#E5E5E5). BLACK não desenha borda (width 0).
+        val strokeColor = if (scheme == ColorScheme.LIGHT) WHITE_90_LIGHT else DSSColors.divider()
         background = DrawableFactory.rounded(
             context = context,
             backgroundColor = DSSColors.surface(),
             cornerRadiusDp = 12f,
-            strokeColor = DSSColors.borderDefault(),
+            strokeColor = strokeColor,
             strokeWidthDp = strokeWidthDp,
         )
         iconView.setColorFilter(DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
@@ -248,5 +253,10 @@ class DSSUsageCard @JvmOverloads constructor(
         usedLabel.setTextColor(if (scheme == ColorScheme.LIGHT) DSSColors.primary() else DSSColors.textPrimary())
         validUntilLabel.setTextColor(DSSColors.textPrimary())
         divider.setBackgroundColor(DSSColors.divider())
+    }
+
+    companion object {
+        /** iOS: UIColor(white: 0.9, alpha: 1) — borda sutil do card no claro. */
+        private const val WHITE_90_LIGHT = 0xFFE5E5E5.toInt()
     }
 }

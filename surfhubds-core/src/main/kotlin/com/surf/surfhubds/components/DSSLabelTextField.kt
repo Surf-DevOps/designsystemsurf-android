@@ -21,7 +21,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
+import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
@@ -267,24 +269,41 @@ class DSSLabelTextField @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refreshTheme() }
 
     private fun refreshTheme(error: Boolean = false) {
+        // iOS `getCurrentBorderColor`: no dark = UIColor(white: 0.85) (cinza claro, rgb 217);
+        // nos demais (light/black) = token borderDefault. Sem isso a borda no dark divergia.
+        val isDark = ThemeManager.colorScheme == ColorScheme.DARK
         val borderColor = when {
             // iOS usa UIColor.systemRed literal no estado de erro -> #FF3B30.
             error -> Color.parseColor("#FF3B30")
             borderColorOverride != null -> borderColorOverride!!
+            isDark -> Color.rgb(217, 217, 217) // iOS UIColor(white: 0.85, alpha: 1.0)
             else -> DSSColors.borderDefault()
+        }
+        // iOS `getCurrentBackgroundColor`: black = DSSColors.surface; dark = secondarySystemBackground
+        // (rgb 28,28,30); light = .clear. Sem isso o campo ficava transparente no dark/black.
+        val scheme = ThemeManager.colorScheme
+        val fieldBg = backgroundColorOverride ?: when (scheme) {
+            ColorScheme.BLACK -> DSSColors.surface()
+            ColorScheme.DARK -> Color.rgb(28, 28, 30)
+            else -> Color.TRANSPARENT
         }
         editText.background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = backgroundColorOverride ?: Color.TRANSPARENT,
+            backgroundColor = fieldBg,
             cornerRadiusDp = 25f,
             strokeColor = borderColor,
             strokeWidthDp = borderWidthOverride ?: 1f,
         )
-        titleLabel.setTextColor(DSSColors.textPrimary())
-        editText.setTextColor(DSSColors.textPrimary())
-        editText.setHintTextColor(DSSColors.textTertiary())
-        leftButton.setColorFilter(DSSColors.textTertiary(), android.graphics.PorterDuff.Mode.SRC_IN)
-        rightButton.setColorFilter(DSSColors.textTertiary(), android.graphics.PorterDuff.Mode.SRC_IN)
+        // iOS no dark: texto/título = .white; placeholder/ícone = UIColor(white: 0.85).
+        // Nos demais schemes mantém os tokens. Garante que texto e placeholder não somem no dark.
+        val light85 = Color.rgb(217, 217, 217)
+        val textColor = if (isDark) Color.WHITE else DSSColors.textPrimary()
+        val hintIconColor = if (isDark) light85 else DSSColors.textTertiary()
+        titleLabel.setTextColor(textColor)
+        editText.setTextColor(textColor)
+        editText.setHintTextColor(hintIconColor)
+        leftButton.setColorFilter(hintIconColor, android.graphics.PorterDuff.Mode.SRC_IN)
+        rightButton.setColorFilter(hintIconColor, android.graphics.PorterDuff.Mode.SRC_IN)
     }
 
     private fun attachWatcher() {

@@ -80,7 +80,7 @@ class DSSImagePickerManager private constructor(
 
     fun show() {
         val options = arrayOf("Câmera", "Galeria", "Cancelar")
-        AlertDialog.Builder(ctx)
+        val d = AlertDialog.Builder(ctx)
             .setTitle("Selecionar foto")
             .setItems(options) { dialog, which ->
                 when (which) {
@@ -89,7 +89,10 @@ class DSSImagePickerManager private constructor(
                 }
                 dialog.dismiss()
             }
-            .show()
+            .create()
+        d.show()
+        // Tematiza pelo DSS (fundo+título; sem isso fica branco e o texto some no dark/black).
+        d.applyDssTheme()
     }
 
     private fun ensureCameraPermissionAndOpen() {

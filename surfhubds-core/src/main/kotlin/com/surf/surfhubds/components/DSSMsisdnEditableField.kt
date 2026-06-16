@@ -119,7 +119,9 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
         isAllCaps = false
         textSize = 16f
         typeface = DSSFont.regular(context, 16f).typeface
-        setTextColor(Color.WHITE)
+        // buttonText (conteúdo sobre a primary), não branco fixo: em brand com primary
+        // clara (Uber) o branco some no botão de fundo primary.
+        setTextColor(DSSColors.buttonText())
         // AppCompatButton herda padding horizontal e minWidth do tema, que comem
         // a largura de 95dp e cortam "Confirmar". Zera pra o texto caber centrado.
         setPadding(0, 0, 0, 0)

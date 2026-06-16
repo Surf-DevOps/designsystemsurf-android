@@ -69,8 +69,9 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
         val ctx = requireContext()
         val scheme = ThemeManager.colorScheme
         // iOS containerView: fundo por scheme (.black → preto; .dark → rgb(28,28,30);
-        // default → .systemBackground), cantos superiores 24 e borda 1pt por scheme
-        // (.black → branco; .dark → branco 40%; default → systemGray4).
+        // default → .systemBackground), cantos superiores 24 e borda 1pt (lineWidth=1)
+        // adicionada só nos schemes black/dark (.black → branco; .dark → branco 40%);
+        // no default o iOS NÃO adiciona o borderLayer.
         val containerColor = when (scheme) {
             ColorScheme.BLACK -> Color.BLACK
             ColorScheme.DARK -> Color.rgb(28, 28, 30)
@@ -79,7 +80,7 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
         val borderColor = when (scheme) {
             ColorScheme.BLACK -> Color.WHITE
             ColorScheme.DARK -> Color.argb(0x66, 0xFF, 0xFF, 0xFF) // branco 40%
-            else -> Color.rgb(209, 209, 214) // iOS systemGray4 (light)
+            else -> null // default não tem borda no iOS
         }
         val scroll = ScrollView(ctx).apply {
             background = GradientDrawable().apply {
@@ -87,7 +88,7 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
                 setColor(containerColor)
                 val r = 24f.dpToPx(ctx).toFloat()
                 cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
-                setStroke(1f.dpToPx(ctx), borderColor)
+                if (borderColor != null) setStroke(1f.dpToPx(ctx), borderColor)
             }
         }
 

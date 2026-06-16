@@ -60,6 +60,9 @@ class DSSCarouselView @JvmOverloads constructor(
         set(value) {
             field = value
             applyColors()
+            // O fundo mudou → dots e texto precisam recontrastar (ex.: fundo preto custom).
+            pageControl.refresh()
+            pager.adapter?.notifyDataSetChanged()
         }
 
     val getCurrentIndex: Int get() = currentIndex
@@ -98,9 +101,11 @@ class DSSCarouselView @JvmOverloads constructor(
     }
 
     private fun applyColors() {
-        val bg = customBackgroundColor ?: carouselSurface()
-        setBackgroundColor(bg)
+        setBackgroundColor(resolvedBackground())
     }
+
+    /** Cor de fundo efetiva do carousel (custom tem prioridade sobre o token). */
+    private fun resolvedBackground(): Int = customBackgroundColor ?: carouselSurface()
 
     /**
      * No scheme BLACK várias brands não definem o token `surface` em black, então ele
@@ -109,6 +114,10 @@ class DSSCarouselView @JvmOverloads constructor(
      */
     private fun carouselSurface(): Int =
         if (ThemeManager.colorScheme == ColorScheme.BLACK) DSSColors.background() else DSSColors.surface()
+
+    /** Fundo escuro? Decide cor de dots/texto por luminância real (independe do scheme). */
+    private fun isOnDarkBackground(): Boolean =
+        ColorUtils.calculateLuminance(resolvedBackground()) < 0.5
 
     fun configure(items: List<DSSCarouselItem>, textColor: Int = Color.BLACK, textTypeface: Typeface? = null) {
         this.items.clear()
@@ -147,7 +156,9 @@ class DSSCarouselView @JvmOverloads constructor(
         override fun getItemCount(): Int = items.size
 
         override fun onBindViewHolder(holder: CarouselVH, position: Int) {
-            holder.cell.configure(items[position], textColor, textTypeface)
+            // iOS: no dark/black o label fica branco. Decidimos pela luminância do fundo real.
+            val effectiveTextColor = if (isOnDarkBackground()) Color.WHITE else textColor
+            holder.cell.configure(items[position], effectiveTextColor, textTypeface)
         }
     }
 
@@ -189,9 +200,7 @@ class DSSCarouselView @JvmOverloads constructor(
         fun configure(item: DSSCarouselItem, textColor: Int, typeface: Typeface?) {
             imageView.setImageDrawable(item.image)
             label.text = item.text
-            // iOS: no dark/black o label fica branco; no light usa a cor informada.
-            val darkLike = ThemeManager.colorScheme != ColorScheme.LIGHT
-            label.setTextColor(if (darkLike) Color.WHITE else textColor)
+            label.setTextColor(textColor)
             typeface?.let { label.typeface = it }
             // iOS: brand .flachip alinha à esquerda; demais centralizam.
             label.gravity = if (BrandResolver.current(context) == Brand.FLACHIP) {
@@ -202,7 +211,7 @@ class DSSCarouselView @JvmOverloads constructor(
         }
     }
 
-    private class PageControlView(context: Context) : LinearLayout(context) {
+    private inner class PageControlView(context: Context) : LinearLayout(context) {
         private var count: Int = 0
         private var currentPage: Int = 0
         private val dotSize = 8.dpToPx(context)
@@ -218,12 +227,13 @@ class DSSCarouselView @JvmOverloads constructor(
 
         private fun rebuild() {
             removeAllViews()
-            // No dark/black o `primary` (e o cinza claro do inativo) somem sobre a surface
-            // escura; nesses schemes os dots viram brancos (ativo cheio, inativo translúcido).
-            val darkLike = ThemeManager.colorScheme != ColorScheme.LIGHT
-            val activeColor = if (darkLike) Color.WHITE else DSSColors.primary()
+            // Sobre fundo escuro (black/dark, ou custom preto) o `primary`/cinza somem; aí os
+            // dots viram brancos (ativo cheio, inativo translúcido). Decisão por luminância
+            // do fundo real, não pelo enum de scheme — cobre o caso de fundo custom.
+            val onDark = isOnDarkBackground()
+            val activeColor = if (onDark) Color.WHITE else DSSColors.primary()
             val inactiveColor =
-                if (darkLike) ColorUtils.setAlphaComponent(Color.WHITE, 0x59) else Color.LTGRAY
+                if (onDark) ColorUtils.setAlphaComponent(Color.WHITE, 0x80) else Color.LTGRAY
             repeat(count) { i ->
                 val dot = View(context).apply {
                     background = GradientDrawable().apply {

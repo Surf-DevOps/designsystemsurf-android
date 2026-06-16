@@ -41,8 +41,8 @@ data class BrandInfo(
             )
             Brand.BANDSPORTS -> BrandInfo(
                 carouselText1 = "A operadora de celular para você que é apaixonado por esportes.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://bandsportscelular.com.br/termodeadesao/",
                 termsOfertaURL = "https://bandsportscelular.com.br/regulamento-de-oferta-2/",
                 termsPrivacidadeURL = "https://bandsportscelular.com.br/politicadeprivacidade/",
@@ -57,8 +57,8 @@ data class BrandInfo(
             )
             Brand.CONECTA -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://megasurfcelular.com.br/termo-de-adesao/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://megasurfcelular.com.br/politica-de-privacidade/",
@@ -73,8 +73,8 @@ data class BrandInfo(
             )
             Brand.MEGA -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://megasurfcelular.com.br/termo-de-adesao/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://megasurfcelular.com.br/politica-de-privacidade/",
@@ -89,8 +89,8 @@ data class BrandInfo(
             )
             Brand.FLUXO -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "",
                 termsOfertaURL = "https://fluxoon.com.br/regulamento-de-oferta/",
                 termsPrivacidadeURL = "https://fluxoon.com.br/politica-de-privacidade/",
@@ -135,8 +135,8 @@ data class BrandInfo(
             )
             Brand.PAFER -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do mercado!",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "",
                 chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=paferweb",
@@ -150,8 +150,8 @@ data class BrandInfo(
             )
             Brand.PAGUEMENOS -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://paguemenoscelular.com.br/termo-de-adesao/",
                 termsOfertaURL = "https://paguemenoscelular.com.br/regulamento-oferta/",
                 termsPrivacidadeURL = "https://paguemenoscelular.com.br/politica-de-privacidade/",
@@ -166,8 +166,8 @@ data class BrandInfo(
             )
             Brand.CARREFOURCHIP -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://carrefourchip.surf.com.br/termo-de-adesao-2/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://carrefourchip.surf.com.br/politica-de-privacidade/",
@@ -182,8 +182,8 @@ data class BrandInfo(
             )
             Brand.CORREIOSCELULAR -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://www.correioscelular.com.br/termos-de-adesao1/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://www.correioscelular.com.br/politica-de-privacidade/",
@@ -198,8 +198,8 @@ data class BrandInfo(
             )
             Brand.UBER -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://uberchip.com.br/termo-de-adesao/",
                 termsOfertaURL = "https://uberchip.com.br/regulamento-oferta/",
                 termsPrivacidadeURL = "https://uberchip.com.br/politica-de-privacidade/",
@@ -214,8 +214,8 @@ data class BrandInfo(
             )
             Brand.PERNAMBUCANASCHIP -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
+                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://pernambucanas.surf.com.br/termo-de-adesao-novo/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://pernambucanas.surf.com.br/termo-de-privacidade-novo/",

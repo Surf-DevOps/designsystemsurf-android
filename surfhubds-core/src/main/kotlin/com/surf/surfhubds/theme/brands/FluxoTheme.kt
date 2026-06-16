@@ -11,7 +11,7 @@ class FluxoTheme : DefaultTheme() {
         primary = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
         secondary = ColorValue.fromHex("#5F00E6", "#2C5282"),
         primaryButton = ColorValue.fromHex("#FF003A", "#FF003A"),
-        buttonText = ColorValue.fromHex("#FFFFFF", "#000000"),
+        buttonText = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
         surface = ColorValue.fromHex("#FFFFFF", "#1C1C1E"),
         background = ColorValue.fromHex("#FFFFFF", "#000000"),
         backgroundSecondary = ColorValue.fromHex("#F8F8F8", "#1C1C1E"),

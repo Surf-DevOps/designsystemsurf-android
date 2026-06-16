@@ -16,7 +16,7 @@
     <color name="background">#000000</color>
     <color name="onBackground">#FFFFFF</color>
     <color name="error">#E74C3C</color>
-    <color name="onError">#000000</color>
+    <color name="onError">#FFFFFF</color>
     <color name="outline">#FFFFFF</color>
     <color name="scrim">#000000</color>
 </resources>

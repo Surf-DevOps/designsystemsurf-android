@@ -5,13 +5,13 @@ import com.surf.surfhubds.theme.colorValueWithAlpha
 import com.surf.surfhubds.tokens.ColorTokens
 import com.surf.surfhubds.tokens.ColorValue
 
+// Gerado pelo brand-builder — espelho do PernambucanasChipTheme.swift (iOS).
 class PernambucanasChipTheme : DefaultTheme() {
     override fun buildColors(): ColorTokens = ColorTokens(
-        primary = ColorValue.fromHex("#320D7B", "#FFFFFF"),
+        primary = ColorValue.fromHex("#203B77", "#FFFFFF"),
         secondary = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
-        primaryButton = ColorValue.fromHex("#FFF100", "#FFFFFF"),
-        // dark/black: primary/primaryButton viram branco -> conteúdo escuro (antes branco no branco).
-        buttonText = ColorValue.fromHex("#320D7B", "#320D7B", "#320D7B"),
+        primaryButton = ColorValue.fromHex("#203B77", "#FFFFFF"),
+        buttonText = ColorValue.fromHex("#F8DE02", "#FFFFFF"),
         surface = ColorValue.fromHex("#FFFFFF", "#1C1C1E"),
         background = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
         backgroundSecondary = ColorValue.fromHex("#F8F8F8", "#FFFFFF"),
@@ -21,7 +21,7 @@ class PernambucanasChipTheme : DefaultTheme() {
         textSecondary = ColorValue.fromHex("#757575", "#B0B0B0"),
         textTertiary = ColorValue.fromHex("#9E9E9E", "#808080"),
         textLink = ColorValue.fromHex("#1D4ED8", "#0A84FF"),
-        textOnPrimary = ColorValue.fromHex("#FFFFFF", "#320D7B", "#320D7B"),
+        textOnPrimary = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
         borderDefault = ColorValue.fromHex("#595959", "#FFFFFF"),
         borderFocus = ColorValue.fromHex("#EB0033", "#EA1E2C"),
         borderError = ColorValue.fromHex("#DC3545", "#E74C3C"),

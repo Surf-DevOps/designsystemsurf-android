@@ -547,6 +547,7 @@
     <string name="recharge_completed_success_title">Recarga realizada!</string>
     <string name="recharge_completed_success_subtitle">Sua recarga foi processada com sucesso.</string>
     <string name="menu_benefits">Benefícios</string>
+    <string name="menu_compre_ganhe">Compre e Ganhe</string>
     <string name="profile_required_fields">Todos os campos obrigatórios devem ser preenchidos.</string>
     <string name="profile_copied">Copiado!</string>
     <string name="credit_card_no_cards">Não há cartões cadastrados, cadastre no +</string>

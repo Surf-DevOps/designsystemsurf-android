@@ -166,14 +166,14 @@ data class BrandInfo(
             )
             Brand.CARREFOURCHIP -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do \nmercado!",
+                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://carrefourchip.surf.com.br/termo-de-adesao-2/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://carrefourchip.surf.com.br/politica-de-privacidade/",
                 chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=carrefourwebchip",
                 whatsApp = "5511933003030",
-                forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.carrefourchip",
+                forceUpdateURL = "https://apps.apple.com/us/app/carrefour-chip/id6768694046",
                 coMvno = "69",
                 mvnoName = "Carrefour Chip",
                 noMvno = "CARREFOUR",

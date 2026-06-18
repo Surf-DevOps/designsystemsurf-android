@@ -19,6 +19,7 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -66,7 +67,7 @@ class DSSBestDealsBottomSheet : BottomSheetDialogFragment() {
         }
 
         val titleLabel = TextView(ctx).apply {
-            text = "Melhor Oferta!"
+            text = AppStrings.brand(ctx, "best_deals_title", "Melhor Oferta!")
             typeface = DSSFont.bold(ctx, 20f).typeface
             textSize = 20f
             gravity = Gravity.CENTER
@@ -90,7 +91,7 @@ class DSSBestDealsBottomSheet : BottomSheetDialogFragment() {
         ).apply { topMargin = 34f.dpToPx(ctx) })
 
         val acceptButton = DSSPrincipalButton(ctx).apply {
-            text = "Eu quero!"
+            text = AppStrings.brand(ctx, "best_deals_accept", "Eu quero!")
             // iOS: font = DSSFont.regular(16) (botão default é light(16))
             typeface = DSSFont.regular(ctx, 16f).typeface
             // iOS passa backgroundColor: DSSColors.primaryButton + textColor: DSSColors.buttonText.
@@ -107,7 +108,7 @@ class DSSBestDealsBottomSheet : BottomSheetDialogFragment() {
         ).apply { topMargin = 32f.dpToPx(ctx) })
 
         val declineButton = AppCompatButton(ctx).apply {
-            text = "Não, obrigado(a)"
+            text = AppStrings.brand(ctx, "best_deals_decline", "Não, obrigado(a)")
             isAllCaps = false
             typeface = DSSFont.regular(ctx, 14f).typeface
             textSize = 14f

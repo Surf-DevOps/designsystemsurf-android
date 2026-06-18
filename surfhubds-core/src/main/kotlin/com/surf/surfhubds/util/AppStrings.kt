@@ -31,7 +31,16 @@ object AppStrings {
         }
     }
 
-    /** Lookup por chave (key→default), útil quando vier de remote config. */
+    /**
+     * Lookup por chave (key→default), útil quando vier de remote config.
+     *
+     * TODO(parity): este `builtIn` ainda carrega defaults de placeholder de
+     * "Educação Inteligente" (home.*, brand_name etc.) que NÃO pertencem ao DSS.
+     * Os componentes do DSS já resolvem textos via [brand] (resource/getIdentifier +
+     * fallback inline), espelhando o `AppStrings.t("...")` do iOS. Remover estes
+     * leftovers em um follow-up — por ora o mapa é mantido para não quebrar callers
+     * que ainda dependem de [get].
+     */
     private val builtIn: Map<String, String> = mapOf(
         "home.title" to "Educação Inteligente SP - Bem-vindo",
         "home.subtitle" to "Sua jornada educacional começa aqui",

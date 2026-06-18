@@ -59,10 +59,19 @@ class DSSActionCardButton @JvmOverloads constructor(
         setPadding(padH, padV, padH, padV)
         minWidth = DEFAULT_WIDTH_DP.dpToPx(context)
         minHeight = DEFAULT_HEIGHT_DP.dpToPx(context)
-        // Sem sombra: zera elevation e remove o stateListAnimator (AppCompatButton aplica
-        // elevação/sombra default via stateListAnimator — só elevation=0 não basta).
-        elevation = 0f
+        // Remove o stateListAnimator (AppCompatButton aplica elevação/sombra default que muda
+        // ao pressionar). Aplicamos uma sombra suave fixa que aproxima o iOS:
+        // shadow black@8% radius 6 offset (0,2). No Android a elevation gera a sombra;
+        // ~4dp + cor de sombra translúcida dá um resultado próximo do "soft shadow".
         stateListAnimator = null
+        elevation = 4f.dpToPx(context).toFloat()
+        outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+        // Tinta da sombra (API 28+): black@~8% pra aproximar o shadowColor/opacity do iOS.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+            val softShadow = androidx.core.graphics.ColorUtils.setAlphaComponent(Color.BLACK, 20) // ~8%
+            outlineAmbientShadowColor = softShadow
+            outlineSpotShadowColor = softShadow
+        }
         refresh()
         setupThemeObserver()
     }

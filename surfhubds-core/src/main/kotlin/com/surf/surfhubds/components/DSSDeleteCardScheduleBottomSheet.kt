@@ -17,6 +17,7 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -77,7 +78,7 @@ class DSSDeleteCardScheduleBottomSheet : BottomSheetDialogFragment() {
         ).apply { gravity = Gravity.CENTER_HORIZONTAL })
 
         val titleLabel = TextView(ctx).apply {
-            text = "Excluir cartão"
+            text = AppStrings.brand(ctx, "delete_card_schedule_title", "Excluir cartão")
             typeface = DSSFont.regular(ctx, 18f).typeface
             textSize = 18f
             gravity = Gravity.CENTER
@@ -94,7 +95,11 @@ class DSSDeleteCardScheduleBottomSheet : BottomSheetDialogFragment() {
         })
 
         val subtitleLabel = TextView(ctx).apply {
-            text = "Este cartão está vinculado à sua recarga programada. O que deseja fazer?"
+            text = AppStrings.brand(
+                ctx,
+                "delete_card_schedule_subtitle",
+                "Este cartão está vinculado à sua recarga programada. O que deseja fazer?",
+            )
             typeface = DSSFont.bold(ctx, 18f).typeface
             textSize = 18f
             gravity = Gravity.CENTER
@@ -109,7 +114,10 @@ class DSSDeleteCardScheduleBottomSheet : BottomSheetDialogFragment() {
             rightMargin = 8f.dpToPx(ctx)
         })
 
-        transferButton = makeOptionButton(ctx, "Transferir programada para outro cartão") {
+        transferButton = makeOptionButton(
+            ctx,
+            AppStrings.brand(ctx, "delete_card_schedule_option_transfer", "Transferir programada para outro cartão"),
+        ) {
             selectedOption = DSSDeleteCardScheduleOption.TRANSFER_TO_ANOTHER_CARD
             updateSelection()
         }
@@ -117,7 +125,10 @@ class DSSDeleteCardScheduleBottomSheet : BottomSheetDialogFragment() {
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = 24f.dpToPx(ctx) })
 
-        cancelScheduleButton = makeOptionButton(ctx, "Entrar em contato e solicitar o cancelamento da programada.") {
+        cancelScheduleButton = makeOptionButton(
+            ctx,
+            AppStrings.brand(ctx, "delete_card_schedule_option_cancel", "Entrar em contato e solicitar o cancelamento da programada."),
+        ) {
             selectedOption = DSSDeleteCardScheduleOption.CANCEL_SCHEDULE
             updateSelection()
         }
@@ -128,7 +139,7 @@ class DSSDeleteCardScheduleBottomSheet : BottomSheetDialogFragment() {
         // iOS: confirmButton é um UIButton "cru" com fill = DSSColors.primaryButton
         // e texto = DSSColors.buttonText (NÃO usa DSSPrincipalButton, que pinta com `primary`).
         val confirmButton = AppCompatButton(ctx).apply {
-            text = "Confirmar"
+            text = AppStrings.brand(ctx, "delete_card_schedule_confirm_button", "Confirmar")
             isAllCaps = false
             gravity = Gravity.CENTER
             textSize = 18f

@@ -1,5 +1,6 @@
 package com.surf.surfhubds.theme
 
+import android.content.Context
 import androidx.core.graphics.ColorUtils
 import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.tokens.ColorTokens
@@ -25,8 +26,14 @@ internal fun colorValueWithAlpha(
 /**
  * Equivalente ao `DefaultTheme.swift`. Brand themes herdam de [BrandTheme] e
  * sobrescrevem apenas [buildColors].
+ *
+ * Passe um [context] (preferencialmente `applicationContext`) para que a tipografia
+ * dos componentes use a família `dss_*` registrada via [com.surf.surfhubds.font.DSSFont]
+ * (espelha `DSSFont.regular/medium/bold` do iOS). Sem contexto, cai no system font.
  */
-open class DefaultTheme : Theme {
+open class DefaultTheme(
+    protected val context: Context? = null,
+) : Theme {
 
     final override val colorScheme: ColorScheme = ColorScheme.LIGHT
 
@@ -35,7 +42,7 @@ open class DefaultTheme : Theme {
     }
 
     final override val components: ComponentStyles by lazy {
-        DefaultComponentStyles.create(tokens)
+        DefaultComponentStyles.create(tokens, context)
     }
 
     protected open fun buildColors(): ColorTokens = ColorTokens(

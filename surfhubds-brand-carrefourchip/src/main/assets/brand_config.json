@@ -1,6 +1,6 @@
 {
   "brandIdentifier": "carrefourchip",
   "primaryColorHex": "#0101BD",
-  "enableChat": false,
+  "enableChat": true,
   "apiBaseURL": ""
 }

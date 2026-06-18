@@ -1,6 +1,6 @@
 {
   "brandIdentifier": "fluxo",
   "primaryColorHex": "#FFFFFF",
-  "enableChat": false,
+  "enableChat": true,
   "apiBaseURL": ""
 }

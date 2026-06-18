@@ -1,6 +1,6 @@
 {
   "brandIdentifier": "pernambucanaschip",
   "primaryColorHex": "#203B77",
-  "enableChat": false,
+  "enableChat": true,
   "apiBaseURL": ""
 }

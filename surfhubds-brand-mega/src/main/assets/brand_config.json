@@ -1,6 +1,6 @@
 {
   "brandIdentifier": "mega",
   "primaryColorHex": "#003EFF",
-  "enableChat": false,
+  "enableChat": true,
   "apiBaseURL": ""
 }

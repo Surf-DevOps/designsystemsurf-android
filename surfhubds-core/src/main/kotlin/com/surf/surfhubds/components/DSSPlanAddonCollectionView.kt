@@ -189,7 +189,7 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
         private val validityLabel = TextView(context)
         private val priceLabel = TextView(context)
         private val planNameLabel = TextView(context)
-        private val downArrow = TextView(context)
+        private val downArrow = ImageView(context)
         private val untilLabel = TextView(context)
         private val dataLabel = TextView(context)
 
@@ -234,7 +234,11 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
                 typeface = DSSFont.regular(context, 14f).typeface
                 gravity = Gravity.END
             }
-            downArrow.apply { text = "v"; textSize = 14f; gravity = Gravity.CENTER }
+            downArrow.apply {
+                // iOS usa chevron.down (SF Symbol) tingido de textPrimary; aqui o vetor equivalente (mirror DSSPlanCollectionView).
+                setImageResource(com.surf.surfhubds.R.drawable.dss_ic_chevron_down)
+                scaleType = ImageView.ScaleType.FIT_CENTER
+            }
             untilLabel.apply {
                 text = "Até"; textSize = 18f; typeface = DSSFont.light(context, 18f).typeface
             }
@@ -445,7 +449,7 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
             planNameLabel.setTextColor(DSSColors.textPrimary())
             untilLabel.setTextColor(DSSColors.textPrimary())
             dataLabel.setTextColor(DSSColors.primary())
-            downArrow.setTextColor(DSSColors.textPrimary())
+            downArrow.setColorFilter(DSSColors.textPrimary(), PorterDuff.Mode.SRC_IN)
             separator.setBackgroundColor(DSSColors.divider())
             ilimitadosTitle.setTextColor(DSSColors.textPrimary())
             assinaturasTitle.setTextColor(DSSColors.textPrimary())

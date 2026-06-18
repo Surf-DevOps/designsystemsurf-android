@@ -22,7 +22,7 @@ class CorreiosCelularTheme : DefaultTheme() {
         textSecondary = ColorValue.fromHex("#757575", "#B0B0B0"),
         textTertiary = ColorValue.fromHex("#9E9E9E", "#808080"),
         textLink = ColorValue.fromHex("#1D4ED8", "#0A84FF"),
-        textOnPrimary = ColorValue.fromHex("#FFFFFF", "#00416B", "#00416B"),
+        textOnPrimary = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
         borderDefault = ColorValue.fromHex("#595959", "#FFFFFF"),
         borderFocus = ColorValue.fromHex("#EB0033", "#EA1E2C"),
         borderError = ColorValue.fromHex("#DC3545", "#E74C3C"),

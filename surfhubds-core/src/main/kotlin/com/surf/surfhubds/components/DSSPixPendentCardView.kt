@@ -214,6 +214,8 @@ class DSSPixPendentCardView @JvmOverloads constructor(
         }
 
         if (!collapsible) resumeCard.borderWidthDp = 0f
+        // iOS: título do resumo em medium 12 nos dois modos (collapsible e simples).
+        resumeCard.titleFont = DSSFont.medium(context, 12f).typeface
         container.addView(
             resumeCard,
             LinearLayout.LayoutParams(
@@ -380,7 +382,9 @@ class DSSPixPendentCardView @JvmOverloads constructor(
             context = context,
             backgroundColor = if (isDark) Color.BLACK else Color.WHITE,
             cornerRadiusDp = cornerRadiusDp,
-            // iOS setupContainerView() não define borderWidth/borderColor em nenhum scheme — SEM borda.
+            // Borda sutil systemGray4 (light #D1D1D6 / dark #3A3A3C), 1pt.
+            strokeColor = if (isDark) SYSTEM_GRAY4_DARK else SYSTEM_GRAY4_LIGHT,
+            strokeWidthDp = 1f,
         )
         elevation = 2f.dpToPx(context).toFloat()
 
@@ -532,6 +536,10 @@ class DSSPixPendentCardView @JvmOverloads constructor(
         /** iOS: UIColor.systemGray5 (light #E5E5EA / dark #2C2C2E). */
         private const val SYSTEM_GRAY5_LIGHT = 0xFFE5E5EA.toInt()
         private const val SYSTEM_GRAY5_DARK = 0xFF2C2C2E.toInt()
+
+        /** iOS: UIColor.systemGray4 (light #D1D1D6 / dark #3A3A3C) — borda sutil do card. */
+        private const val SYSTEM_GRAY4_LIGHT = 0xFFD1D1D6.toInt()
+        private const val SYSTEM_GRAY4_DARK = 0xFF3A3A3C.toInt()
 
         private const val KEY_IS_PENDING = "isPixPending"
         private const val KEY_TARGET = "targetDate"

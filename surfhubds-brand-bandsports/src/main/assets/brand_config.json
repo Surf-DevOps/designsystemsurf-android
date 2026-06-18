@@ -1,6 +1,6 @@
 {
   "brandIdentifier": "bandsports",
   "primaryColorHex": "#AF0002",
-  "enableChat": false,
+  "enableChat": true,
   "apiBaseURL": ""
 }

@@ -35,5 +35,7 @@ internal object NoopTheme : Theme {
             divider = colorValueWithAlpha("#E0E0E0", "#424242", 0.5f, 0.7f),
         ),
     )
-    override val components: ComponentStyles = DefaultComponentStyles.create(tokens)
+    // Sem Context disponível (object/fallback que não deveria aparecer em runtime),
+    // então a tipografia usa o fallback de system font do DefaultComponentStyles.
+    override val components: ComponentStyles = DefaultComponentStyles.create(tokens, context = null)
 }

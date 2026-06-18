@@ -2,6 +2,7 @@ package com.surf.surfhubds.theme
 
 import android.content.Context
 import android.graphics.Typeface
+import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.tokens.BadgeStyle
 import com.surf.surfhubds.tokens.BadgeStyles
 import com.surf.surfhubds.tokens.ButtonStateStyle
@@ -47,8 +48,32 @@ object DefaultComponentStyles {
     private val systemTypefaceMedium = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
     private val systemTypefaceBold = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
 
-    private fun font(sizeSp: Float, bold: Boolean = false): FontSpec =
-        FontSpec(if (bold) systemTypefaceBold else systemTypefaceRegular, sizeSp)
+    /**
+     * Espelha os pesos do `DSSFont` do iOS usados no `DefaultTheme.swift`.
+     * `.medium` é distinto de `.bold` (não mapear medium -> bold).
+     */
+    private enum class Weight { REGULAR, MEDIUM, BOLD }
+
+    /**
+     * Quando [context] está disponível, resolve a tipografia via [DSSFont] para usar a
+     * família `dss_*` registrada pela brand (espelhando `DSSFont.regular/medium/bold` do iOS).
+     * Sem contexto, mantém o fallback de system font (compatibilidade com callers antigos).
+     */
+    private fun font(context: Context?, sizeSp: Float, weight: Weight = Weight.REGULAR): FontSpec {
+        if (context != null) {
+            return when (weight) {
+                Weight.REGULAR -> DSSFont.regular(context, sizeSp)
+                Weight.MEDIUM -> DSSFont.medium(context, sizeSp)
+                Weight.BOLD -> DSSFont.bold(context, sizeSp)
+            }
+        }
+        val typeface = when (weight) {
+            Weight.REGULAR -> systemTypefaceRegular
+            Weight.MEDIUM -> systemTypefaceMedium
+            Weight.BOLD -> systemTypefaceBold
+        }
+        return FontSpec(typeface, sizeSp)
+    }
 
     fun create(tokens: DesignTokens, context: Context? = null): ComponentStyles {
         val colors = tokens.colors
@@ -64,7 +89,7 @@ object DefaultComponentStyles {
                     borderColor = null,
                     borderWidthDp = 0f,
                     cornerRadiusDp = radius.md,
-                    font = font(17f, bold = true),
+                    font = font(context, 17f, Weight.MEDIUM),
                     contentInsets = EdgeInsets(spacing.sm, spacing.lg, spacing.sm, spacing.lg),
                     minHeightDp = 44f,
                     shadow = shadows.sm,
@@ -83,7 +108,7 @@ object DefaultComponentStyles {
                     borderColor = colors.primary,
                     borderWidthDp = 2f,
                     cornerRadiusDp = radius.md,
-                    font = font(17f, bold = true),
+                    font = font(context, 17f, Weight.MEDIUM),
                     contentInsets = EdgeInsets(spacing.sm, spacing.lg, spacing.sm, spacing.lg),
                     minHeightDp = 44f,
                     shadow = null,
@@ -102,7 +127,7 @@ object DefaultComponentStyles {
                     borderColor = null,
                     borderWidthDp = 0f,
                     cornerRadiusDp = radius.md,
-                    font = font(17f, bold = true),
+                    font = font(context, 17f, Weight.MEDIUM),
                     contentInsets = EdgeInsets(spacing.sm, spacing.lg, spacing.sm, spacing.lg),
                     minHeightDp = 44f,
                     shadow = null,
@@ -121,7 +146,7 @@ object DefaultComponentStyles {
                     borderColor = null,
                     borderWidthDp = 0f,
                     cornerRadiusDp = radius.md,
-                    font = font(17f, bold = true),
+                    font = font(context, 17f, Weight.MEDIUM),
                     contentInsets = EdgeInsets(spacing.sm, spacing.lg, spacing.sm, spacing.lg),
                     minHeightDp = 44f,
                     shadow = shadows.sm,
@@ -140,7 +165,7 @@ object DefaultComponentStyles {
                     borderColor = null,
                     borderWidthDp = 0f,
                     cornerRadiusDp = radius.md,
-                    font = font(17f, bold = true),
+                    font = font(context, 17f, Weight.MEDIUM),
                     contentInsets = EdgeInsets(spacing.sm, spacing.lg, spacing.sm, spacing.lg),
                     minHeightDp = 44f,
                     shadow = null,
@@ -156,7 +181,7 @@ object DefaultComponentStyles {
                     borderColor = null,
                     borderWidthDp = 0f,
                     cornerRadiusDp = 0f,
-                    font = font(17f),
+                    font = font(context, 17f),
                     contentInsets = EdgeInsets(spacing.xxs, spacing.xxs, spacing.xxs, spacing.xxs),
                     minHeightDp = 22f,
                     shadow = null,
@@ -172,7 +197,7 @@ object DefaultComponentStyles {
                     borderColor = colors.borderDefault,
                     borderWidthDp = 0f,
                     cornerRadiusDp = 0f,
-                    font = font(17f),
+                    font = font(context, 17f),
                     contentInsets = EdgeInsets(spacing.sm, 0f, spacing.sm, 0f),
                     minHeightDp = 44f,
                     focus = TextFieldStateStyle(borderColor = colors.borderFocus, borderWidthDp = 2f),
@@ -186,7 +211,7 @@ object DefaultComponentStyles {
                     borderColor = ColorValue.fromHex("#00000000"),
                     borderWidthDp = 0f,
                     cornerRadiusDp = radius.sm,
-                    font = font(17f),
+                    font = font(context, 17f),
                     contentInsets = EdgeInsets(spacing.sm, spacing.md, spacing.sm, spacing.md),
                     minHeightDp = 44f,
                     focus = TextFieldStateStyle(backgroundColor = colors.primary.withAlpha(0.05f)),
@@ -200,7 +225,7 @@ object DefaultComponentStyles {
                     borderColor = colors.borderDefault,
                     borderWidthDp = 1f,
                     cornerRadiusDp = radius.sm,
-                    font = font(17f),
+                    font = font(context, 17f),
                     contentInsets = EdgeInsets(spacing.sm, spacing.md, spacing.sm, spacing.md),
                     minHeightDp = 44f,
                     focus = TextFieldStateStyle(borderColor = colors.borderFocus, borderWidthDp = 2f),
@@ -242,7 +267,7 @@ object DefaultComponentStyles {
                 bar = NavigationBarStyle(
                     backgroundColor = colors.surface,
                     tintColor = colors.primary,
-                    titleFont = font(18f, bold = true),
+                    titleFont = font(context, 18f, Weight.BOLD),
                     shadow = shadows.sm,
                     heightDp = 44f,
                 ),
@@ -251,7 +276,7 @@ object DefaultComponentStyles {
                     selectedColor = colors.primary,
                     unselectedColor = colors.textTertiary,
                     indicatorColor = colors.primary,
-                    font = font(13f, bold = true),
+                    font = font(context, 13f, Weight.MEDIUM),
                     shadow = shadows.sm,
                 ),
             ),
@@ -291,10 +316,10 @@ object DefaultComponentStyles {
                     minHeightDp = 44f,
                 ),
                 section = ListSectionStyle(
-                    headerFont = font(13f, bold = true),
+                    headerFont = font(context, 13f, Weight.MEDIUM),
                     headerTextColor = colors.textSecondary,
                     headerPadding = EdgeInsets(spacing.md, spacing.md, spacing.xs, spacing.md),
-                    footerFont = font(11f),
+                    footerFont = font(context, 11f),
                     footerTextColor = colors.textTertiary,
                     footerPadding = EdgeInsets(spacing.xs, spacing.md, spacing.md, spacing.md),
                 ),
@@ -311,7 +336,7 @@ object DefaultComponentStyles {
                     borderColor = null,
                     borderWidthDp = 0f,
                     cornerRadiusDp = radius.full,
-                    font = font(13f, bold = true),
+                    font = font(context, 13f, Weight.MEDIUM),
                     contentInsets = EdgeInsets(spacing.xs, spacing.sm, spacing.xs, spacing.sm),
                     minHeightDp = 28f,
                 ),
@@ -321,7 +346,7 @@ object DefaultComponentStyles {
                     borderColor = colors.primary,
                     borderWidthDp = 1f,
                     cornerRadiusDp = radius.full,
-                    font = font(13f, bold = true),
+                    font = font(context, 13f, Weight.MEDIUM),
                     contentInsets = EdgeInsets(spacing.xs, spacing.sm, spacing.xs, spacing.sm),
                     minHeightDp = 28f,
                 ),
@@ -364,7 +389,7 @@ object DefaultComponentStyles {
                 standard = BadgeStyle(
                     backgroundColor = colors.error,
                     textColor = colors.textOnPrimary,
-                    font = font(11f),
+                    font = font(context, 11f),
                     cornerRadiusDp = radius.full,
                     padding = EdgeInsets(spacing.xxxs, spacing.xs, spacing.xxxs, spacing.xs),
                     minSize = Size(18f, 18f),
@@ -372,7 +397,7 @@ object DefaultComponentStyles {
                 dot = BadgeStyle(
                     backgroundColor = colors.error,
                     textColor = ColorValue.fromHex("#00000000"),
-                    font = font(11f),
+                    font = font(context, 11f),
                     cornerRadiusDp = radius.full,
                     padding = EdgeInsets.Zero,
                     minSize = Size(8f, 8f),

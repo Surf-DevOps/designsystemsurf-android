@@ -46,7 +46,6 @@ class DSSScannerManager(private val view: DecoratedBarcodeView) {
                 BarcodeFormat.EAN_13,
                 BarcodeFormat.CODE_128,
                 BarcodeFormat.CODE_39,
-                BarcodeFormat.ITF,
             )
         }
         view.barcodeView.decoderFactory = DefaultDecoderFactory(formats)

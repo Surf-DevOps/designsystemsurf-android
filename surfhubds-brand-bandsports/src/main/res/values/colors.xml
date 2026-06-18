@@ -3,7 +3,7 @@
      pelo ThemeManager (<Pascal>Theme.kt do DSS). O módulo da brand pode
      sobrescrever estes tokens via XML se quiser. -->
 <resources>
-    <color name="primary">#1D4ED8</color>
+    <color name="primary">#AF0002</color>
     <color name="onPrimary">#FFFFFF</color>
     <color name="primaryContainer">#DCE3FF</color>
     <color name="onPrimaryContainer">#001A41</color>
@@ -24,7 +24,7 @@
     <color name="ic_launcher_background">#FF0031</color>
 
     <!-- tokens DS -->
-    <color name="ds_primary">#1D4ED8</color>
+    <color name="ds_primary">#AF0002</color>
     <color name="ds_secondary">#5856D6</color>
     <color name="ds_background">#FFFFFF</color>
     <color name="ds_background_secondary">#F8F8F8</color>
@@ -32,7 +32,7 @@
     <color name="ds_text_secondary">#757575</color>
     <color name="ds_surface">#FFFFFF</color>
     <color name="ds_button_text">#FFFFFF</color>
-    <color name="ds_primary_button">#1D4ED8</color>
+    <color name="ds_primary_button">#AF0002</color>
     <color name="ds_error">#DC3545</color>
     <color name="ds_success">#28A745</color>
     <color name="ds_warning">#E08B00</color>

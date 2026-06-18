@@ -1,0 +1,215 @@
+{
+  "hasCategories": true,
+  "categories": [
+    {
+      "title": "Recarga",
+      "items": [
+        {
+          "question": "Onde recarregar o meu chip?",
+          "answer": "Você pode realizar a recarga do seu Surf pelo seguinte canal:\n• Aplicativo: Surf"
+        },
+        {
+          "question": "Quais são os valores de recarga?",
+          "answer": "As recargas disponíveis são:\nOfertas com validade de 30 dias.\n\n• R$ 15,00 (quinze reais) – Oferta 5GB\n• R$ 20,50 (vinte reais e cinquenta centavos) – Oferta 10GB\n• R$ 28,00 (vinte e oito reais) – Oferta 20GB\n• R$ 33,50 (trinta e três reais e cinquenta centavos) – Oferta 30GB\n• R$ 37,50 (trinta e sete reais e cinquenta centavos) – Oferta 35GB\n• R$ 42,00 (quarenta e dois reais) – Oferta 40GB\n\nObservação: Ofertas disponíveis para recarga."
+        },
+        {
+          "question": "Quais as Ofertas de celular que o Surf oferece?",
+          "answer": "As Ofertas Surf possuem valores e pacotes de benefícios correspondentes a cada valor de recarga e são válidos por 30 dias:\n\nOferta Surf – 5GB\n• 5GB de internet\n• Ligações ilimitadas para qualquer operadora\n• 100 SMS\n• WhatsApp Ilimitado\n• Internet sem cortes por 30 dias\n• Skeelo Light\n• Acúmulo de benefícios\n\nOferta Surf – 10GB\n• 10GB de internet\n• Ligações ilimitadas para qualquer operadora\n• 100 SMS\n• WhatsApp Ilimitado\n• Internet sem cortes por 30 dias\n• Skeelo Light\n• Acúmulo de benefícios\n\nOferta Surf – 20GB\n• 20GB de internet\n• Ligações ilimitadas para qualquer operadora\n• 100 SMS\n• WhatsApp Ilimitado\n• Waze Ilimitado\n• Internet sem cortes por 30 dias\n• Skeelo Light\n• Acúmulo de benefícios\n\nOferta Surf – 30GB\n• 30GB de internet\n• Ligações ilimitadas para qualquer operadora\n• 100 SMS\n• WhatsApp Ilimitado\n• Waze Ilimitado\n• Internet sem cortes por 30 dias\n• Skeelo Regular\n• Acúmulo de benefícios\n\nOferta Surf – 35GB\n• 35GB de internet\n• Ligações ilimitadas para qualquer operadora\n• 100 SMS\n• WhatsApp Ilimitado\n• Waze Ilimitado\n• Internet sem cortes por 30 dias\n• Skeelo Regular\n• Acúmulo de benefícios\n\nOferta Surf – 40GB\n• 40GB de internet\n• Ligações ilimitadas para qualquer operadora\n• 100 SMS\n• WhatsApp Ilimitado\n• Waze Ilimitado\n• Internet sem cortes por 30 dias\n• Skeelo Regular\n• Acúmulo de benefícios"
+        },
+        {
+          "question": "E se eu não recarregar o meu chip?",
+          "answer": "Se não houver recarga ou renovação após a expiração da recarga, o titular passa por 3 estágios até a desativação da linha:\n\n1º estágio (após expiração da recarga): o cliente recebe chamadas e SMS, porém não terá os benefícios de voz e dados.\n\n2º estágio (Até 45 dias após o 1º estágio): o cliente poderá apenas originar chamadas, enviar mensagens de textos aos serviços públicos de emergência definidos na regulamentação da Anatel, contatar o Call Center através do *288 e realizar recarga. Ficará por 30 dias neste estágio até a desativação total do serviço.\n\n3º estágio (até 75 dias após o 1º estágio): Após o período de 75 dias do segundo estágio sem plano ativo a linha é expirada no 76º dia."
+        },
+        {
+          "question": "Quais são as formas de pagamento?",
+          "answer": "Cartão de crédito e PIX via site e cartão de crédito, cartão de débito e PIX para aplicativo."
+        }
+      ]
+    },
+    {
+      "title": "Chip Virtual (eSIM)",
+      "items": [
+        {
+          "question": "O que é o chip virtual (eSIM)?",
+          "answer": "Um eSIM é um chip digital que permite o uso de uma Oferta celular de sua operadora sem precisar de um chip físico."
+        },
+        {
+          "question": "Como funciona?",
+          "answer": "O eSIM funciona como um chip tradicional, mas está embutido diretamente nos aparelhos. Ao invés de inserir um cartão físico, você baixa eletronicamente as informações da operadora para o eSIM. Isso permite ativar, trocar e gerenciar Ofertas de maneira ágil, sem a necessidade de trocar de chip manualmente."
+        },
+        {
+          "question": "Principais vantagens",
+          "answer": "Diferenciais eSIM Surf:\n• Algumas operadoras podem cobrar pela ativação do seu eSIM e levam dias para ativar. Com o eSIM Surf você tem sua linha ativa em menos de 24h e só paga o valor da sua recarga.\n\nFacilidade de Ativação:\n• Não é necessário um cartão SIM físico. A ativação é feita eletronicamente em até 24h através de um QR Code, permitindo uma configuração rápida e sem a necessidade de inserir um chip.\n\nFlexibilidade:\n• É possível alterar entre operadoras e Ofertas sem precisar trocar fisicamente o chip, mesmo para aparelhos com apenas uma bandeja de cartão SIM.\n\nConveniência:\n• Não há risco de perder ou danificar um eSIM. As configurações do eSIM estão armazenadas eletronicamente no dispositivo e podem ser restauradas facilmente."
+        },
+        {
+          "question": "O QR Code pode ser lido mais de uma vez?",
+          "answer": "Sim, o eSIM pode ser lido novamente, desde que o cliente ainda possua QR Code adquirido e que remova do aparelho anterior, antes de fazer uma nova leitura.\n\nNo entanto, se der algum problema ao fazer esse processo, entre em contato pelo telefone, discando *288 do seu celular ou 10543 de qualquer operadora. Fique tranquilo! Estamos 24h por dia, 7 dias por semana disponíveis para ajudar você no que precisar."
+        },
+        {
+          "question": "Quais celulares são compatíveis?",
+          "answer": "APPLE:\n• iPhone XS, XS Max, XR\n• iPhone SE (2020, 2022)\n• iPhone 11, 11 Pro, 11 Pro Max\n• iPhone 12 Mini, 12, 12 Pro, 12 Pro Max\n• iPhone 13 Mini, 13, 13 Pro, 13 Pro Max\n• iPhone 14, 14 Pro, 14 Plus, 14 Pro Max\n• iPhone 15, 15 Pro, 15 Plus, 15 Pro Max\nObservação: Dois eSIM podem ser ativados simultaneamente no iPhone 13, 14 e 15.\n\nSAMSUNG:\n• Galaxy A34 5G, A54\n• Galaxy S20, S20+, S20 Ultra\n• Galaxy S21, S21+ 5G, S21+ Ultra 5G\n• Galaxy S22, S22+, S22 Ultra\n• Galaxy S23, S23+, S23 Ultra, S23 FE\n• Galaxy Note 20, Note 20 Ultra 5G\n• Galaxy Fold, Z Fold2 5G, Z Fold3 5G, Z Fold4\n• Galaxy Z Flip, Z Flip 3 5G, Z Flip4\n• Galaxy Watch (app Samsung Wearable)\n\nGOOGLE:\n• Pixel 3, 3 XL, 3a, 3a XL\n• Pixel 4, 4a, 4 XL\n• Pixel 5, 6, 6 Pro, 6a\n• Pixel 7, 7 Pro\n• Pixel 8, 8 Pro\n• Pixel Fold\n\nMOTOROLA:\n• Razr 2019, Razr 5G, Razr 40, Razr 40 Ultra, Razr+\n• Edge +, Edge 40, Edge 40 Pro, Edge 40 Neo\n• G52J 5G, G52J 5GⅡ, G53J 5G, G84, G53 5G\n\nE outras marcas como Huawei, Oppo, Xiaomi, Nokia, OnePlus, etc."
+        },
+        {
+          "question": "Como ativar um chip virtual?",
+          "answer": "SAMSUNG:\n1. Acesse \"Configurações\"\n2. Toque em \"Conexões\"\n3. Selecione \"Gerenciamento de cartão SIM\"\n4. Toque em \"Adicionar Oferta móvel\"\n5. Clique em Ler QR CODE ou selecione copie e cole para copiar o código manualmente.\n6. Selecione \"ADICIONAR\". PRONTO! Seu Chip Virtual está ativo.\n\nAPPLE:\n1. Vá em \"Ajustes\"\n2. Clique em \"CELULAR\"\n3. Em seguida, vá em \"ADICIONAR e-SIM\"\n4. Clique em \"USAR CÓDIGO QR\"\n5. Aponte a câmera para o código QR CODE e faça a leitura ou\n6. Clique em \"INSERIR DETALHES MANUALMENTE\" e cole o código no campo \"Endereço SM-DP+\".\nPRONTO! Seu Chip Virtual está ativo.\n\nMOTOROLA:\n1. Acesse \"CONFIGURAÇÕES\"\n2. Clique em \"REDE E INTERNET\"\n3. Depois, vá em \"REDE MÓVEL\"\n4. Em seguida acesse \"OPERADORA\"\n5. Depois, clique em \"ADICIONAR OPERADORA\"; PRONTO! Seu Chip Virtual está ativo."
+        },
+        {
+          "question": "Posso ativar o mesmo Chip virtual em mais de um aparelho?",
+          "answer": "Não, o eSIM funciona da mesma forma que um chip físico, sendo assim só pode funcionar em um único aparelho, ou seja, se for conectado em um aparelho e depois ser conectado em outro, o primeiro aparelho que foi inserido o chip virtual será desconectado e conectado no novo aparelho."
+        },
+        {
+          "question": "Como transferir o meu Chip Virtual para outro celular?",
+          "answer": "IOS:\n1. No novo iPhone, acesse \"Ajustes > Celular > Adicionar Oferta Celular\"\n2. Escolha a Oferta (operadora) celular para transferir de outro iPhone. Se você não vir uma lista de números, toque em \"Transferir de outro iPhone\". Para esse processo, os dois dispositivos devem ter o iOS 16 ou posterior.\n3. Verifique as instruções no iPhone anterior para confirmar a transferência.\n4. Aguarde a ativação da Oferta celular no novo iPhone. O cartão SIM anterior será desativado quando a Oferta celular for ativada no novo iPhone.\n5. Se precisar de ajuda entre em contato pelo telefone, discando *288 do seu celular ou 10543 de qualquer operadora.\n\nANDROID:\n1. No novo aparelho, acesse \"Configurações > Conexões > Gerenciamento de cartão SIM > adicionar Oferta móvel\"\n2. Escolha a forma que vai ativar a sua Oferta:\n   OPÇÃO 1: Lendo o código QR da operadora\n   OPÇÃO 2: Traga a Oferta do aparelho antigo.\n3. Aguarde a ativação da Oferta celular no novo aparelho."
+        },
+        {
+          "question": "A tecnologia eSIM é segura?",
+          "answer": "Sim, a tecnologia eSIM contém diversos benefícios e segurança é o maior deles.\n\nCaso o aparelho seja roubado, o eSIM não pode ser retirado, impedindo o criminoso de revender ou utilizar o seu telefone. Além disso, não há interrupção da conexão de dados, facilitando a localização em caso de perda ou mesmo de furto.\n\nO chip eSIM não quebra ou se desgasta, como pode acontecer nas versões físicas, sem contar que você pode adquirir um eSIM muito mais rápido que um Chip Físico, não sendo necessário a ida até uma loja física ou aguardando a entrega do chip, mas sim, ativando seu eSIM por um simples QR Code."
+        },
+        {
+          "question": "E se eu mudar meu aparelho para um que não suporta eSIM?",
+          "answer": "É importante se atentar aos aparelhos compatíveis antes de realizar a compra do seu chip! Caso já possua o eSIM ativado e troque de aparelho é necessário que seja realizado uma nova compra de chip e entre em contato conosco discando *288 do seu celular ou 10543 para apenas realizar a sua troca de chip. Caso tenha comprado o eSIM por engano, pois o aparelho não é compatível, entre em contato na central para enviar o chip físico ao invés do eSIM."
+        },
+        {
+          "question": "O eSIM funciona apenas em telefonia móvel?",
+          "answer": "Sim, tanto o eSIM como o chip físico é somente compatível com aparelhos móveis."
+        },
+        {
+          "question": "O eSIM é compatível com o sinal 5G?",
+          "answer": "O eSIM é compatível com o sinal 5G, precisando apenas ser verificado se o seu aparelho é compatível com a rede."
+        },
+        {
+          "question": "Posso usar um eSIM e um chip físico ao mesmo tempo?",
+          "answer": "IOS:\nTodos os modelos de iPhone compatíveis com eSIM podem ter vários eSIM e usar o Dual SIM com dois SIM ativos ao mesmo tempo. Você pode usar o Dual SIM sendo um SIM físico e um eSIM. Nos modelos de iPhone 13 e posteriores, também é possível usar dois eSIM ativos.\n\nANDROID:\nNo Android ainda não podemos ter dois eSIM em um único aparelho, somente um eSIM e, dependendo do aparelho, dois chips físicos."
+        },
+        {
+          "question": "Se eu perder o QR Code do meu eSIM como posso recuperar?",
+          "answer": "Em caso de perca do QR Code primeiramente verifique na caixa de lixo do e-mail, e caso não encontre entre em contato na central discando *288 do seu celular ou 10543 de qualquer operadora junto com o comprovante da venda do eSIM."
+        }
+      ]
+    },
+    {
+      "title": "Ativação",
+      "items": [
+        {
+          "question": "Como ativar o seu Surf?",
+          "answer": "1. Desligue o seu celular e coloque o chip Surf\n2. Ligue o aparelho e aguarde aparecer \"Surf\" na parte superior da tela\n3. Faça a primeira chamada e siga as orientações"
+        }
+      ]
+    },
+    {
+      "title": "Portabilidade",
+      "items": [
+        {
+          "question": "O que é portabilidade?",
+          "answer": "A Portabilidade é a possibilidade do cliente que já possui um número telefônico manter o seu número mesmo trocando de operadora. No Surf, você pode fazer a portabilidade do seu número pelo aplicativo Surf ou pelo telefone, discando *288 do seu celular ou 10543 do chip de qualquer operadora."
+        },
+        {
+          "question": "Como pedir portabilidade no app Surf?",
+          "answer": "O titular da linha pode solicitar a portabilidade através do app Surf clicando no menu inferior direto e acessando a função (Portabilidade) e inserindo as informações:\n• Número Surf\n• Número que deseja manter\n• Operadora do número mantido\n• CPF/CNPJ do titular da linha\n• Nome do titular da linha\n\nApós finalizar a solicitação, você receberá um SMS em que deve responder para que a portabilidade ocorra. Após isso basta aguardar o processo de portabilidade ser realizado.\n\nEnquanto isso, o seu Surf terá a Oferta ativa, benefícios disponíveis e um número temporário (pode ser consultado discando *221#)."
+        },
+        {
+          "question": "Não recebi SMS para confirmar a portabilidade.",
+          "answer": "O SMS pode levar até 15 minutos para chegar, caso não receba o SMS é necessário entrar em contato com a sua outra operadora e verificar se consta bloqueio ou algum outro problema na linha. Importante: o SMS é enviado para o número que deseja portar."
+        },
+        {
+          "question": "Qual é o prazo da portabilidade?",
+          "answer": "O prazo para efetivar a portabilidade é de até 72 horas úteis e tanto o seu chip antigo quanto o Surf funcionarão normalmente nesse período. Você poderá ficar com a sua linha indisponível no dia da portabilidade por, no máximo, 2 horas."
+        },
+        {
+          "question": "Posso portar o número de um DDD diferente?",
+          "answer": "Não. A portabilidade numérica somente é possível dentro da mesma área de registro (mesmo DDD) – para os clientes de telefonia móvel – e dentro da mesma localidade (mesmo município ou localidade com continuidade urbana)."
+        },
+        {
+          "question": "Posso portar o número de uma Oferta pós-pago?",
+          "answer": "Sim. Na telefonia móvel, a portabilidade numérica será possível mesmo em distintas modalidades de serviços, desde que realizada dentro de uma mesma área de registro (mesmo DDD)."
+        },
+        {
+          "question": "A portabilidade tem custo adicional?",
+          "answer": "Atualmente a portabilidade para o Surf não tem custo, contudo, conforme prevê o regulamento da Anatel, é possível a cobrança de taxas ao receber um novo cliente."
+        },
+        {
+          "question": "O pedido de portabilidade pode ser negado?",
+          "answer": "Sim. Embora seja um direito do usuário e um dever das operadoras, o pedido de portabilidade pode ser recusado nas seguintes situações:\n• Quando os dados enviados pelo usuário estiverem incorretos ou incompletos\n• Se houver em andamento outra solicitação de portabilidade para o mesmo número\n• Se o número do telefone for inexistente, não pertencer a nenhum cliente, for temporário ou for designado a um Telefone de Uso Público (orelhão)\n• Se o número do telefone for de uma operadora fixa e a portabilidade for para uma operadora móvel e vice-versa\n• Por razões técnicas, por exemplo, se a operadora de destino (receptora) não tiver serviço na área solicitada ou se tratar de Serviço Móvel Especializado (SME)"
+        },
+        {
+          "question": "Como funciona a bonificação para portabilidade?",
+          "answer": "O cliente que trouxer o seu número para a operadora do Surf terá o benefício de receber GB adicionais à sua Oferta todos os meses a cada nova recarga. Nas informações da sua Oferta consulte gigas de portabilidade. A atribuição dos bônus de portabilidade ocorre até 3 dias úteis após a finalização da portabilidade.\n\nEnquanto isso, o seu Surf terá a Oferta ativa, benefícios disponíveis e um número temporário (pode ser consultado discando *221#)."
+        }
+      ]
+    },
+    {
+      "title": "Internet",
+      "items": [
+        {
+          "question": "Como configurar a internet?",
+          "answer": "1. Depois de ativar seu número Surf, vá em \"Configurações\" no seu celular e selecione \"Redes\" ou \"Redes Móveis\"\n2. Ative a opção de \"Dados em Roaming\" e selecione a banda 5G, 4G ou LTE\n3. Clique em \"Pontos de Acesso\" e em seguida \"+\" ou \"adicionar\"\n4. Insira no campo \"nome\" a palavra \"Surf\" e no campo APN o endereço surf.br\n5. Clique na seta de retorno, salve e selecione a rede \"Surf\""
+        },
+        {
+          "question": "Como funciona o WhatsApp grátis?",
+          "answer": "O uso do WhatsApp para mensagens de texto e fotos não será descontado da franquia de dados, durante o período de validade da Oferta, independentemente de haver saldo ou não na franquia de dados. Para baixar ou enviar vídeos via WhatsApp, chamadas de voz e chamadas de vídeo haverá consumo de dados de sua franquia."
+        },
+        {
+          "question": "Como funciona o benefício de internet sem cortes?",
+          "answer": "Após o consumo de 100% de sua franquia de dados, o acesso à internet não será cortado e sua internet poderá ser utilizada em velocidade reduzida (32 Kbps) até o final do prazo de validade da Oferta."
+        },
+        {
+          "question": "Como funciona a velocidade de navegação na internet?",
+          "answer": "A velocidade de referência de navegação na rede 3G é de até 1 Mbps para download e de até 100 kbps para upload. A velocidade de referência na rede 4G é de até 5 Mbps para download e de até 500 kbps para upload."
+        },
+        {
+          "question": "Como funciona o acúmulo de benefícios não utilizados no mês?",
+          "answer": "Os benefícios de minutos/SMS ou dados não utilizados no período de validade da Oferta, que é de 30 dias, são acumulados para o próximo mês, desde que o cliente tenha feito uma recarga dentro do prazo de validade de sua Oferta."
+        },
+        {
+          "question": "Como funciona o benefício da Skeelo?",
+          "answer": "Na aquisição de cada Oferta/benefício tem o benefício de 1 (um) e-book grátis no aplicativo Skeelo. Para resgatar seu livro, basta baixar o aplicativo e fazer seu cadastro. Esse benefício não acarreta de nenhuma cobrança adicional ao cliente, sendo incluso na Oferta."
+        },
+        {
+          "question": "O saldo de internet acabou antes do vencimento da Oferta, e agora?",
+          "answer": "O novo saldo de internet será renovado na data da nova recarga realizada."
+        }
+      ]
+    },
+    {
+      "title": "Outros",
+      "items": [
+        {
+          "question": "O que é o Surf?",
+          "answer": "Surf é a marca de Serviço Móvel Pessoal prestado pela Surf. Oferecemos Ofertas de celular com benefícios especiais para o cliente."
+        },
+        {
+          "question": "Quais são as principais vantagens?",
+          "answer": "Com o Surf, é possível navegar no WhatsApp sem gastar sua internet móvel*, na rede 4G de maior cobertura do Brasil, além de ligações locais e interurbanas para qualquer operadora, usando o código 41.\n\n*A gratuidade aplica-se para o envio/recebimento de mensagens de texto, arquivos de foto e arquivos de áudio; As ligações (chamadas) de voz ou vídeo realizadas do WhatsApp são cobradas (deduzidas do pacote de dados) normalmente."
+        },
+        {
+          "question": "Onde consultar meu saldo?",
+          "answer": "Você pode consultar seu saldo em uma das opções abaixo:\n• Disque *225# e veja o saldo na tela do seu celular\n• Aplicativo Surf\n• Se preferir, consulte pelo telefone discando *288 do seu Surf ou ligando 10543 de qualquer operadora."
+        },
+        {
+          "question": "Que aparelhos celulares podem ser utilizados no Surf?",
+          "answer": "O correto funcionamento e desempenho do Surf somente será possível por meio do uso de equipamentos homologados pela ANATEL e compatíveis com as frequências autorizadas e em uso pelo prestador parceiro Surf Telecom cujo IMEI não esteja bloqueado por autoridades competentes."
+        },
+        {
+          "question": "O Roaming Nacional tem custos?",
+          "answer": "O Roaming é gratuito para o cliente. Não haverá cobrança adicional para o encaminhamento das chamadas de longa distância em todo o território nacional. Não haverá cobrança de taxa de deslocamento para as chamadas recebidas fora de sua localidade."
+        },
+        {
+          "question": "É possível fazer ligações internacionais (DDI)?",
+          "answer": "Não, o Surf no momento não faz chamadas internacionais."
+        },
+        {
+          "question": "Perdeu ou danificou o Surf? Veja como pedir a 2ª via.",
+          "answer": "Em caso de roubo, perda ou defeito, basta adquirir um novo chip diretamente pelo site e, depois que ele chegar, entrar em contato com a central pelo número *288 para solicitar a troca."
+        },
+        {
+          "question": "Tenho que pagar a 2ª via do chip?",
+          "answer": "Nos casos de perda ou roubo, é necessário adquirir um novo chip pelo site e entrar em contato com a central pelo número *288 para realizar a troca. Em caso de defeito constatado pela nossa equipe técnica, enviaremos a 2ª via do chip sem custo."
+        },
+        {
+          "question": "Alguma outra dúvida sobre o Surf?",
+          "answer": "Para obter ajuda sobre os detalhes da sua Oferta pré-pago Surf entre em contato pelo telefone, discando *288 do seu celular ou 10543 de qualquer operadora. Fique tranquilo! Estamos 24h por dia, 7 dias por semana disponíveis para ajudar você no que precisar."
+        }
+      ]
+    }
+  ]
+}

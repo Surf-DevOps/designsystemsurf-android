@@ -17,6 +17,7 @@ import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -30,6 +31,17 @@ class ExpandablePlanCardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr), ThemeAware {
+
+    /**
+     * Port do `ExpandablePlanCardViewDelegate` do iOS — ações da parte de baixo do card.
+     */
+    interface Listener {
+        /** Acionado quando o usuário completa o slide de "Repetir recarga". */
+        fun didTapRepeatRecharge(view: ExpandablePlanCardView)
+
+        /** Acionado quando o usuário toca em "Trocar plano". */
+        fun didTapChangePlan(view: ExpandablePlanCardView)
+    }
 
     data class Feature(val title: String, val description: String)
 
@@ -63,6 +75,20 @@ class ExpandablePlanCardView @JvmOverloads constructor(
     private val featuresStack = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
     private val expandableContent = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; visibility = View.GONE }
     private val toggleButton = TextView(context)
+
+    // MARK: Recharge / Change Plan section (parte de baixo) — port do iOS.
+    /** Slider "Repetir recarga" — mesmo estilo do iOS `renewButtonSlider`. */
+    val renewButtonSlider = DSSSwipeView(context)
+
+    /** Link "Trocar plano" (usa o componente [TextWithActionLinkView]). */
+    val trocarPlanoLink = TextWithActionLinkView(context)
+
+    /** Container da seção de baixo (slider + trocar plano). Oculto até [configureRecharge]. */
+    private val rechargeSectionStack =
+        LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; visibility = View.GONE }
+
+    /** Listener das ações da parte de baixo do card. */
+    var listener: Listener? = null
 
     private var isExpanded = false
 
@@ -120,6 +146,26 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         contentColumn.addView(ilimitadosStack, marginTop(8))
         contentColumn.addView(subscriptionsTitle, marginTop(16))
         contentColumn.addView(subscriptionsStack, marginTop(8))
+
+        // Recharge / Trocar plano (parte de baixo) — entre as assinaturas e o toggle.
+        // iOS: rechargeSectionStack { renewButtonSlider, trocarPlanoLink } spacing 12, alignment .fill.
+        rechargeSectionStack.addView(
+            renewButtonSlider,
+            // iOS: renewButtonSlider.heightAnchor = 44.
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                44f.dpToPx(context),
+            ),
+        )
+        rechargeSectionStack.addView(
+            trocarPlanoLink,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply { topMargin = 12f.dpToPx(context) },
+        )
+        contentColumn.addView(rechargeSectionStack, marginTop(16))
+
         contentColumn.addView(expandableContent, marginTop(16))
         expandableContent.addView(featuresStack)
 
@@ -168,6 +214,26 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             isClickable = true
             isFocusable = true
         }
+
+        // Slider "Repetir recarga": trilha primary, texto branco, thumb branco.
+        // (DSSSwipeView já tem innerColor=WHITE / iconColor=BLACK por padrão, como o iOS.)
+        renewButtonSlider.outerColor = DSSColors.primary()
+        renewButtonSlider.labelTextColor = android.graphics.Color.WHITE
+        renewButtonSlider.delegate = DSSSwipeView.Delegate {
+            listener?.didTapRepeatRecharge(this@ExpandablePlanCardView)
+        }
+
+        // Link "Trocar plano": DSSFont.regular(16), cor primária, centralizado.
+        trocarPlanoLink.gravity = Gravity.CENTER
+        trocarPlanoLink.configure(
+            fullText = "Trocar plano",
+            linkText = "Trocar plano",
+            typeface = DSSFont.regular(context, 16f).typeface,
+            sizeSp = 16f,
+            textColor = DSSColors.primary(),
+            linkColor = DSSColors.primary(),
+        )
+        trocarPlanoLink.onLinkTap = { listener?.didTapChangePlan(this@ExpandablePlanCardView) }
     }
 
     fun configure(
@@ -191,19 +257,11 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         }
         planNameLabel.text = plan.planName
 
-        // iOS: no plano DIAMANTE o valor é ocultado (oferta sem preço exibido).
-        val isDiamante = plan.planName.trim().lowercase().contains("diamante")
         // Preço chega em centavos (ex.: 6999 == R$ 69,99). formatPrice divide por 100.
         val finalPriceCents = if (plan.parcelas > 1) plan.priceCents / plan.parcelas else plan.priceCents
-        if (isDiamante) {
-            priceLabel.visibility = View.GONE
-            priceLabel.text = ""
-        } else {
-            priceLabel.visibility = View.VISIBLE
-            val reais = finalPriceCents / 100
-            val cs = finalPriceCents % 100
-            priceLabel.text = if (cs == 0) "R$$reais/mês" else "R$${DSSPlanCollectionView.formatPrice(finalPriceCents)}/mês"
-        }
+        val reais = finalPriceCents / 100
+        val cs = finalPriceCents % 100
+        priceLabel.text = if (cs == 0) "R$$reais/mês" else "R$${DSSPlanCollectionView.formatPrice(finalPriceCents)}/mês"
         validityDateLabel.text = validityDate
 
         // Benefits checkmarks
@@ -244,8 +302,8 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         addFeature(Feature("Internet que acumula", "A internet que você não utilizou acumula para o próximo mês. Basta manter sua oferta ativa."))
         addFeature(Feature("Ligações ilimitadas", "Ligações ilimitadas para qualquer operadora e em todo Brasil utilizando o código 41."))
         addFeature(Feature("Internet sem cortes", "Durante a validade da sua oferta você não fica sem internet (mesmo se consumir todos os GB do seu plano). Nós mantemos sua navegação liberada porém com velocidade reduzida até a próxima recarga."))
-        // Sempre exibir os dias de validade com -1 (regra de negócio: desconta o dia corrente).
-        addFeature(Feature("Validade do plano ${validityDays - 1} dias", ""))
+        // iOS: "Validade do plano \(validityDays) dias" — usa o valor cru, sem desconto.
+        addFeature(Feature("Validade do plano $validityDays dias", ""))
         if (hasScheduledRechargeBonus) {
             addFeature(Feature("Bônus recarga programada", "Os ${scheduleGB}GB bônus por recarga programada são adicionados todo mês ao seu plano enquanto tiver uma recarga programada ativa."))
         }
@@ -253,7 +311,29 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             addFeature(Feature("Bônus portabilidade", "Os ${portabilityGB}GB bônus por portabilidade são adicionado todo mês no seu plano após trazer seu número de outra operadora para o $mvnoName."))
         }
 
+        // Parte de baixo: slider "Repetir recarga" + "Trocar plano".
+        // iOS usa o mesmo valor (em centavos) exibido no preço, garantindo consistência.
+        configureRecharge(priceCents = finalPriceCents)
+
         refresh()
+    }
+
+    /**
+     * Configura a seção de baixo (slider "Repetir recarga" + "Trocar plano").
+     *
+     * @param priceCents valor da recarga em centavos (ex.: 3000 → R$30,00).
+     * @param showChangePlan se exibe o link "Trocar plano".
+     */
+    fun configureRecharge(priceCents: Int, showChangePlan: Boolean = true) {
+        // iOS: "  Repetir recarga  \(Utility.formatPrice(priceInCents))"
+        renewButtonSlider.labelText = "  Repetir recarga  ${Utility.formatPrice(priceCents)}"
+        trocarPlanoLink.visibility = if (showChangePlan) View.VISIBLE else View.GONE
+        rechargeSectionStack.visibility = View.VISIBLE
+    }
+
+    /** Reseta o slider de recarga para o estado inicial (port do iOS `resetRechargeSlider`). */
+    fun resetRechargeSlider() {
+        renewButtonSlider.resetState(true)
     }
 
     private fun addFeature(feature: Feature) {

@@ -49,4 +49,38 @@ internal object DateHelpers {
 
     fun formatDDMM(date: Date): String =
         SimpleDateFormat("dd/MM", Locale("pt", "BR")).format(date)
+
+    /**
+     * Espelha `Date.progress(in:)` do iOS — fração consumida de um período de
+     * [totalDays] dias, calculada a partir dos dias restantes até [date] (a partir
+     * de agora). Retorna `(totalDays - restantes) / totalDays` como [Float].
+     *
+     * iOS: `Float(totalDays - remaining) / Float(totalDays)`.
+     */
+    fun progress(date: Date, totalDays: Int): Float {
+        val remaining = daysRemainingClamped(date)
+        return (totalDays - remaining).toFloat() / totalDays.toFloat()
+    }
+
+    /**
+     * Espelha `Date.formatted(_:locale:timeZone:)` do iOS — formatação genérica
+     * com [pattern] (default `dd/MM`), [locale] (default pt-BR) e [zone]
+     * (default fuso atual do dispositivo).
+     */
+    fun formatted(
+        date: Date,
+        pattern: String = "dd/MM",
+        locale: Locale = Locale("pt", "BR"),
+        zone: TimeZone = TimeZone.getDefault(),
+    ): String {
+        val fmt = SimpleDateFormat(pattern, locale)
+        fmt.timeZone = zone
+        return fmt.format(date)
+    }
+
+    /**
+     * Dias restantes até [until] a partir de agora, clampados em >= 0
+     * (espelha o `max(0, ...)` do `Date.daysRemaining(until:)` do iOS).
+     */
+    private fun daysRemainingClamped(until: Date): Int = maxOf(0, daysRemaining(until))
 }

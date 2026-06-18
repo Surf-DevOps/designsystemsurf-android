@@ -1,6 +1,6 @@
 {
   "brandIdentifier": "matizconecta",
   "primaryColorHex": "#1D4ED8",
-  "enableChat": false,
+  "enableChat": true,
   "apiBaseURL": ""
 }

@@ -20,6 +20,7 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
@@ -56,7 +57,9 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
     fun configure(bonusText: String, detailText: String?) {
         this.bonusText = bonusText
         this.detailText = detailText
-        messageLabel?.text = String.format(SUCCESS_MESSAGE_FORMAT, bonusText)
+        context?.let { ctx ->
+            messageLabel?.text = successMessage(ctx, bonusText)
+        }
         detailLabel?.let {
             it.text = detailText
             it.visibility = if (detailText == null) View.GONE else View.VISIBLE
@@ -137,7 +140,7 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
 
         // Title
         val titleLabel = TextView(ctx).apply {
-            text = SUCCESS_TITLE
+            text = AppStrings.brand(ctx, "benefits_success_title", SUCCESS_TITLE)
             typeface = DSSFont.bold(ctx, 20f).typeface
             textSize = 20f
             gravity = Gravity.CENTER
@@ -149,7 +152,7 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
 
         // Message
         val messageLabel = TextView(ctx).apply {
-            text = String.format(SUCCESS_MESSAGE_FORMAT, bonusText)
+            text = successMessage(ctx, bonusText)
             typeface = DSSFont.regular(ctx, 16f).typeface
             textSize = 16f
             gravity = Gravity.CENTER
@@ -178,7 +181,7 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
         // iOS: backgroundColor = DSSColors.primaryButton, textColor = DSSColors.buttonText,
         // font = DSSFont.regular(16) (DSSPrincipalButton default é light(16)).
         val newRedeemButton = DSSPrincipalButton(ctx).apply {
-            text = NEW_REDEEM
+            text = AppStrings.brand(ctx, "benefits_new_redeem", NEW_REDEEM)
             typeface = DSSFont.regular(ctx, 16f).typeface
             customBackgroundColor = DSSColors.primaryButton()
             customTextColor = DSSColors.buttonText()
@@ -190,7 +193,7 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
 
         // "Concluir" button
         val finishButton = AppCompatButton(ctx).apply {
-            text = FINISH
+            text = AppStrings.brand(ctx, "benefits_finish", FINISH)
             isAllCaps = false
             typeface = DSSFont.regular(ctx, 16f).typeface
             textSize = 16f
@@ -210,6 +213,9 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
         ))
         return scroll
     }
+
+    private fun successMessage(ctx: android.content.Context, bonusText: String): String =
+        AppStrings.brand(ctx, "benefits_success_message_format", SUCCESS_MESSAGE_FORMAT, bonusText)
 
     private fun newRedeemTapped() {
         didTapNewRedeem = true

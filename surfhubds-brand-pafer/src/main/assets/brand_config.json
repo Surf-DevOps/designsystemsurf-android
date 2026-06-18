@@ -1,6 +1,6 @@
 {
   "brandIdentifier": "pafer",
   "primaryColorHex": "#155190",
-  "enableChat": false,
+  "enableChat": true,
   "apiBaseURL": ""
 }

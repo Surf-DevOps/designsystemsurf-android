@@ -552,4 +552,6 @@
     <string name="terms_view_termo_adesao">Termo de Adesão</string>
     <string name="validate_code_resend">Reenviar código</string>
     <string name="validate_code_title">Digite o código</string>
+    <string name="accept_and_continue">Aceitar e continuar</string>
+    <string name="desc_terms">Para acessar o aplicativo e aproveitar todas as \nvantagens você precisa estar de acordo com \nnosso Termos de Uso e Política de \nPrivacidade. Nenhuma informação será \ndivulgada e qualquer dado informado é \nprotegido por um ambiente 100% seguro.</string>
 </resources>

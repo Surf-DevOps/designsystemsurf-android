@@ -70,9 +70,18 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
         gravity = Gravity.START
     }
 
-    private val resumeCard = DSSResumeCard(context).apply {
-        setCategoryLabels(number = "Número", offer = "Oferta", price = "Valor")
+    private val subtitleLabel = TextView(context).apply {
+        text = "Pague para finalizar sua recarga"
+        textSize = 14f
+        typeface = DSSFont.regular(context, 14f).typeface
+        maxLines = 1
     }
+
+    private val resumeCard = DSSResumeCard(context).apply {
+        setCategoryLabels(number = "Número", offer = "Plano", price = "Valor")
+    }
+
+    private val divider = View(context)
 
     private val copyButton = AppCompatButton(context).apply {
         text = "Copiar código"
@@ -150,19 +159,35 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply { topMargin = 8f.dpToPx(context) },
         )
+        // iOS: subtitle "Pague para finalizar sua recarga" entre o timer e as colunas (4pt do timer).
+        container.addView(
+            subtitleLabel,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply { topMargin = 4f.dpToPx(context) },
+        )
         container.addView(
             resumeCard,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-            ),
+            ).apply { topMargin = 16f.dpToPx(context) },
+        )
+        // iOS: divider (systemGray4) 1pt acima do botão (16pt das colunas).
+        container.addView(
+            divider,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                1f.dpToPx(context),
+            ).apply { topMargin = 16f.dpToPx(context) },
         )
         container.addView(
             copyButton,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 50f.dpToPx(context),
-            ).apply { topMargin = 20f.dpToPx(context) },
+            ).apply { topMargin = 16f.dpToPx(context) },
         )
 
         container.setOnClickListener { onCardTapped?.invoke() }
@@ -286,6 +311,9 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
         // (cor literal, não semântica). Override de configureStyle tem prioridade.
         titleLabel.setTextColor(titleColorOverride ?: PIX_DARK_RED)
         timeLabel.setTextColor(DSSColors.textPrimary())
+        // iOS: subtitle = textSecondary (lightGray no dark); divider = systemGray4.
+        subtitleLabel.setTextColor(DSSColors.textSecondary())
+        divider.setBackgroundColor(if (isDark) SYSTEM_GRAY4_DARK else SYSTEM_GRAY4_LIGHT)
 
         val buttonColor = buttonColorOverride ?: PIX_DARK_RED
         copyButton.setTextColor(buttonColor)
@@ -418,6 +446,10 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
 
         // iOS UIColor.systemGray3 no dark mode = #48484A — borda do container só no scheme DARK.
         @ColorInt private val SYSTEM_GRAY3_DARK: Int = android.graphics.Color.rgb(72, 72, 74)
+
+        // iOS UIColor.systemGray4 (light #D1D1D6 / dark #3A3A3C) — divider acima do botão.
+        @ColorInt private val SYSTEM_GRAY4_LIGHT: Int = android.graphics.Color.rgb(209, 209, 214)
+        @ColorInt private val SYSTEM_GRAY4_DARK: Int = android.graphics.Color.rgb(58, 58, 60)
 
         private const val KEY_IS_PENDING = "DSSPixSimpleCard_isPixPending"
         private const val KEY_TARGET = "DSSPixSimpleCard_targetDate"

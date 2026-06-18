@@ -135,7 +135,10 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT),
         )
         val pad = 16f.dpToPx(context)
-        container.setPadding(pad, pad, pad, pad)
+        // Bottom um pouco menor que os demais lados: junto com as margens reduzidas do
+        // divider e do botão abaixo, evita que o botão "Copiar código" seja cortado pela
+        // altura fixa de 270dp do carrossel da Home (estava estourando por alguns dp).
+        container.setPadding(pad, pad, pad, 12f.dpToPx(context))
 
         // Header row
         headerRow.addView(
@@ -187,14 +190,14 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 1f.dpToPx(context),
-            ).apply { topMargin = 12f.dpToPx(context) },
+            ).apply { topMargin = 8f.dpToPx(context) },
         )
         container.addView(
             copyButton,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 48f.dpToPx(context),
-            ).apply { topMargin = 12f.dpToPx(context) },
+            ).apply { topMargin = 8f.dpToPx(context) },
         )
 
         container.setOnClickListener { onCardTapped?.invoke() }

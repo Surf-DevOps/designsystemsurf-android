@@ -119,7 +119,10 @@ class DSSRecurrencyFailureCardView @JvmOverloads constructor(
             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT),
         )
         val pad = 16f.dpToPx(context)
-        container.setPadding(pad, pad, pad, pad)
+        // Bottom um pouco menor que os demais lados: junto com a margem reduzida do botão
+        // abaixo, evita que o botão "Copiar código" seja cortado pela altura fixa de 270dp
+        // do carrossel da Home (mesmo ajuste do DSSPixSimpleCardView).
+        container.setPadding(pad, pad, pad, 12f.dpToPx(context))
 
         // Header row (ícone 24x24 + título), spacing 5.
         headerRow.addView(
@@ -163,12 +166,14 @@ class DSSRecurrencyFailureCardView @JvmOverloads constructor(
         )
 
         // iOS: copyButton top = resumeCard.bottom + 20, altura 50, cornerRadius 25.
+        // Margem reduzida (20->12) para o botão não estourar a altura fixa de 270dp do
+        // carrossel da Home (mesmo ajuste do DSSPixSimpleCardView), mantendo os 50dp.
         container.addView(
             copyButton,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 50f.dpToPx(context),
-            ).apply { topMargin = 20f.dpToPx(context) },
+            ).apply { topMargin = 12f.dpToPx(context) },
         )
 
         container.setOnClickListener { onCardTapped?.invoke() }

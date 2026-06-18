@@ -79,6 +79,8 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
 
     private val resumeCard = DSSResumeCard(context).apply {
         setCategoryLabels(number = "Número", offer = "Plano", price = "Valor")
+        // iOS mostra as colunas inline (sem card aninhado com borda): sem borda aqui.
+        borderWidthDp = 0f
     }
 
     private val divider = View(context)
@@ -172,7 +174,7 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-            ).apply { topMargin = 16f.dpToPx(context) },
+            ).apply { topMargin = 8f.dpToPx(context) },
         )
         // iOS: divider (systemGray4) 1pt acima do botão (16pt das colunas).
         container.addView(
@@ -180,14 +182,14 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 1f.dpToPx(context),
-            ).apply { topMargin = 16f.dpToPx(context) },
+            ).apply { topMargin = 12f.dpToPx(context) },
         )
         container.addView(
             copyButton,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                50f.dpToPx(context),
-            ).apply { topMargin = 16f.dpToPx(context) },
+                48f.dpToPx(context),
+            ).apply { topMargin = 12f.dpToPx(context) },
         )
 
         container.setOnClickListener { onCardTapped?.invoke() }
@@ -225,7 +227,9 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
         this.priceInCents = priceInCents
         this.pixCode = pixCode
 
-        resumeCard.configure(title = title, number = msisdn, offer = offer, priceInCents = priceInCents)
+        // iOS: o subtitle "Pague para finalizar sua recarga" já aparece acima; o resume card NÃO
+        // repete o título (senão duplica e estoura a altura fixa de 270dp do carrossel da Home).
+        resumeCard.configure(title = "", number = msisdn, offer = offer, priceInCents = priceInCents)
 
         targetTimestamp = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(durationInSeconds.toLong())
 

@@ -148,7 +148,11 @@ class DSSResumeCard @JvmOverloads constructor(
 
     /** Configura o card com número, oferta e preço (centavos). */
     fun configure(title: String? = null, number: String, offer: String, priceInCents: Int) {
-        if (title != null) titleLabel.text = title
+        if (title != null) {
+            titleLabel.text = title
+            // Título vazio -> some a linha (iOS mostra as colunas inline, sem título duplicado).
+            titleLabel.visibility = if (title.isEmpty()) android.view.View.GONE else android.view.View.VISIBLE
+        }
         numberValue.text = formatPhone(number)
         offerValue.text = offer
         priceValue.text = formatPrice(priceInCents)
@@ -157,7 +161,10 @@ class DSSResumeCard @JvmOverloads constructor(
     fun setNumber(number: String) { numberValue.text = formatPhone(number) }
     fun setOffer(offer: String) { offerValue.text = offer }
     fun setPrice(cents: Int) { priceValue.text = formatPrice(cents) }
-    fun setTitle(title: String) { titleLabel.text = title }
+    fun setTitle(title: String) {
+        titleLabel.text = title
+        titleLabel.visibility = if (title.isEmpty()) android.view.View.GONE else android.view.View.VISIBLE
+    }
 
     // iOS: setTitleFont(_:) — exposto pela property `titleFont` (gera setTitleFont
     // para Java e `titleFont =` para Kotlin); o setter já aplica no titleLabel.

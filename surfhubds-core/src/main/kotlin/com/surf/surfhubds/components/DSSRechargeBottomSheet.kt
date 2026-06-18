@@ -362,8 +362,13 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
     private fun updateScheduleVisibility() {
         if (!::scheduleContainer.isInitialized || !::paymentSelectionView.isInitialized) return
         val isPixSelected = paymentSelectionView.getSelectedPaymentMethod() == DSSPaymentMethod.Pix
-        // iOS: shouldShow = !isPixSelected && configuration?.showScheduleOption == true
-        val shouldShow = !isPixSelected && configuration?.showScheduleOption == true && !hideSchedule
+        // iOS: shouldShow = !isPixSelected && showScheduleOption && !creditCards.isEmpty
+        // (o switch de agendamento só aparece se houver cartões cadastrados — sem cartão,
+        // não há como recorrer no cartão, então some.)
+        val shouldShow = !isPixSelected &&
+            configuration?.showScheduleOption == true &&
+            !hideSchedule &&
+            creditCards.isNotEmpty()
         scheduleContainer.visibility = if (shouldShow) View.VISIBLE else View.GONE
         if (!shouldShow) {
             scheduleSwitch.isChecked = true

@@ -37,13 +37,30 @@ class ExpandablePlanCardView @JvmOverloads constructor(
      */
     interface Listener {
         /** Acionado quando o usuário completa o slide de "Repetir recarga". */
-        fun didTapRepeatRecharge(view: ExpandablePlanCardView)
+        fun didTapRepeatRecharge(view: ExpandablePlanCardView, consolidated: ConsolidatedPlan?)
 
         /** Acionado quando o usuário toca em "Trocar plano". */
         fun didTapChangePlan(view: ExpandablePlanCardView)
     }
 
     data class Feature(val title: String, val description: String)
+
+    /**
+     * Dados da consulta consolidada (`ConsolidatedQuerySuccess.DetalhePlano` no iOS) — SurfAPIKit-free.
+     * Valores monetários em CENTAVOS (ex.: 3000 = R$30,00), dados em MB.
+     */
+    data class ConsolidatedPlan(
+        val nuPlano: String,
+        val noPlano: String,
+        val valorCents: Int,
+        val qtDadoMB: Int,
+        val diasValidade: Int,
+        val qtSms: Int,
+        val qtVoz: Int,
+        val dadoPortabilidadeMB: Int = 0,
+        val dadoRecorrenciaMB: Int = 0,
+        val valorRecargaRapidaCents: Int? = null,
+    )
 
     data class PlanData(
         val planName: String,
@@ -89,6 +106,9 @@ class ExpandablePlanCardView @JvmOverloads constructor(
 
     /** Listener das ações da parte de baixo do card. */
     var listener: Listener? = null
+
+    /** Último `ConsolidatedPlan` configurado — repassado ao listener (port do iOS `consolidatedDetail`). */
+    private var consolidatedDetail: ConsolidatedPlan? = null
 
     private var isExpanded = false
 
@@ -220,7 +240,7 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         renewButtonSlider.outerColor = DSSColors.primary()
         renewButtonSlider.labelTextColor = android.graphics.Color.WHITE
         renewButtonSlider.delegate = DSSSwipeView.Delegate {
-            listener?.didTapRepeatRecharge(this@ExpandablePlanCardView)
+            listener?.didTapRepeatRecharge(this@ExpandablePlanCardView, consolidatedDetail)
         }
 
         // Link "Trocar plano": DSSFont.regular(16), cor primária, centralizado.
@@ -234,6 +254,60 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             linkColor = DSSColors.primary(),
         )
         trocarPlanoLink.onLinkTap = { listener?.didTapChangePlan(this@ExpandablePlanCardView) }
+    }
+
+    /**
+     * Configura o card a partir da consulta consolidada, com FALLBACK (port do iOS
+     * `configure(plan:consolidated:…)`): se `catalogPlan` (catálogo) for nulo, monta um plano de
+     * fallback usando o próprio `consolidated` — o card nunca fica vazio quando o catálogo não casa.
+     * O slider "Repetir recarga" usa `valorRecargaRapidaCents` quando houver.
+     */
+    fun configureFromConsolidated(
+        catalogPlan: PlanData?,
+        catalogValidityDays: Int?,
+        consolidated: ConsolidatedPlan,
+        isScheduledRechargeActive: Boolean,
+        validityDate: String = "",
+        mvnoName: String = "",
+        scheduleEligible: Boolean = false,
+    ) {
+        this.consolidatedDetail = consolidated
+        val resolved = catalogPlan ?: buildFallbackPlan(consolidated)
+        // iOS: validityDays = plan?.qtDiaValidade ?? consolidated.diasValidade
+        val validityDays = catalogValidityDays ?: consolidated.diasValidade
+        configure(
+            plan = resolved,
+            validityDays = validityDays,
+            hasScheduledRechargeBonus = consolidated.dadoRecorrenciaMB > 0,
+            isScheduledRechargeActive = isScheduledRechargeActive,
+            validityDate = validityDate,
+            scheduleBonusMB = consolidated.dadoRecorrenciaMB,
+            portabilityBonusMB = consolidated.dadoPortabilidadeMB,
+            mvnoName = mvnoName,
+            scheduleEligible = scheduleEligible,
+        )
+        // iOS: slider usa o valor da recarga rápida quando houver.
+        consolidated.valorRecargaRapidaCents?.let { configureRecharge(priceCents = it) }
+    }
+
+    /**
+     * Monta um [PlanData] de fallback a partir do consolidado (port do iOS `buildFallbackPlan`).
+     * `valorCents` JÁ vem em centavos (ex.: 3000 = R$30,00) — sem multiplicar por 100.
+     */
+    private fun buildFallbackPlan(c: ConsolidatedPlan): PlanData {
+        val totalGB = c.qtDadoMB / 1024
+        val internet = mutableListOf<Pair<String, String>>()
+        internet.add("${totalGB}GB" to "de internet")
+        if (c.dadoPortabilidadeMB > 0) internet.add("${c.dadoPortabilidadeMB / 1024}GB" to "bônus portabilidade")
+        if (c.dadoRecorrenciaMB > 0) internet.add("${c.dadoRecorrenciaMB / 1024}GB" to "bônus recarga programada")
+        return PlanData(
+            planName = c.noPlano,
+            priceCents = c.valorCents,
+            parcelas = 1,
+            sms = "${c.qtSms} SMS",
+            voz = if (c.qtVoz >= 1000) "Ilimitado" else "${c.qtVoz} min",
+            internetDetail = internet,
+        )
     }
 
     fun configure(

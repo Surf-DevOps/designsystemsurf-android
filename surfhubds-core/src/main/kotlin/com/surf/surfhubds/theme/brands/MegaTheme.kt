@@ -5,11 +5,12 @@ import com.surf.surfhubds.theme.colorValueWithAlpha
 import com.surf.surfhubds.tokens.ColorTokens
 import com.surf.surfhubds.tokens.ColorValue
 
+// Gerado pelo brand-builder — espelho do MegaTheme.swift (iOS).
 class MegaTheme : DefaultTheme() {
     override fun buildColors(): ColorTokens = ColorTokens(
-        primary = ColorValue.fromHex("#003EFF", "#EA1E2C"),
-        secondary = ColorValue.fromHex("#5F00E6", "#2C5282"),
-        primaryButton = ColorValue.fromHex("#FF003A", "#FF003A"),
+        primary = ColorValue.fromHex("#003EFF", "#003EFF"),
+        secondary = ColorValue.fromHex("#5F00E6", "#5F00E6"),
+        primaryButton = ColorValue.fromHex("#003EFF", "#003EFF"),
         buttonText = ColorValue.fromHex("#FFFFFF", "#000000"),
         surface = ColorValue.fromHex("#FFFFFF", "#1C1C1E"),
         background = ColorValue.fromHex("#FFFFFF", "#000000"),

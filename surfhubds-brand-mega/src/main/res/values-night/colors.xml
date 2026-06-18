@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gerado pelo brand-builder para "Mega" (slug: mega). -->
+<resources>
+    <color name="primary">#003EFF</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="primaryContainer">#1C1C1E</color>
+    <color name="onPrimaryContainer">#FFFFFF</color>
+    <color name="secondary">#5F00E6</color>
+    <color name="onSecondary">#FFFFFF</color>
+    <color name="secondaryContainer">#1C1C1E</color>
+    <color name="onSecondaryContainer">#FFFFFF</color>
+    <color name="surface">#1C1C1E</color>
+    <color name="onSurface">#FFFFFF</color>
+    <color name="surfaceVariant">#1C1C1E</color>
+    <color name="onSurfaceVariant">#B0B0B0</color>
+    <color name="background">#000000</color>
+    <color name="onBackground">#FFFFFF</color>
+    <color name="error">#E74C3C</color>
+    <color name="onError">#000000</color>
+    <color name="outline">#FFFFFF</color>
+    <color name="scrim">#000000</color>
+</resources>

@@ -73,14 +73,14 @@ data class BrandInfo(
             )
             Brand.MEGA -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do \nmercado!",
+                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://megasurfcelular.com.br/termo-de-adesao/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://megasurfcelular.com.br/politica-de-privacidade/",
                 chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=megasurfapp&params=mtq5otc1ntq3ntu%3D",
                 whatsApp = "5511933003030",
-                forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.mega",
+                forceUpdateURL = "https://apps.apple.com/us/app/mega-surf/id6757757362",
                 coMvno = "56",
                 mvnoName = "Mega Surf Celular",
                 noMvno = "MEGA MAIS",

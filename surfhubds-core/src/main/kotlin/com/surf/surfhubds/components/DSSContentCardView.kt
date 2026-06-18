@@ -15,6 +15,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
@@ -52,7 +53,7 @@ class DSSContentCardView @JvmOverloads constructor(
     }
 
     val typeCardLabel = TextView(context).apply {
-        text = "Cartão de crédito"
+        text = AppStrings.brand(context, "card_plan_credit_card", "Cartão de crédito")
         textSize = 14f
         typeface = DSSFont.light(context, 14f).typeface
     }
@@ -76,7 +77,7 @@ class DSSContentCardView @JvmOverloads constructor(
     fun updatePaymentOptionsUI() {
         removeAllViews()
         if (isEditingPaymentMethod) {
-            addView(buildOptionRow(PaymentType.CREDIT_CARD, "Cartão de crédito", editing = true))
+            addView(buildOptionRow(PaymentType.CREDIT_CARD, AppStrings.brand(context, "card_plan_credit_card", "Cartão de crédito"), editing = true))
             addView(
                 buildOptionRow(PaymentType.PIX, "Pix", editing = true),
                 LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
@@ -89,7 +90,7 @@ class DSSContentCardView @JvmOverloads constructor(
     }
 
     private fun labelFor(type: PaymentType): String =
-        if (type == PaymentType.PIX) "Pix" else "Cartão de crédito"
+        if (type == PaymentType.PIX) "Pix" else AppStrings.brand(context, "card_plan_credit_card", "Cartão de crédito")
 
     private fun buildOptionRow(type: PaymentType, name: String, editing: Boolean): android.view.View {
         val row = LinearLayout(context).apply {

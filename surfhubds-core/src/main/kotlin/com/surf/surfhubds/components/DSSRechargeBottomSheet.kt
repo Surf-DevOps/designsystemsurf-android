@@ -17,6 +17,7 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -121,10 +122,14 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
         // Resume card section — usa o DSSResumeCard portado (sem borda, igual ao iOS).
         resumeCard = DSSResumeCard(ctx).apply {
             borderWidthDp = 0f
-            setCategoryLabels(number = "Número", offer = "Oferta", price = "Valor")
+            setCategoryLabels(
+                number = AppStrings.brand(ctx, "recharge_sheet_number_label", "Número"),
+                offer = AppStrings.brand(ctx, "recharge_sheet_offer_label", "Oferta"),
+                price = AppStrings.brand(ctx, "recharge_sheet_price_label", "Valor"),
+            )
             // iOS: setTitle(... systemFont(22, .light), color .red); borderWidth = 0.
             // .red é cor literal do iOS (UIColor.red = #FF0000), não token semântico.
-            setTitle("Confirme sua recarga", DSSFont.light(ctx, 22f).typeface, 0xFFFF0000.toInt())
+            setTitle(AppStrings.brand(ctx, "recharge_sheet_confirm_title", "Confirme sua recarga"), DSSFont.light(ctx, 22f).typeface, 0xFFFF0000.toInt())
         }
         root.addView(resumeCard, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -132,7 +137,7 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
 
         // Payment section
         val paymentSectionLabel = TextView(ctx).apply {
-            text = "Pagamento"
+            text = AppStrings.brand(ctx, "recharge_sheet_payment_label", "Pagamento")
             typeface = DSSFont.regular(ctx, 14f).typeface
             textSize = 14f
             setTextColor(DSSColors.textSecondary())
@@ -228,7 +233,7 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
         }
         scheduleTitleLabel = TextView(ctx).apply {
             // iOS default: "recharge_schedule.title_no_bonus"
-            text = "Programe suas recargas e ganhe bônus!"
+            text = AppStrings.brand(ctx, "recharge_sheet_schedule_title", "Programe suas recargas e ganhe bônus!")
             typeface = DSSFont.medium(ctx, 14f).typeface
             textSize = 14f
             maxLines = 2
@@ -245,7 +250,7 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
         ))
 
         val scheduleDescriptionLabel = TextView(ctx).apply {
-            text = "suas recargas são feitas automaticamente no cartão de crédito a cada 30 dias."
+            text = AppStrings.brand(ctx, "recharge_sheet_schedule_subtitle", "suas recargas são feitas automaticamente no cartão de crédito a cada 30 dias.")
             typeface = DSSFont.regular(ctx, 12f).typeface
             textSize = 12f
             setTextColor(DSSColors.textSecondary())
@@ -260,7 +265,7 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
 
         // iOS: confirmButton title = "recharge_schedule.continue", font regular(16), height 48.
         confirmButton = DSSPrincipalButton(ctx).apply {
-            text = "Continuar"
+            text = AppStrings.brand(ctx, "common_continue", "Continuar")
             // iOS: font = DSSFont.regular(16) (o default do botão é light(16)).
             typeface = DSSFont.regular(ctx, 16f).typeface
             onTap = { confirmTapped() }
@@ -311,7 +316,7 @@ class DSSRechargeBottomSheet : BottomSheetDialogFragment() {
         // iOS: bonus vazio ou "0GB" -> title_no_bonus; senão title_with_bonus(bonus).
         val bonus = cfg.scheduleBonus ?: ""
         scheduleTitleLabel.text = if (bonus.isEmpty() || bonus == "0GB") {
-            "Programe suas recargas e ganhe bônus!"
+            AppStrings.brand(requireContext(), "recharge_sheet_schedule_title", "Programe suas recargas e ganhe bônus!")
         } else {
             "Programe suas recargas e ganhe até $bonus de bônus!"
         }

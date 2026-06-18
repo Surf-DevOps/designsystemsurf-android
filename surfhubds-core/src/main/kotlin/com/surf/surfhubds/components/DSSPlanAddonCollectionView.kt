@@ -20,6 +20,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -240,7 +241,7 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
                 scaleType = ImageView.ScaleType.FIT_CENTER
             }
             untilLabel.apply {
-                text = "Até"; textSize = 18f; typeface = DSSFont.light(context, 18f).typeface
+                text = AppStrings.brand(context, "plan_collection_up_to", "Até"); textSize = 18f; typeface = DSSFont.light(context, 18f).typeface
             }
             dataLabel.apply { textSize = 22f; typeface = DSSFont.bold(context, 22f).typeface }
 
@@ -300,7 +301,7 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
             ).apply { topMargin = 16f.dpToPx(context); bottomMargin = 16f.dpToPx(context) }
             expandableContainer.addView(separator)
 
-            ilimitadosTitle.apply { text = "Ilimitados"; textSize = 14f; typeface = DSSFont.bold(context, 14f).typeface }
+            ilimitadosTitle.apply { text = AppStrings.brand(context, "expandable_plan_unlimited", "Ilimitados"); textSize = 14f; typeface = DSSFont.bold(context, 14f).typeface }
             expandableContainer.addView(ilimitadosTitle)
             expandableContainer.addView(
                 ilimitadosStack,
@@ -310,7 +311,7 @@ class DSSPlanAddonCollectionView @JvmOverloads constructor(
                 ).apply { topMargin = 8f.dpToPx(context) },
             )
 
-            assinaturasTitle.apply { text = "Assinaturas"; textSize = 14f; typeface = DSSFont.bold(context, 14f).typeface }
+            assinaturasTitle.apply { text = AppStrings.brand(context, "expandable_plan_subscriptions", "Assinaturas"); textSize = 14f; typeface = DSSFont.bold(context, 14f).typeface }
             expandableContainer.addView(
                 assinaturasTitle,
                 LinearLayout.LayoutParams(

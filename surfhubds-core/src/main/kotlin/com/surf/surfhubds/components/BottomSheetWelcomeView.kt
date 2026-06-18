@@ -12,6 +12,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -31,7 +32,7 @@ class BottomSheetWelcomeView(context: Context) : FrameLayout(context), ThemeAwar
 
     private val numberDescriptionLabel = TextView(context).apply {
         gravity = Gravity.CENTER
-        text = "Seu número é:"
+        text = AppStrings.brand(context, "welcome_your_number_is", "Seu número é:")
         typeface = DSSFont.medium(context, 18f).typeface
         textSize = 18f
     }

@@ -12,6 +12,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -30,7 +31,7 @@ class DSSScheduleOfferCardView @JvmOverloads constructor(
     private val column = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
     private val card = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
     private val headerLabel = TextView(context).apply {
-        text = "Sua oferta"
+        text = AppStrings.brand(context, "my_plan_schedule_your_offer", "Sua oferta")
         textSize = 16f
         typeface = DSSFont.light(context, 16f).typeface
         // iOS: numberOfLines padrão = 1

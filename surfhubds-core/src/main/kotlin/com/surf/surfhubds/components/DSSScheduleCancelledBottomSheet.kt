@@ -16,6 +16,7 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
@@ -64,7 +65,7 @@ class DSSScheduleCancelledBottomSheet : BottomSheetDialogFragment() {
         ).apply { gravity = Gravity.CENTER_HORIZONTAL })
 
         val titleLabel = TextView(ctx).apply {
-            text = "Programada cancelada!"
+            text = AppStrings.brand(ctx, "schedule_cancelled_title", "Programada cancelada!")
             typeface = DSSFont.light(ctx, 24f).typeface
             textSize = 24f
             gravity = Gravity.CENTER
@@ -86,7 +87,7 @@ class DSSScheduleCancelledBottomSheet : BottomSheetDialogFragment() {
 
         // iOS: stack vertical com linhas [ícone x.circle 18x18 systemGray] + [label systemFont 15 systemGray],
         // spacing 12 entre linhas, alinhamento .leading, bloco centralizado horizontalmente.
-        val benefits = listOf("GB bônus", "Renovações automáticas", "Mais praticidade")
+        val benefits = listOf(AppStrings.brand(ctx, "schedule_benefit_gb_bonus", "GB bônus"), "Renovações automáticas", "Mais praticidade")
         val benefitsContainer = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.START
@@ -121,7 +122,7 @@ class DSSScheduleCancelledBottomSheet : BottomSheetDialogFragment() {
 
         // Botão primário: bg = primaryButton, texto = buttonText (tokens da brand).
         val finishButton = DSSPrincipalButton(ctx).apply {
-            text = "Finalizar"
+            text = AppStrings.brand(ctx, "schedule_cancelled_finish", "Finalizar")
             typeface = DSSFont.regular(ctx, 16f).typeface
             textSize = 16f
             customBackgroundColor = DSSColors.primaryButton()

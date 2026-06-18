@@ -87,10 +87,10 @@ class DSSPaymentSelectionView @JvmOverloads constructor(
         set(value) { field = value; newCardCard.setIcon(value) }
 
     private val pixCard = DSSPaymentMethodCard(context).apply {
-        configure(PaymentMethodImages.pixIcon(context), "Pix")
+        configure(PaymentMethodImages.pixIcon(context), AppStrings.brand(context, "card_plan_pix", "Pix"))
     }
     private val newCardCard = DSSPaymentMethodCard(context).apply {
-        configure(PaymentMethodImages.addCardIcon(context), "Novo Cartão de Crédito")
+        configure(PaymentMethodImages.addCardIcon(context), AppStrings.brand(context, "payment_method_new_credit_card", "Novo Cartão de Crédito"))
     }
 
     private val creditCardsRecycler = RecyclerView(context).apply {

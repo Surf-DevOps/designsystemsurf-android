@@ -18,6 +18,7 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -56,7 +57,7 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
         }
 
         val titleLabel = TextView(ctx).apply {
-            text = "Recarga Programada"
+            text = AppStrings.brand(ctx, "schedule_cancel_title", "Recarga Programada")
             typeface = DSSFont.light(ctx, 24f).typeface
             textSize = 24f
             gravity = Gravity.CENTER
@@ -74,7 +75,11 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
             120f.dpToPx(ctx), 80f.dpToPx(ctx),
         ).apply { topMargin = 24f.dpToPx(ctx) })
 
-        val benefits = listOf("GB bônus", "Renovações automáticas", "Mais praticidade")
+        val benefits = listOf(
+            AppStrings.brand(ctx, "schedule_benefit_gb_bonus", "GB bônus"),
+            AppStrings.brand(ctx, "schedule_benefit_auto_renewals", "Renovações automáticas"),
+            AppStrings.brand(ctx, "schedule_benefit_more_convenience", "Mais praticidade"),
+        )
         val benefitsContainer = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
         }
@@ -99,7 +104,7 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
 
         // Botão primário: bg = primaryButton, texto = buttonText (tokens da brand); font regular(16).
         val keepButton = DSSPrincipalButton(ctx).apply {
-            text = "Manter benefícios"
+            text = AppStrings.brand(ctx, "schedule_cancel_keep_benefits", "Manter benefícios")
             customBackgroundColor = DSSColors.primaryButton()
             customTextColor = DSSColors.buttonText()
             typeface = DSSFont.regular(ctx, 16f).typeface
@@ -111,7 +116,7 @@ class DSSScheduleCancelBottomSheet : BottomSheetDialogFragment() {
         ).apply { topMargin = 32f.dpToPx(ctx) })
 
         val cancelButton = AppCompatButton(ctx).apply {
-            text = "Confirmar cancelamento"
+            text = AppStrings.brand(ctx, "schedule_cancel_confirm_cancel", "Confirmar cancelamento")
             isAllCaps = false
             typeface = DSSFont.regular(ctx, 16f).typeface
             textSize = 16f

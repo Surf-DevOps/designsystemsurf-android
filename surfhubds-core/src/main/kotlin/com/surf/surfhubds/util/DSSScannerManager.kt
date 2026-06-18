@@ -64,7 +64,7 @@ class DSSScannerManager(private val view: DecoratedBarcodeView) {
         try {
             view.resume()
             isReading = true
-        } catch (e: Exception) { onError?.invoke(e.localizedMessage ?: "Falha ao abrir câmera.") }
+        } catch (e: Exception) { onError?.invoke(e.localizedMessage ?: AppStrings.brand(view.context, "scanner_open_camera_failed", "Falha ao abrir câmera.")) }
     }
 
     fun resetScanner() {

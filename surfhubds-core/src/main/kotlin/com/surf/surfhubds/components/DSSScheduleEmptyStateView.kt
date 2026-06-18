@@ -15,6 +15,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
@@ -45,7 +46,7 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
         setImageDrawable(ImageLoader.image(context, "empty_recurrency"))
     }
     private val titleLabel = TextView(context).apply {
-        text = "Você não possui uma recarga \nprogramada na sua linha.\nPrograme agora e aproveite!"
+        text = AppStrings.brand(context, "schedule_empty_message", "Você não possui uma recarga \nprogramada na sua linha.\nPrograme agora e aproveite!")
         textSize = 16f
         typeface = DSSFont.regular(context, 16f).typeface
         gravity = Gravity.START
@@ -55,7 +56,7 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
         gravity = Gravity.START
     }
     private val scheduleButton = DSSPrincipalButton(context).apply {
-        text = "Programar recarga"
+        text = AppStrings.brand(context, "schedule_empty_button", "Programar recarga")
         textSize = 17f
         // iOS: `.boldSystemFont(ofSize: 17)` e `cornerRadius = 28`.
         typeface = DSSFont.bold(context, 17f).typeface

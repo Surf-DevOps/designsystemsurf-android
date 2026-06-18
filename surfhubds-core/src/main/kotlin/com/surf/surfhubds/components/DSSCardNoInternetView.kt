@@ -20,6 +20,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
@@ -56,7 +57,7 @@ class DSSCardNoInternetView @JvmOverloads constructor(
 
     // título
     private val titleLabel = TextView(context).apply {
-        text = "Não fique sem internet!"
+        text = AppStrings.brand(context, "card_no_internet_title", "Não fique sem internet!")
         textSize = 17f
         typeface = DSSFont.bold(context, 17f).typeface
         setTextColor(Color.WHITE)
@@ -249,7 +250,7 @@ class DSSCardNoInternetView @JvmOverloads constructor(
         paymentOptionsContainer.removeAllViews()
         if (isEditingPaymentMethod) {
             paymentOptionsContainer.addView(
-                buildExpandedRow(PaymentType.CREDIT_CARD, "Cartão de crédito"),
+                buildExpandedRow(PaymentType.CREDIT_CARD, AppStrings.brand(context, "card_plan_credit_card", "Cartão de crédito")),
             )
             paymentOptionsContainer.addView(
                 buildExpandedRow(PaymentType.PIX, "Pix"),
@@ -278,7 +279,7 @@ class DSSCardNoInternetView @JvmOverloads constructor(
             setImageDrawable(iconResolver(currentPaymentType))
         }
         val label = TextView(context).apply {
-            text = if (currentPaymentType == PaymentType.PIX) "Pix" else "Cartão de crédito"
+            text = if (currentPaymentType == PaymentType.PIX) "Pix" else AppStrings.brand(context, "card_plan_credit_card", "Cartão de crédito")
             textSize = 15f
             typeface = DSSFont.regular(context, 15f).typeface
             setTextColor(rowTextColor())

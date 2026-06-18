@@ -15,6 +15,7 @@ import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -71,7 +72,7 @@ class DSSScheduleCardListView @JvmOverloads constructor(
 
     private val stack = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
     private val registerButton = TextView(context).apply {
-        text = "Cadastrar novo cartão"
+        text = AppStrings.brand(context, "schedule_card_list_register_new", "Cadastrar novo cartão")
         textSize = 14f
         typeface = DSSFont.medium(context, 14f).typeface
         isClickable = true; isFocusable = true
@@ -223,7 +224,7 @@ class DSSScheduleCardListView @JvmOverloads constructor(
             gravity = Gravity.START
         }
         private val titleLabel = TextView(context).apply {
-            text = "Cartão cadastrado"
+            text = AppStrings.brand(context, "scheduled_card_card_registered", "Cartão cadastrado")
             textSize = 14f
             typeface = DSSFont.medium(context, 14f).typeface
             // Uma linha só, como no iOS. Um TextView single-line NÃO quebra no meio da

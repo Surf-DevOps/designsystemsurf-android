@@ -17,6 +17,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
@@ -46,20 +47,20 @@ class CardsEmptyStateView @JvmOverloads constructor(
         gravity = Gravity.CENTER
         textSize = 20f
         typeface = DSSFont.bold(context, 20f).typeface
-        text = "Você ainda não tem um cartão cadastrado"
+        text = AppStrings.brand(context, "cards_empty_title", "Você ainda não tem um cartão cadastrado")
     }
     private val subtitleView = TextView(context).apply {
         gravity = Gravity.CENTER
         textSize = 15f
         typeface = DSSFont.regular(context, 15f).typeface
-        text = "Adicione um cartão agora para ter mais facilidades."
+        text = AppStrings.brand(context, "cards_empty_subtitle", "Adicione um cartão agora para ter mais facilidades.")
     }
     private val benefitsStack = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
     }
     private val addCardButton = AppCompatButton(context).apply {
         isAllCaps = false
-        text = "Adicionar cartão"
+        text = AppStrings.brand(context, "card_form_add_card", "Adicionar cartão")
         textSize = 17f
         typeface = DSSFont.bold(context, 17f).typeface
     }
@@ -128,9 +129,9 @@ class CardsEmptyStateView @JvmOverloads constructor(
 
     private fun setupFixedBenefits() {
         val items = listOf(
-            "Recarga programada",
-            "Mais agilidade",
-            "Mais praticidade",
+            AppStrings.brand(context, "payment_scheduled_recharge_title", "Recarga programada"),
+            AppStrings.brand(context, "cards_empty_benefit_agility", "Mais agilidade"),
+            AppStrings.brand(context, "schedule_empty_more_convenience", "Mais praticidade"),
         )
         items.forEachIndexed { index, text ->
             val label = TextView(context).apply {

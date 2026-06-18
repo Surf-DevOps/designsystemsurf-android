@@ -18,6 +18,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
@@ -136,10 +137,10 @@ class RechargeCompletedCardView @JvmOverloads constructor(
     }
 
     fun configure(config: PlanInfoCardConfig) {
-        numberTitleLabel.text = "Número"
+        numberTitleLabel.text = AppStrings.brand(context, "resume_card_number", "Número")
         numberValueLabel.text = config.msisdn.formatPhoneNumber()
 
-        planTitleLabel.text = "Plano"
+        planTitleLabel.text = AppStrings.brand(context, "pix_info_plan_header", "Plano")
         totalPlanLabel.text = Utility.formatMBToGB(config.totalDataPlan)
 
         // iOS: remove todos e recria os bullets a partir de config.benefits (sem limite).
@@ -159,31 +160,36 @@ class RechargeCompletedCardView @JvmOverloads constructor(
             )
         }
 
-        valueTitleLabel.text = "Valor"
+        valueTitleLabel.text = AppStrings.brand(context, "resume_card_price", "Valor")
         valueValueLabel.text = "R$ ${Utility.formatPrice(config.value.toIntOrNull() ?: 0)}"
 
-        paymentTitleLabel.text = "Pagamento"
+        paymentTitleLabel.text = AppStrings.brand(context, "recharge_sheet_payment_label", "Pagamento")
 
         when (config.paymentMethod) {
             DSSPaymentMethodType.CREDIT_CARD -> {
-                paymentMethodLabel.text = "Cartão de Crédito"
+                paymentMethodLabel.text = AppStrings.brand(context, "recharge_completed_credit_card", "Cartão de Crédito")
                 paymentRightLabel.text = "Final ${config.lastDigitsCard}"
                 paymentRightLabel.visibility = View.VISIBLE
             }
             DSSPaymentMethodType.PIX -> {
-                paymentMethodLabel.text = "Pix"
+                paymentMethodLabel.text = AppStrings.brand(context, "card_plan_pix", "Pix")
                 paymentRightLabel.text = null
                 paymentRightLabel.visibility = View.GONE
             }
         }
 
         if (config.hasScheduledRecharge) {
-            paymentMethodRow.text = "Recarga Programada"
-            paymentStatusLabel.text = "Ativa"
+            paymentMethodRow.text = AppStrings.brand(context, "payment_scheduled_recharge_title", "Recarga Programada")
+            paymentStatusLabel.text = AppStrings.brand(context, "recharge_completed_active", "Ativa")
             paymentMethodRow.visibility = View.VISIBLE
             paymentStatusLabel.visibility = View.VISIBLE
             bottomInfoLabel.text =
-                "Próxima recarga ${Utility.formatDateToBrazilianFormatPlus30Days(config.dateNextRecharge)}"
+                AppStrings.brand(
+                    context,
+                    "recharge_completed_next_recharge_format",
+                    "Próxima recarga %1\$s",
+                    Utility.formatDateToBrazilianFormatPlus30Days(config.dateNextRecharge),
+                )
         } else {
             paymentMethodRow.visibility = View.GONE
             paymentStatusLabel.visibility = View.GONE

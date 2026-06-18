@@ -18,6 +18,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.text.SimpleDateFormat
@@ -244,7 +245,7 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         val day = cal.get(Calendar.DAY_OF_MONTH)
         val month = cal.get(Calendar.MONTH) + 1
         val dateStr = String.format(Locale.US, "%02d/%02d", day, month)
-        val prefix = "Ativar programada a partir\ndo dia "
+        val prefix = AppStrings.brand(context, "schedule_calendar_activate_from_prefix", "Ativar programada a partir\ndo dia ")
         val full = prefix + dateStr
         val span = SpannableString(full)
         val start = full.indexOf(dateStr)

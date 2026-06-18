@@ -14,6 +14,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.dpToPx
 import com.surf.surfhubds.util.dpToPxFloat
 
@@ -76,7 +77,11 @@ class DSSSelectorType @JvmOverloads constructor(
             val itemContainer = FrameLayout(context)
 
             val button = AppCompatButton(context).apply {
-                text = type.title
+                text = when (type) {
+                    SelectorType.INTERNET -> AppStrings.brand(context, "data_view_internet", "Internet")
+                    SelectorType.LIGACOES -> AppStrings.brand(context, "my_plan_feature_calls_title", "Ligações")
+                    SelectorType.SMS -> type.title
+                }
                 isAllCaps = false
                 textSize = 18f
                 typeface = DSSFont.light(context, 18f).typeface

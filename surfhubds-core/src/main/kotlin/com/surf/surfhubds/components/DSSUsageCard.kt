@@ -20,6 +20,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.util.Locale
@@ -118,7 +119,7 @@ class DSSUsageCard @JvmOverloads constructor(
         when (config.type) {
             Type.INTERNET -> {
                 iconView.setImageDrawable(internetIcon ?: defaultIcon(com.surf.surfhubds.R.drawable.dss_ic_globe))
-                titleLabel.text = "Internet base do plano"
+                titleLabel.text = AppStrings.brand(context, "usage_card_internet_base", "Internet base do plano")
                 availableLabel.text = "${formatMBToGB(config.available)}GB disponíveis"
                 totalLabel.text = "de ${formatMBToGB(config.total)}GB"
                 validUntilLabel.text = "Válido até: ${config.validUntil} 00:01"
@@ -129,15 +130,15 @@ class DSSUsageCard @JvmOverloads constructor(
             }
             Type.CALLS -> {
                 iconView.setImageDrawable(callsIcon ?: defaultIcon(com.surf.surfhubds.R.drawable.dss_ic_phone))
-                titleLabel.text = "Ligações"
+                titleLabel.text = AppStrings.brand(context, "my_plan_feature_calls_title", "Ligações")
                 val usedMinutes = (config.total - config.available).coerceAtLeast(0)
                 val totalSecondsUsed = usedMinutes * 60
                 val h = totalSecondsUsed / 3600
                 val m = (totalSecondsUsed % 3600) / 60
                 val s = totalSecondsUsed % 60
                 usedLabel.text = String.format(Locale.US, "%02d:%02d:%02d utilizados", h, m, s)
-                val formattedTotal = if (config.total >= 1000) "Ilimitado" else "${config.total} min"
-                val formattedAvailable = if (config.total >= 1000) "Ilimitado" else "${config.available} min"
+                val formattedTotal = if (config.total >= 1000) AppStrings.brand(context, "consumption_unlimited", "Ilimitado") else "${config.total} min"
+                val formattedAvailable = if (config.total >= 1000) AppStrings.brand(context, "consumption_unlimited", "Ilimitado") else "${config.available} min"
                 availableLabel.text = "$formattedAvailable disponíveis"
                 totalLabel.text = "de $formattedTotal"
                 validUntilLabel.text = "Válido até: ${config.validUntil} 00:01"
@@ -150,7 +151,7 @@ class DSSUsageCard @JvmOverloads constructor(
             }
             Type.SMS -> {
                 iconView.setImageDrawable(smsIcon ?: defaultIcon(com.surf.surfhubds.R.drawable.dss_ic_chat))
-                titleLabel.text = "SMS"
+                titleLabel.text = AppStrings.brand(context, "consumption_sms", "SMS")
                 val used = (config.total - config.available).coerceAtLeast(0)
                 val pct = percent(used, config.total)
                 availableLabel.text = "${config.available} disponíveis"

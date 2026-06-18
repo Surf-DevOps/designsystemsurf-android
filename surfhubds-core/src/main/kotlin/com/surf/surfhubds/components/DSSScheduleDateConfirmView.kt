@@ -11,6 +11,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -37,13 +38,13 @@ class DSSScheduleDateConfirmView @JvmOverloads constructor(
     }
 
     private val questionLabel = TextView(context).apply {
-        text = "Confirma a troca da data de cobrança da recarga programada?"
+        text = AppStrings.brand(context, "schedule_date_confirm_question", "Confirma a troca da data de cobrança da recarga programada?")
         textSize = 14f
         typeface = DSSFont.bold(context, 14f).typeface
     }
 
     private val currentTitle = TextView(context).apply {
-        text = "Programada atual:"
+        text = AppStrings.brand(context, "schedule_date_confirm_current", "Programada atual:")
         textSize = 13f
         typeface = DSSFont.light(context, 13f).typeface
     }
@@ -54,7 +55,7 @@ class DSSScheduleDateConfirmView @JvmOverloads constructor(
     private val currentValueText = TextView(context).apply { textSize = 14f; gravity = Gravity.END; typeface = DSSFont.bold(context, 14f).typeface }
 
     private val newTitle = TextView(context).apply {
-        text = "Nova data:"
+        text = AppStrings.brand(context, "schedule_date_confirm_new", "Nova data:")
         textSize = 14f
         typeface = DSSFont.bold(context, 14f).typeface
     }
@@ -65,7 +66,7 @@ class DSSScheduleDateConfirmView @JvmOverloads constructor(
     private val newValueText = TextView(context).apply { textSize = 14f; gravity = Gravity.END; typeface = DSSFont.bold(context, 14f).typeface }
 
     private val confirmButton = DSSPrincipalButton(context).apply {
-        text = "Confirmar"
+        text = AppStrings.brand(context, "common_confirm", "Confirmar")
         typeface = DSSFont.regular(context, 16f).typeface
     }
 

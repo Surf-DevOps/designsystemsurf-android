@@ -22,6 +22,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
@@ -62,13 +63,13 @@ class DSSRecurrencyFailureCardView @JvmOverloads constructor(
         setImageDrawable(ImageLoader.image(context, "empty_recurrency"))
     }
     private val titleLabel = TextView(context).apply {
-        text = "FALHA NA RECORRÊNCIA"
+        text = AppStrings.brand(context, "recurrency_failure_title", "FALHA NA RECORRÊNCIA")
         textSize = 12f
         typeface = DSSFont.bold(context, 12f).typeface
         maxLines = 1
     }
     private val descriptionLabel = TextView(context).apply {
-        text = "Realize a recarga via PIX e não fique sem internet!"
+        text = AppStrings.brand(context, "recurrency_failure_subtitle", "Realize a recarga via PIX e não fique sem internet!")
         textSize = 14f
         typeface = DSSFont.regular(context, 14f).typeface
         gravity = Gravity.START
@@ -76,7 +77,11 @@ class DSSRecurrencyFailureCardView @JvmOverloads constructor(
 
     private val resumeCard = DSSResumeCard(context).apply {
         // iOS: setCategoryLabels(number: "Número", offer: "Plano", price: "Valor").
-        setCategoryLabels(number = "Número", offer = "Plano", price = "Valor")
+        setCategoryLabels(
+            number = AppStrings.brand(context, "resume_card_number", "Número"),
+            offer = AppStrings.brand(context, "pix_info_plan_header", "Plano"),
+            price = AppStrings.brand(context, "resume_card_price", "Valor"),
+        )
         // iOS: setTitleFont(DSSFont.medium(14)).
         titleFont = DSSFont.medium(context, 14f).typeface
         // iOS: borderWidth = 0.
@@ -84,7 +89,7 @@ class DSSRecurrencyFailureCardView @JvmOverloads constructor(
     }
 
     private val copyButton = AppCompatButton(context).apply {
-        text = "Copiar código"
+        text = AppStrings.brand(context, "pix_payment_copy_code", "Copiar código")
         textSize = 16f
         typeface = DSSFont.medium(context, 16f).typeface
         isAllCaps = false
@@ -271,7 +276,7 @@ class DSSRecurrencyFailureCardView @JvmOverloads constructor(
         clipboard.setPrimaryClip(ClipData.newPlainText("Pix", pixCode ?: "Código PIX copiado"))
 
         val originalText = copyButton.text
-        copyButton.text = "Pix copiado"
+        copyButton.text = AppStrings.brand(context, "pix_copied", "Pix copiado")
         copyButton.isEnabled = false
         handler.postDelayed({
             copyButton.text = originalText

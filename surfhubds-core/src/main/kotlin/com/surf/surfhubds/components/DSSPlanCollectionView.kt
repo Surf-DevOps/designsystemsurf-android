@@ -22,6 +22,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.Utility
@@ -270,7 +271,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
 
             // Faixa "Oferta atual" — adicionada ANTES do container para ficar atrás dele.
             currentOfferBadge.apply {
-                text = "Oferta atual"
+                text = AppStrings.brand(context, "expandable_plan_current_offer", "Oferta atual")
                 textSize = 14f
                 typeface = DSSFont.medium(context, 14f).typeface
                 // iOS: .white sobre fill primary/primaryButton. No dark/black de algumas brands
@@ -370,7 +371,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 scaleType = ImageView.ScaleType.FIT_CENTER
             }
             untilLabel.apply {
-                text = "Até"
+                text = AppStrings.brand(context, "plan_collection_up_to", "Até")
                 textSize = 18f
                 typeface = DSSFont.light(context, 18f).typeface
             }
@@ -488,7 +489,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             expandableContainer.addView(separator)
 
             ilimitadosTitle.apply {
-                text = "Ilimitados"
+                text = AppStrings.brand(context, "expandable_plan_unlimited", "Ilimitados")
                 textSize = 14f
                 typeface = DSSFont.bold(context, 14f).typeface
                 maxLines = 1 // iOS makeSectionTitleLabel numberOfLines = 1
@@ -509,7 +510,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             )
 
             assinaturasTitle.apply {
-                text = "Assinaturas"
+                text = AppStrings.brand(context, "expandable_plan_subscriptions", "Assinaturas")
                 textSize = 14f
                 typeface = DSSFont.bold(context, 14f).typeface
                 maxLines = 1 // iOS makeSectionTitleLabel numberOfLines = 1
@@ -619,7 +620,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             }
             channelsView.visibility = View.VISIBLE
             val essencial = type.contains("ESSENCIAL")
-            channelsLabel.text = if (essencial) "+5 canais" else "+17 canais"
+            channelsLabel.text = if (essencial) AppStrings.brand(context, "plan_collection_channels_essencial", "+5 canais") else AppStrings.brand(context, "plan_collection_channels_total", "+17 canais")
 
             // iOS: ImageLoader.image(named: "channels_essencial"/"channels_total").
             val imageName = if (essencial) "channels_essencial" else "channels_total"

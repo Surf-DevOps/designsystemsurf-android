@@ -179,7 +179,11 @@ class DSSResumeCard @JvmOverloads constructor(
         if (color != null) titleTextColorOverride = color
     }
 
-    fun setCategoryLabels(number: String = "Número", offer: String = "Oferta", price: String = "Valor") {
+    fun setCategoryLabels(
+        number: String = AppStrings.brand(context, "resume_card_number", "Número"),
+        offer: String = AppStrings.brand(context, "resume_card_offer", "Oferta"),
+        price: String = AppStrings.brand(context, "resume_card_price", "Valor"),
+    ) {
         numberLabel.text = number; offerLabel.text = offer; priceLabel.text = price
     }
 

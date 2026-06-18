@@ -11,6 +11,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -25,7 +26,7 @@ class DSSDataView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr), ThemeAware {
 
     val internetLabel = TextView(context).apply {
-        text = "Internet"
+        text = AppStrings.brand(context, "data_view_internet", "Internet")
         textSize = 14f
         typeface = DSSFont.light(context, 14f).typeface
     }

@@ -15,6 +15,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DateHelpers
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.Utility
@@ -186,7 +187,7 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
             val days = DateHelpers.daysRemaining(end)
             validityView.daysLabel.text = "$days dias"
             validityView.validUntilLabel.text = when {
-                days <= 2 -> "Recarregue agora!"
+                days <= 2 -> AppStrings.brand(context, "card_plan_recharge_now", "Recarregue agora!")
                 days <= 5 -> "vence em $days dias"
                 else -> "válido até ${DateHelpers.formatDDMM(end)}"
             }
@@ -226,7 +227,7 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     private fun configurePayment(data: CardData) {
         contentCardView.selectedPaymentType = data.payment
         contentCardView.typeCardLabel.text =
-            if (data.payment == PaymentType.PIX) "Pix" else "Cartão de crédito"
+            if (data.payment == PaymentType.PIX) "Pix" else AppStrings.brand(context, "card_plan_credit_card", "Cartão de crédito")
         contentCardView.updatePaymentOptionsUI()
     }
 

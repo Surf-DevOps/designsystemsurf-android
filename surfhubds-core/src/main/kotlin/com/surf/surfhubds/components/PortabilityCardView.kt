@@ -18,6 +18,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import com.surf.surfhubds.util.formatPhoneNumber
@@ -214,18 +215,18 @@ class PortabilityCardView @JvmOverloads constructor(
     // MARK: Status configs
 
     private fun configError(response: PortabilityStatusResponse) {
-        titleLabel.text = "Infelizmente não conseguirmos seguir com a sua portabilidade"
-        subtitleLabel.text = "Verifique se:"
+        titleLabel.text = AppStrings.brand(context, "portability_card_failure_title", "Infelizmente não conseguirmos seguir com a sua portabilidade")
+        subtitleLabel.text = AppStrings.brand(context, "portability_card_failure_subtitle", "Verifique se:")
         progressImageView.setImageDrawable(progressImages.refused)
         progressImageView.visibility = View.GONE
         setupErrorCard(response)
-        actionButton.text = "Tentar novamente"
+        actionButton.text = AppStrings.brand(context, "common_try_again", "Tentar novamente")
         showActionButton()
     }
 
     private fun configPending(response: PortabilityStatusResponse) {
-        titleLabel.text = "Falta pouco."
-        subtitleLabel.text = "Confirme o SMS para seguir com a portabilidade"
+        titleLabel.text = AppStrings.brand(context, "portability_card_almost_there_title", "Falta pouco.")
+        subtitleLabel.text = AppStrings.brand(context, "portability_card_confirm_sms", "Confirme o SMS para seguir com a portabilidade")
         progressImageView.setImageDrawable(progressImages.procedure)
         progressImageView.visibility = View.VISIBLE
         setupCarousel(response)
@@ -234,7 +235,7 @@ class PortabilityCardView @JvmOverloads constructor(
     }
 
     private fun configConfirmed(response: PortabilityStatusResponse) {
-        titleLabel.text = "Portabilidade em andamento"
+        titleLabel.text = AppStrings.brand(context, "portability_card_in_progress_title", "Portabilidade em andamento")
         subtitleLabel.text = ""
         progressImageView.setImageDrawable(progressImages.procedure)
         progressImageView.visibility = View.VISIBLE
@@ -244,18 +245,18 @@ class PortabilityCardView @JvmOverloads constructor(
     }
 
     private fun configSuccess(response: PortabilityStatusResponse) {
-        titleLabel.text = "Parabéns!"
+        titleLabel.text = AppStrings.brand(context, "portability_card_congratulations", "Parabéns!")
         subtitleLabel.text =
-            "Sua portabilidade foi realizada e agora você recebe GB bônus em toda recarga."
+            AppStrings.brand(context, "portability_card_success_message", "Sua portabilidade foi realizada e agora você recebe GB bônus em toda recarga.")
         progressImageView.setImageDrawable(progressImages.completed)
         progressImageView.visibility = View.VISIBLE
         setupSuccessCard(response)
-        actionButton.text = "Finalizar"
+        actionButton.text = AppStrings.brand(context, "portability_card_finish", "Finalizar")
         showActionButton()
     }
 
     private fun configDefault(response: PortabilityStatusResponse) {
-        titleLabel.text = "Portabilidade em andamento"
+        titleLabel.text = AppStrings.brand(context, "portability_card_in_progress_title", "Portabilidade em andamento")
         subtitleLabel.text = ""
         progressImageView.setImageDrawable(progressImages.procedure)
         progressImageView.visibility = View.VISIBLE
@@ -281,7 +282,7 @@ class PortabilityCardView @JvmOverloads constructor(
         }
         val msg = TextView(context).apply {
             text = response.resultado?.descricaoTicketStatus
-                ?: "Não foi possível processar sua solicitação."
+                ?: AppStrings.brand(context, "portability_card_generic_error", "Não foi possível processar sua solicitação.")
             textSize = 16f
             typeface = DSSFont.regular(context, 16f).typeface
             setSingleLine(false)
@@ -321,15 +322,22 @@ class PortabilityCardView @JvmOverloads constructor(
         val pages = listOf(
             CarouselPage(
                 icon = progressImages.pending,
-                title = "Confirme o SMS",
-                message = "Responda em até 24 horas o SMS que enviamos no número $msisdn \n" +
-                    "para confirmar sua solicitação.",
+                title = AppStrings.brand(context, "portability_card_confirm_sms_title", "Confirme o SMS"),
+                message = AppStrings.brand(
+                    context,
+                    "portability_card_confirm_sms_message",
+                    "Responda em até 24 horas o SMS que enviamos no número %1\$s \npara confirmar sua solicitação.",
+                    msisdn,
+                ),
             ),
             CarouselPage(
                 icon = progressImages.pending,
-                title = "Enquanto isso...",
-                message = "Não se preocupe, os dois números continuarão funcionando até " +
-                    "que a portabilidade seja concluída.",
+                title = AppStrings.brand(context, "portability_card_meanwhile_title", "Enquanto isso..."),
+                message = AppStrings.brand(
+                    context,
+                    "portability_card_meanwhile_message",
+                    "Não se preocupe, os dois números continuarão funcionando até que a portabilidade seja concluída.",
+                ),
             ),
         )
         pager.adapter = CarouselAdapter(pages)
@@ -384,7 +392,13 @@ class PortabilityCardView @JvmOverloads constructor(
             setImageDrawable(progressImages.confirmed)
         }
         val title = TextView(context).apply {
-            text = "Previsão de conclusão\n${response.resultado?.dtConfirmacao ?: "Em breve"}"
+            text = AppStrings.brand(
+                context,
+                "portability_card_completion_forecast_format",
+                "Previsão de conclusão\n%1\$s",
+                response.resultado?.dtConfirmacao
+                    ?: AppStrings.brand(context, "portability_card_soon", "Em breve"),
+            )
             textSize = 16f
             typeface = DSSFont.semibold(context, 16f).typeface
             gravity = Gravity.CENTER_HORIZONTAL
@@ -392,7 +406,7 @@ class PortabilityCardView @JvmOverloads constructor(
             setTextColor(DSSColors.textPrimary())
         }
         val message = TextView(context).apply {
-            text = "Não se preocupe, as duas linhas continuam funcionando normalmente até lá."
+            text = AppStrings.brand(context, "portability_card_lines_working_note", "Não se preocupe, as duas linhas continuam funcionando normalmente até lá.")
             textSize = 14f
             typeface = DSSFont.regular(context, 14f).typeface
             gravity = Gravity.CENTER_HORIZONTAL
@@ -438,7 +452,7 @@ class PortabilityCardView @JvmOverloads constructor(
             setPadding(pad, pad, pad, pad)
         }
         val phoneLabel = TextView(context).apply {
-            text = "Agora seu número\nChip Educação é:"
+            text = AppStrings.brand(context, "portability_card_new_number_chip_educacao", "Agora seu número\nChip Educação é:")
             textSize = 16f
             typeface = DSSFont.medium(context, 16f).typeface
             gravity = Gravity.CENTER_HORIZONTAL

@@ -67,7 +67,7 @@ class DSSProfileImageManager(
                     isFirstResource: Boolean,
                 ): Boolean {
                     removeLoadingIndicator(imageView)
-                    delegate?.profileImageDidFailLoading(e?.localizedMessage ?: "Erro ao carregar imagem.")
+                    delegate?.profileImageDidFailLoading(e?.localizedMessage ?: AppStrings.brand(imageView.context, "profile_image_load_error", "Erro ao carregar imagem."))
                     return false
                 }
 

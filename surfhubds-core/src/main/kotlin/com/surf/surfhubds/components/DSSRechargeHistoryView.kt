@@ -21,6 +21,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.text.SimpleDateFormat
@@ -64,7 +65,7 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
     // MARK: - UI
 
     private val titleLabel = TextView(context).apply {
-        text = "Histórico"
+        text = AppStrings.brand(context, "recharge_history_title", "Histórico")
         textSize = 22f
         typeface = DSSFont.bold(context, 22f).typeface
     }
@@ -78,7 +79,7 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
     }
 
     private val emptyStateLabel = TextView(context).apply {
-        text = "Sem recargas neste mês"
+        text = AppStrings.brand(context, "recharge_history_empty", "Sem recargas neste mês")
         textSize = 14f
         typeface = DSSFont.regular(context, 14f).typeface
         gravity = Gravity.CENTER
@@ -408,10 +409,10 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         }
 
         fun configure(item: Transacao) {
-            titleLabel.text = RechargeHistoryItemPresenter.title(item)
+            titleLabel.text = RechargeHistoryItemPresenter.title(context, item)
             relativeTimeLabel.text = RechargeHistoryItemPresenter.relativeTime(item)
-            descriptionLabel.text = RechargeHistoryItemPresenter.description(item)
-            validityLabel.text = RechargeHistoryItemPresenter.validity(item)
+            descriptionLabel.text = RechargeHistoryItemPresenter.description(context, item)
+            validityLabel.text = RechargeHistoryItemPresenter.validity(context, item)
         }
 
         override fun applyTheme(theme: Theme) { refresh() }
@@ -471,23 +472,23 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
 
     private object RechargeHistoryItemPresenter {
 
-        fun title(item: Transacao): String = when (item.tipo.uppercase(Locale.getDefault())) {
-            "RENOVACAO", "RENOVAÇÃO" -> "Renovação de programada"
-            else -> "Recarga"
+        fun title(context: Context, item: Transacao): String = when (item.tipo.uppercase(Locale.getDefault())) {
+            "RENOVACAO", "RENOVAÇÃO" -> AppStrings.brand(context, "recharge_history_renewal_type", "Renovação de programada")
+            else -> AppStrings.brand(context, "menu_recharge", "Recarga")
         }
 
-        fun description(item: Transacao): String {
+        fun description(context: Context, item: Transacao): String {
             val value = CurrencyFormatter.brl(item.vlCredito)
-            return "Seu plano no valor de $value foi renovado!"
+            return AppStrings.brand(context, "recharge_history_renewed_format", "Seu plano no valor de %1\$s foi renovado!", value)
         }
 
-        fun validity(item: Transacao): String {
+        fun validity(context: Context, item: Transacao): String {
             val executionDate = DateParser.parse(item.dtExecucao) ?: return ""
             val cal = Calendar.getInstance().apply {
                 time = executionDate
                 add(Calendar.DAY_OF_MONTH, 30)
             }
-            return "plano válido até ${DateFormatters.shortBR.format(cal.time)}"
+            return AppStrings.brand(context, "recharge_history_valid_until_format", "plano válido até %1\$s", DateFormatters.shortBR.format(cal.time))
         }
 
         fun relativeTime(item: Transacao): String {

@@ -23,6 +23,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 
@@ -190,7 +191,7 @@ class DSSScheduleRechargeSuccessView @JvmOverloads constructor(
 
         // Ilimitados
         if (config.ratingGroups.isNotEmpty() || config.includeUnlimitedCalls) {
-            addSectionHeader("Ilimitados")
+            addSectionHeader(AppStrings.brand(ctx, "schedule_success_unlimited", "Ilimitados"))
 
             config.ratingGroups.forEach { (nome, imageName) ->
                 catalogStack.addView(
@@ -201,7 +202,7 @@ class DSSScheduleRechargeSuccessView @JvmOverloads constructor(
 
             if (config.includeUnlimitedCalls) {
                 catalogStack.addView(
-                    makeIconRow("Ligações usando o código 41", null, config.iconResolver, systemPhone = true),
+                    makeIconRow(AppStrings.brand(ctx, "schedule_success_calls_code_41", "Ligações usando o código 41"), null, config.iconResolver, systemPhone = true),
                     mp().apply { bottomMargin = 8f.dpToPx(ctx) },
                 )
             }
@@ -210,7 +211,7 @@ class DSSScheduleRechargeSuccessView @JvmOverloads constructor(
         // Assinaturas
         val svaText = config.svaText
         if (!svaText.isNullOrEmpty()) {
-            addSectionHeader("Assinaturas")
+            addSectionHeader(AppStrings.brand(ctx, "schedule_success_subscriptions", "Assinaturas"))
             catalogStack.addView(
                 makeIconRow(svaText, config.svaImageName ?: "icAppSkeelo", config.iconResolver),
                 mp().apply { bottomMargin = 8f.dpToPx(ctx) },

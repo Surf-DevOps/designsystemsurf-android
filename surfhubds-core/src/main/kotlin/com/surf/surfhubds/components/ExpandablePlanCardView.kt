@@ -16,6 +16,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
@@ -209,14 +210,14 @@ class ExpandablePlanCardView @JvmOverloads constructor(
 
     private fun setupStyles() {
         currentOfferLabel.apply {
-            text = "Oferta atual"
+            text = AppStrings.brand(context, "expandable_plan_current_offer", "Oferta atual")
             textSize = 14f
             typeface = DSSFont.light(context, 14f).typeface
         }
         planNameLabel.apply { textSize = 18f; typeface = DSSFont.bold(context, 18f).typeface }
         priceLabel.apply { textSize = 18f; typeface = DSSFont.bold(context, 18f).typeface; gravity = Gravity.END }
         validityBadge.apply {
-            text = "validade"
+            text = AppStrings.brand(context, "expandable_plan_validity", "validade")
             textSize = 12f
             typeface = DSSFont.bold(context, 12f).typeface
             // iOS: label inset 12 leading/trailing, centerY em altura fixa de 24 (sem inset vertical).
@@ -224,10 +225,10 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             setPadding(12f.dpToPx(context), 0, 12f.dpToPx(context), 0)
         }
         validityDateLabel.apply { textSize = 14f; typeface = DSSFont.light(context, 14f).typeface; gravity = Gravity.END }
-        ilimitadosTitle.apply { text = "Ilimitados"; textSize = 16f; typeface = DSSFont.bold(context, 16f).typeface }
-        subscriptionsTitle.apply { text = "Assinaturas"; textSize = 16f; typeface = DSSFont.bold(context, 16f).typeface }
+        ilimitadosTitle.apply { text = AppStrings.brand(context, "expandable_plan_unlimited", "Ilimitados"); textSize = 16f; typeface = DSSFont.bold(context, 16f).typeface }
+        subscriptionsTitle.apply { text = AppStrings.brand(context, "expandable_plan_subscriptions", "Assinaturas"); textSize = 16f; typeface = DSSFont.bold(context, 16f).typeface }
         toggleButton.apply {
-            text = "Mais detalhes"
+            text = AppStrings.brand(context, "expandable_plan_more_details", "Mais detalhes")
             textSize = 14f
             typeface = DSSFont.regular(context, 14f).typeface
             gravity = Gravity.CENTER
@@ -246,8 +247,8 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         // Link "Trocar plano": DSSFont.regular(16), cor primária, centralizado.
         trocarPlanoLink.gravity = Gravity.CENTER
         trocarPlanoLink.configure(
-            fullText = "Trocar plano",
-            linkText = "Trocar plano",
+            fullText = AppStrings.brand(context, "my_plan_schedule_change_plan", "Trocar plano"),
+            linkText = AppStrings.brand(context, "my_plan_schedule_change_plan", "Trocar plano"),
             typeface = DSSFont.regular(context, 16f).typeface,
             sizeSp = 16f,
             textColor = DSSColors.primary(),
@@ -351,7 +352,7 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         val ilimitadosItems: List<DSSPlanCollectionView.CheckListItem> = if (plan.unlimitedItems.isNotEmpty()) {
             plan.unlimitedItems
         } else if (plan.voz.lowercase().contains("ilimitad")) {
-            listOf(DSSPlanCollectionView.CheckListItem("Ligações usando o código 41", null))
+            listOf(DSSPlanCollectionView.CheckListItem(AppStrings.brand(context, "schedule_success_calls_code_41", "Ligações usando o código 41"), null))
         } else {
             emptyList()
         }
@@ -373,16 +374,16 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         featuresStack.removeAllViews()
         val scheduleGB = scheduleBonusMB / 1024
         val portabilityGB = portabilityBonusMB / 1024
-        addFeature(Feature("Internet que acumula", "A internet que você não utilizou acumula para o próximo mês. Basta manter sua oferta ativa."))
-        addFeature(Feature("Ligações ilimitadas", "Ligações ilimitadas para qualquer operadora e em todo Brasil utilizando o código 41."))
-        addFeature(Feature("Internet sem cortes", "Durante a validade da sua oferta você não fica sem internet (mesmo se consumir todos os GB do seu plano). Nós mantemos sua navegação liberada porém com velocidade reduzida até a próxima recarga."))
+        addFeature(Feature(AppStrings.brand(context, "expandable_plan_internet_accumulates", "Internet que acumula"), "A internet que você não utilizou acumula para o próximo mês. Basta manter sua oferta ativa."))
+        addFeature(Feature(AppStrings.brand(context, "expandable_plan_unlimited_calls", "Ligações ilimitadas"), AppStrings.brand(context, "expandable_plan_unlimited_calls_desc", "Ligações ilimitadas para qualquer operadora e em todo Brasil utilizando o código 41.")))
+        addFeature(Feature(AppStrings.brand(context, "expandable_plan_internet_no_cuts", "Internet sem cortes"), "Durante a validade da sua oferta você não fica sem internet (mesmo se consumir todos os GB do seu plano). Nós mantemos sua navegação liberada porém com velocidade reduzida até a próxima recarga."))
         // iOS: "Validade do plano \(validityDays) dias" — usa o valor cru, sem desconto.
         addFeature(Feature("Validade do plano $validityDays dias", ""))
         if (hasScheduledRechargeBonus) {
             addFeature(Feature("Bônus recarga programada", "Os ${scheduleGB}GB bônus por recarga programada são adicionados todo mês ao seu plano enquanto tiver uma recarga programada ativa."))
         }
         if (portabilityGB > 0) {
-            addFeature(Feature("Bônus portabilidade", "Os ${portabilityGB}GB bônus por portabilidade são adicionado todo mês no seu plano após trazer seu número de outra operadora para o $mvnoName."))
+            addFeature(Feature(AppStrings.brand(context, "expandable_plan_portability_bonus", "Bônus portabilidade"), "Os ${portabilityGB}GB bônus por portabilidade são adicionado todo mês no seu plano após trazer seu número de outra operadora para o $mvnoName."))
         }
 
         // Parte de baixo: slider "Repetir recarga" + "Trocar plano".
@@ -509,7 +510,7 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         isExpanded = !isExpanded
         TransitionManager.beginDelayedTransition(this)
         expandableContent.visibility = if (isExpanded) View.VISIBLE else View.GONE
-        toggleButton.text = if (isExpanded) "Ver menos" else "Mais detalhes"
+        toggleButton.text = if (isExpanded) AppStrings.brand(context, "expandable_plan_see_less", "Ver menos") else AppStrings.brand(context, "expandable_plan_more_details", "Mais detalhes")
     }
 
     override fun applyTheme(theme: Theme) { refresh() }

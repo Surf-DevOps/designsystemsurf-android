@@ -21,6 +21,7 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
@@ -103,7 +104,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
         }
         headerRow.addView(icon, LinearLayout.LayoutParams(32f.dpToPx(ctx), 32f.dpToPx(ctx)))
         val title = TextView(ctx).apply {
-            text = "Plano alterado com sucesso!"
+            text = AppStrings.brand(ctx, "schedule_success_plan_changed", "Plano alterado com sucesso!")
             typeface = DSSFont.bold(ctx, 18f).typeface
             textSize = 18f
             setTextColor(DSSColors.textPrimary())
@@ -140,7 +141,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
         }
 
         val novaOfertaLabel = TextView(ctx).apply {
-            text = "Nova oferta"
+            text = AppStrings.brand(ctx, "schedule_success_new_offer", "Nova oferta")
             typeface = DSSFont.bold(ctx, 18f).typeface
             textSize = 18f
             setTextColor(DSSColors.success())
@@ -181,7 +182,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             gravity = Gravity.CENTER_VERTICAL
         }
         val badge = TextView(ctx).apply {
-            text = "Inicio da programada"
+            text = AppStrings.brand(ctx, "schedule_success_start_date_label", "Inicio da programada")
             typeface = DSSFont.light(ctx, 13f).typeface
             textSize = 13f
             // contraste sobre o fill primary: branco em primary saturado (=iOS), escuro
@@ -234,7 +235,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
 
         if (c.ratingGroups.isNotEmpty() || c.includeUnlimitedCalls) {
             val ilimitadosLabel = TextView(ctx).apply {
-                text = "Ilimitados"
+                text = AppStrings.brand(ctx, "schedule_success_unlimited", "Ilimitados")
                 typeface = DSSFont.bold(ctx, 15f).typeface
                 textSize = 15f
                 setTextColor(DSSColors.textPrimary())
@@ -255,7 +256,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             // Ligações ilimitadas (código 41) quando a voz é ilimitada
             if (c.includeUnlimitedCalls) {
                 card.addView(
-                    makeIconRow(ctx, "Ligações usando o código 41", null, c.iconResolver, systemPhone = true),
+                    makeIconRow(ctx, AppStrings.brand(ctx, "schedule_success_calls_code_41", "Ligações usando o código 41"), null, c.iconResolver, systemPhone = true),
                     LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
                     ).apply { bottomMargin = 8f.dpToPx(ctx) },
@@ -265,7 +266,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
 
         if (!c.svaText.isNullOrEmpty()) {
             val assinaturasLabel = TextView(ctx).apply {
-                text = "Assinaturas"
+                text = AppStrings.brand(ctx, "schedule_success_subscriptions", "Assinaturas")
                 typeface = DSSFont.bold(ctx, 15f).typeface
                 textSize = 15f
                 setTextColor(DSSColors.textPrimary())

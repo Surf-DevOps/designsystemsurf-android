@@ -11,6 +11,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -34,7 +35,7 @@ class BottomSheetEsimInstallationView @JvmOverloads constructor(
         textSize = 20f
         typeface = DSSFont.bold(context, 20f).typeface
         gravity = Gravity.CENTER
-        text = "Instalação do seu eSIM"
+        text = AppStrings.brand(context, "esim_installation_title", "Instalação do seu eSIM")
     }
 
     private val authorizationLabel = TextView(context).apply {
@@ -46,7 +47,7 @@ class BottomSheetEsimInstallationView @JvmOverloads constructor(
     }
 
     private val continueButton = DSSPrincipalButton(context).apply {
-        text = "Concordar e continuar"
+        text = AppStrings.brand(context, "esim_agree_continue", "Concordar e continuar")
         textSize = 16f
         typeface = DSSFont.regular(context, 16f).typeface
     }
@@ -76,8 +77,8 @@ class BottomSheetEsimInstallationView @JvmOverloads constructor(
 
     private fun applyContentConfig() {
         cancelLabel.configure(
-            fullText = "Não concordo",
-            linkText = "Não concordo",
+            fullText = AppStrings.brand(context, "esim_disagree", "Não concordo"),
+            linkText = AppStrings.brand(context, "esim_disagree", "Não concordo"),
             typeface = DSSFont.light(context, 14f).typeface,
             sizeSp = 14f,
             textColor = DSSColors.textPrimary(),

@@ -40,6 +40,7 @@ import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.surf.surfhubds.font.DSSFont
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.util.concurrent.ExecutorService
@@ -160,7 +161,7 @@ class DSSCardScannerActivity : AppCompatActivity() {
         )
 
         instructionLabel = TextView(this).apply {
-            text = "Posicione o cartão dentro da área"
+            text = AppStrings.brand(this@DSSCardScannerActivity, "card_scanner_instruction", "Posicione o cartão dentro da área")
             setTextColor(Color.WHITE)
             textSize = 16f
             typeface = DSSFont.medium(this@DSSCardScannerActivity, 16f).typeface
@@ -522,7 +523,7 @@ class DSSCardScannerActivity : AppCompatActivity() {
                 strokeColor = SYSTEM_GREEN,
                 strokeWidthDp = 2f,
             )
-            instructionLabel.text = "Cartão detectado!"
+            instructionLabel.text = AppStrings.brand(this, "card_scanner_detected", "Cartão detectado!")
             mainHandler.postDelayed({ deliverResult(scannedData) }, 800L)
         }
     }

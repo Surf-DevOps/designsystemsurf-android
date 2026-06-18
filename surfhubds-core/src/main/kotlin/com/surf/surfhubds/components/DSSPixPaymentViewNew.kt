@@ -25,6 +25,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -81,7 +82,7 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
     private val resumeCard = DSSResumeCard(context)
 
     private val paymentDetailsLabel = TextView(context).apply {
-        text = "Detalhes do pagamento"
+        text = AppStrings.brand(context, "pix_payment_payment_details", "Detalhes do pagamento")
         textSize = 18f
         typeface = DSSFont.medium(context, 18f).typeface
         gravity = Gravity.CENTER_HORIZONTAL
@@ -92,7 +93,7 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
         gravity = Gravity.CENTER_HORIZONTAL
     }
     private val pixTitleLabel = TextView(context).apply {
-        text = "Pague com Pix"
+        text = AppStrings.brand(context, "pix_payment_pay_with_pix", "Pague com Pix")
         textSize = 16f
         typeface = DSSFont.medium(context, 16f).typeface
         gravity = Gravity.CENTER_HORIZONTAL
@@ -115,7 +116,7 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
     }
 
     private val copyButton = AppCompatButton(context).apply {
-        text = "Copiar código"
+        text = AppStrings.brand(context, "pix_payment_copy_code", "Copiar código")
         textSize = 16f
         typeface = DSSFont.medium(context, 16f).typeface
         isAllCaps = false
@@ -127,8 +128,12 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
     }
 
     private val warningLabel = TextView(context).apply {
-        text = "Importante: O prazo limite para pagamento do Pix é de 3 horas, " +
-                "após este prazo seu pedido será cancelado"
+        text = AppStrings.brand(
+            context,
+            "pix_payment_deadline_warning",
+            "Importante: O prazo limite para pagamento do Pix é de 3 horas, " +
+                "após este prazo seu pedido será cancelado",
+        )
         textSize = 14f
         typeface = DSSFont.regular(context, 14f).typeface
         setSingleLine(false)
@@ -246,12 +251,20 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
 
     private fun setupInstructions() {
         val instructions = listOf(
-            "1- Abra o aplicativo ou internet banking no seu celular;",
-            "2- Na opção Pix, escolher \"Ler QR Code\";",
-            "3- Aponte a câmera do seu celular para o QR Code ao lado ou, se preferir, " +
-                "copie o código para a Pix copia e cola;",
-            "4- Revise as informações e confirme o pagamento. Pronto! " +
-                "O status do pedido será atualizado na mesma hora;",
+            AppStrings.brand(context, "pix_payment_instruction_1", "1- Abra o aplicativo ou internet banking no seu celular;"),
+            AppStrings.brand(context, "pix_payment_instruction_2", "2- Na opção Pix, escolher \"Ler QR Code\";"),
+            AppStrings.brand(
+                context,
+                "pix_payment_instruction_3",
+                "3- Aponte a câmera do seu celular para o QR Code ao lado ou, se preferir, " +
+                    "copie o código para a Pix copia e cola;",
+            ),
+            AppStrings.brand(
+                context,
+                "pix_payment_instruction_4",
+                "4- Revise as informações e confirme o pagamento. Pronto! " +
+                    "O status do pedido será atualizado na mesma hora;",
+            ),
         )
         for ((i, line) in instructions.withIndex()) {
             val tv = TextView(context).apply {
@@ -274,7 +287,7 @@ class DSSPixPaymentViewNew @JvmOverloads constructor(
         delegate?.pixPaymentViewDidTapCopyCode(this, currentPixCode)
 
         val originalText = copyButton.text
-        copyButton.text = "Código copiado!"
+        copyButton.text = AppStrings.brand(context, "pix_payment_code_copied", "Código copiado!")
         val originalBg = copyButton.background
         copyButton.background = DrawableFactory.rounded(
             context = context,

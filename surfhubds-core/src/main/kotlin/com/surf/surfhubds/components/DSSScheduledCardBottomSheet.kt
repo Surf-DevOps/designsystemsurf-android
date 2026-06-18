@@ -23,6 +23,7 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
@@ -139,7 +140,7 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
 
         // Título "Cartão da programada"
         val titleLabel = TextView(ctx).apply {
-            text = "Cartão da programada"
+            text = AppStrings.brand(ctx, "scheduled_card_title", "Cartão da programada")
             typeface = DSSFont.light(ctx, 24f).typeface
             textSize = 24f
             setTextColor(DSSColors.textPrimary())
@@ -175,7 +176,7 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
         val btnContainer = FrameLayout(ctx)
         confirmContainer = btnContainer
         val confirm = DSSPrincipalButton(ctx).apply {
-            text = "Confirmar alteração"
+            text = AppStrings.brand(ctx, "scheduled_card_confirm_change", "Confirmar alteração")
             onTap = { confirmTapped() }
         }
         confirmButton = confirm
@@ -197,7 +198,7 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
 
         // Botão "Adicionar cartão"
         val addCard = AppCompatButton(ctx).apply {
-            text = "Adicionar cartão"
+            text = AppStrings.brand(ctx, "scheduled_card_add_card", "Adicionar cartão")
             isAllCaps = false
             typeface = DSSFont.regular(ctx, 16f).typeface
             textSize = 16f
@@ -252,7 +253,7 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
         } else {
             isCancelable = true
             confirm.isEnabled = true
-            confirm.text = "Confirmar alteração"
+            confirm.text = AppStrings.brand(requireContext(), "scheduled_card_confirm_change", "Confirmar alteração")
             progress.visibility = View.GONE
         }
     }
@@ -268,7 +269,7 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
 
     private fun renderData() {
         if (cards.isEmpty()) {
-            showMessage("Nenhum cartão cadastrado.")
+            showMessage(AppStrings.brand(requireContext(), "scheduled_card_no_cards", "Nenhum cartão cadastrado."))
             return
         }
         // Pré-seleciona o cartão da programada (com recorrência) ou o default.
@@ -402,12 +403,12 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
 
         // Se o cartão selecionado já é o da programada, não há troca a fazer.
         if (selectedCard.hasRecurrence) {
-            showError("Este cartão já é o cartão da programada.")
+            showError(AppStrings.brand(requireContext(), "scheduled_card_already_selected", "Este cartão já é o cartão da programada."))
             return
         }
         val recurrenceId = recurrence?.id
         if (recurrenceId.isNullOrEmpty()) {
-            showError("Não foi possível identificar a programada.")
+            showError(AppStrings.brand(requireContext(), "scheduled_card_identify_error", "Não foi possível identificar a programada."))
             return
         }
 
@@ -491,7 +492,7 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
             }
         }
         private val titleLabel = TextView(context).apply {
-            text = "Cartão cadastrado"
+            text = AppStrings.brand(context, "scheduled_card_card_registered", "Cartão cadastrado")
             typeface = DSSFont.medium(context, 14f).typeface
             textSize = 14f
         }
@@ -605,15 +606,15 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
             // cartão da programada -> "Utilizando"; demais -> "Utilizar cartão".
             when {
                 isSelected -> {
-                    statusLabel.text = "Selecionado"
+                    statusLabel.text = AppStrings.brand(context, "scheduled_card_selected", "Selecionado")
                     statusLabel.setTextColor(DSSColors.success())
                 }
                 isProgramada -> {
-                    statusLabel.text = "Utilizando"
+                    statusLabel.text = AppStrings.brand(context, "scheduled_card_in_use", "Utilizando")
                     statusLabel.setTextColor(DSSColors.textSecondary())
                 }
                 else -> {
-                    statusLabel.text = "Utilizar cartão"
+                    statusLabel.text = AppStrings.brand(context, "scheduled_card_use_card", "Utilizar cartão")
                     statusLabel.setTextColor(DSSColors.primary())
                 }
             }
@@ -794,7 +795,7 @@ class DSSScheduledCardSuccessBottomSheet : BottomSheetDialogFragment() {
         ).apply { topMargin = 40f.dpToPx(ctx) })
 
         val title = TextView(ctx).apply {
-            text = "Cartão da programada alterado com sucesso!"
+            text = AppStrings.brand(ctx, "scheduled_card_success_title", "Cartão da programada alterado com sucesso!")
             typeface = DSSFont.bold(ctx, 20f).typeface
             textSize = 20f
             setTextColor(DSSColors.success())

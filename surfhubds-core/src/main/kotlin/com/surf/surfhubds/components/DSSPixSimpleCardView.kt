@@ -22,6 +22,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.util.concurrent.TimeUnit
@@ -57,7 +58,7 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
         scaleType = ImageView.ScaleType.FIT_CENTER
     }
     private val titleLabel = TextView(context).apply {
-        text = "Recarga com pagamento pendente"
+        text = AppStrings.brand(context, "pix_pendent_title", "Recarga com pagamento pendente")
         textSize = 14f
         typeface = DSSFont.medium(context, 14f).typeface
         maxLines = 1
@@ -71,14 +72,18 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
     }
 
     private val subtitleLabel = TextView(context).apply {
-        text = "Pague para finalizar sua recarga"
+        text = AppStrings.brand(context, "home_pix_pending_title", "Pague para finalizar sua recarga")
         textSize = 14f
         typeface = DSSFont.regular(context, 14f).typeface
         maxLines = 1
     }
 
     private val resumeCard = DSSResumeCard(context).apply {
-        setCategoryLabels(number = "Número", offer = "Plano", price = "Valor")
+        setCategoryLabels(
+            number = AppStrings.brand(context, "resume_card_number", "Número"),
+            offer = AppStrings.brand(context, "pix_info_plan_header", "Plano"),
+            price = AppStrings.brand(context, "resume_card_price", "Valor"),
+        )
         // iOS mostra as colunas inline (sem card aninhado com borda): sem borda aqui.
         borderWidthDp = 0f
     }
@@ -86,7 +91,7 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
     private val divider = View(context)
 
     private val copyButton = AppCompatButton(context).apply {
-        text = "Copiar código"
+        text = AppStrings.brand(context, "pix_payment_copy_code", "Copiar código")
         textSize = 16f
         typeface = DSSFont.medium(context, 16f).typeface
         isAllCaps = false
@@ -357,10 +362,10 @@ class DSSPixSimpleCardView @JvmOverloads constructor(
 
     private fun onCopyTapped() {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("Pix", pixCode ?: "Código PIX copiado"))
+        clipboard.setPrimaryClip(ClipData.newPlainText("Pix", pixCode ?: AppStrings.brand(context, "pix_code_copied_clipboard_label", "Código PIX copiado")))
 
         val originalText = copyButton.text
-        copyButton.text = "Pix copiado"
+        copyButton.text = AppStrings.brand(context, "pix_copied", "Pix copiado")
         copyButton.isEnabled = false
         handler.postDelayed({
             copyButton.text = originalText

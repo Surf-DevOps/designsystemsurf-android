@@ -25,6 +25,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.util.concurrent.TimeUnit
@@ -69,7 +70,7 @@ class DSSPixPendentCardView @JvmOverloads constructor(
         scaleType = ImageView.ScaleType.FIT_CENTER
     }
     private val titleLabel = TextView(context).apply {
-        text = "Recarga com pagamento pendente"
+        text = AppStrings.brand(context, "pix_pendent_title", "Recarga com pagamento pendente")
         maxLines = 1
     }
     private val expandButton = ImageView(context).apply {
@@ -77,17 +78,21 @@ class DSSPixPendentCardView @JvmOverloads constructor(
     }
     private val timeLabel = TextView(context).apply { text = "00:00:00" }
     private val subtitleLabel = TextView(context).apply {
-        text = "clique aqui para finalizar sua recarga"
+        text = AppStrings.brand(context, "pix_pendent_finish_link", "clique aqui para finalizar sua recarga")
         textSize = 11f
         typeface = DSSFont.light(context, 11f).typeface
     }
 
     private val resumeCard = DSSResumeCard(context).apply {
-        setCategoryLabels(number = "Número", offer = "Oferta", price = "Valor")
+        setCategoryLabels(
+            number = AppStrings.brand(context, "resume_card_number", "Número"),
+            offer = AppStrings.brand(context, "resume_card_offer", "Oferta"),
+            price = AppStrings.brand(context, "resume_card_price", "Valor"),
+        )
     }
     private val separator = View(context)
     private val copyButton = AppCompatButton(context).apply {
-        text = "Copiar código"
+        text = AppStrings.brand(context, "pix_payment_copy_code", "Copiar código")
         textSize = 16f
         typeface = DSSFont.medium(context, 16f).typeface
         isAllCaps = false
@@ -435,10 +440,10 @@ class DSSPixPendentCardView @JvmOverloads constructor(
 
     private fun onCopyTapped() {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("Pix", pixCode ?: "Código PIX copiado"))
+        clipboard.setPrimaryClip(ClipData.newPlainText("Pix", pixCode ?: AppStrings.brand(context, "pix_code_copied_clipboard_label", "Código PIX copiado")))
 
         val originalText = copyButton.text
-        copyButton.text = "Pix copiado"
+        copyButton.text = AppStrings.brand(context, "pix_copied", "Pix copiado")
         copyButton.isEnabled = false
         handler.postDelayed({
             copyButton.text = originalText

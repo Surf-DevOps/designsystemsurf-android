@@ -24,6 +24,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -266,7 +267,7 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
         val numbersOnly = text.filter(Char::isDigit)
         val normalized = normalizeBrazilianPhone(numbersOnly)
         if (normalized == null) {
-            showErrorAlert("Número de telefone inválido. Por favor, verifique e tente novamente.")
+            showErrorAlert(AppStrings.brand(context, "msisdn_field_invalid_phone", "Número de telefone inválido. Por favor, verifique e tente novamente."))
             return
         }
         runValidation(normalized)
@@ -344,7 +345,7 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
 
     private fun showErrorAlert(message: String) {
         AlertDialog.Builder(context)
-            .setTitle("Atenção")
+            .setTitle(AppStrings.brand(context, "common_attention", "Atenção"))
             .setMessage(message)
             .setPositiveButton("OK", null)
             .show()

@@ -13,6 +13,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import java.text.NumberFormat
@@ -39,9 +40,9 @@ class DSSPixInfoCardView @JvmOverloads constructor(
         orientation = LinearLayout.HORIZONTAL
     }
 
-    private val numberHeaderLabel = headerText("Número", Gravity.START)
-    private val planHeaderLabel = headerText("Plano", Gravity.CENTER)
-    private val valueHeaderLabel = headerText("Valor", Gravity.END)
+    private val numberHeaderLabel = headerText(AppStrings.brand(context, "resume_card_number", "Número"), Gravity.START)
+    private val planHeaderLabel = headerText(AppStrings.brand(context, "pix_info_plan_header", "Plano"), Gravity.CENTER)
+    private val valueHeaderLabel = headerText(AppStrings.brand(context, "resume_card_price", "Valor"), Gravity.END)
 
     private val numberLabel = dataText(Gravity.START)
     private val planLabel = dataText(Gravity.CENTER)

@@ -19,6 +19,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -193,7 +194,7 @@ class DSSPaymentMethodCard @JvmOverloads constructor(
             DSSPaymentMethodCard(
                 context,
                 PaymentMethodImages.addCardIcon(context),
-                "Novo Cartão de Crédito",
+                AppStrings.brand(context, "payment_method_new_credit_card", "Novo Cartão de Crédito"),
             )
 
         /** Cria um card para cartão existente. */

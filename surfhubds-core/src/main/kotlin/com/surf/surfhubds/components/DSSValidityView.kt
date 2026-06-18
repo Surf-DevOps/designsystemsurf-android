@@ -16,6 +16,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -31,7 +32,7 @@ class DSSValidityView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr), ThemeAware {
 
     val expiresOnLabel = TextView(context).apply {
-        text = "Vence em"
+        text = AppStrings.brand(context, "validity_view_expires_in", "Vence em")
         textSize = 14f
         typeface = DSSFont.light(context, 14f).typeface
     }

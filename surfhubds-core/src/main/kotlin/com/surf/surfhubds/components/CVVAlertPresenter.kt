@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.applyDssTheme
 import com.surf.surfhubds.util.dpToPx
 
@@ -26,7 +27,7 @@ object CVVAlertPresenter {
     private fun showCvvDialog(activity: Activity, completion: (String) -> Unit) {
         val ctx = activity
         val editText = AppCompatEditText(ctx).apply {
-            hint = "CVV (3 dígitos)"
+            hint = AppStrings.brand(ctx, "cvv_placeholder", "CVV (3 dígitos)")
             // iOS: keyboardType = .numberPad + isSecureTextEntry = true
             inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
             transformationMethod = PasswordTransformationMethod.getInstance()
@@ -43,15 +44,15 @@ object CVVAlertPresenter {
         }
 
         val dialog = AlertDialog.Builder(ctx)
-            .setTitle("Digite o CVV")
-            .setMessage("Informe o código de segurança do cartão (3 dígitos).")
+            .setTitle(AppStrings.brand(ctx, "cvv_title", "Digite o CVV"))
+            .setMessage(AppStrings.brand(ctx, "cvv_message", "Informe o código de segurança do cartão (3 dígitos)."))
             .setView(container)
             .setNegativeButton("Cancelar", null)
             .setPositiveButton("Confirmar") { _, _ ->
                 val raw = editText.text?.toString().orEmpty()
                 val digits = raw.filter { it.isDigit() }
                 if (digits.length != 3) {
-                    presentValidationError(activity, "CVV inválido. Digite exatamente 3 dígitos.") {
+                    presentValidationError(activity, AppStrings.brand(activity, "cvv_invalid", "CVV inválido. Digite exatamente 3 dígitos.")) {
                         showCvvDialog(activity, completion)
                     }
                 } else {
@@ -90,9 +91,9 @@ object CVVAlertPresenter {
         activity: Activity, message: String, retry: () -> Unit,
     ) {
         val dialog = AlertDialog.Builder(activity)
-            .setTitle("Atenção")
+            .setTitle(AppStrings.brand(activity, "common_attention", "Atenção"))
             .setMessage(message)
-            .setPositiveButton("Tentar novamente") { _, _ -> retry() }
+            .setPositiveButton(AppStrings.brand(activity, "common_try_again", "Tentar novamente")) { _, _ -> retry() }
             .setNegativeButton("Cancelar", null)
             .create()
         showWithBlur(activity, dialog)

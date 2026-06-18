@@ -15,6 +15,7 @@ import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import com.surf.surfhubds.theme.ThemeManager
@@ -65,7 +66,7 @@ class DSSConsumptionCard @JvmOverloads constructor(
         setColorFilter(Color.WHITE)
     }
     private val titleView = TextView(context).apply {
-        text = "Total disponível"
+        text = AppStrings.brand(context, "consumption_card_total_available", "Total disponível")
         textSize = 14f
         typeface = DSSFont.medium(context, 14f).typeface
         setTextColor(Color.WHITE)

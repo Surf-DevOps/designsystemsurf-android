@@ -207,12 +207,13 @@ object OfferUpsellRules {
         current: DSSBestDealsBottomSheet.PlanOption,
         plans: List<DSSBestDealsBottomSheet.PlanOption>,
     ): Offer? = when (BrandResolver.current(context)) {
-        Brand.FLACHIP -> flachipUpgrade(current, plans)
-        Brand.BANDSPORTS -> bandsportsUpgrade(current, plans)
+        Brand.FLACHIP -> flachipUpgrade(context, current, plans)
+        Brand.BANDSPORTS -> bandsportsUpgrade(context, current, plans)
         else -> null
     }
 
     private fun flachipUpgrade(
+        context: Context,
         current: DSSBestDealsBottomSheet.PlanOption,
         plans: List<DSSBestDealsBottomSheet.PlanOption>,
     ): Offer? {
@@ -221,7 +222,7 @@ object OfferUpsellRules {
             plans.firstOrNull { it.noPlano.uppercase().contains("FLA 40") }?.let { target ->
                 return Offer(
                     upgrade = target,
-                    text = "Por apenas mais R$10,00 tenha até 15GB A MAIS para usar como quiser.",
+                    text = AppStrings.brand(context, "best_deals_offer_fla_plus15gb", "Por apenas mais R$10,00 tenha até 15GB A MAIS para usar como quiser."),
                 )
             }
         }
@@ -229,7 +230,7 @@ object OfferUpsellRules {
             plans.firstOrNull { it.noPlano.uppercase().contains("FLA 50") }?.let { target ->
                 return Offer(
                     upgrade = target,
-                    text = "Por apenas mais R$10,00 tenha até 10GB A MAIS para usar como quiser.",
+                    text = AppStrings.brand(context, "best_deals_offer_fla_plus10gb", "Por apenas mais R$10,00 tenha até 10GB A MAIS para usar como quiser."),
                 )
             }
         }
@@ -237,6 +238,7 @@ object OfferUpsellRules {
     }
 
     private fun bandsportsUpgrade(
+        context: Context,
         current: DSSBestDealsBottomSheet.PlanOption,
         plans: List<DSSBestDealsBottomSheet.PlanOption>,
     ): Offer? {
@@ -245,7 +247,7 @@ object OfferUpsellRules {
         if (currentIndex < 0 || currentIndex + 1 >= plans.size) return null
         return Offer(
             upgrade = plans[currentIndex + 1],
-            text = "Por apenas mais R$10,00 tenha a muito mais canais de conteúdo no streaming Newco Play.",
+            text = AppStrings.brand(context, "best_deals_offer_streaming", "Por apenas mais R$10,00 tenha a muito mais canais de conteúdo no streaming Newco Play."),
         )
     }
 }

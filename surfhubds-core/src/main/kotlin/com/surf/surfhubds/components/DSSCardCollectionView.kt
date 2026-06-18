@@ -18,6 +18,7 @@ import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
+import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import kotlin.math.roundToInt
@@ -129,7 +130,7 @@ class DSSCardCollectionView @JvmOverloads constructor(
         } else {
             String.format(java.util.Locale.US, "R$%.2f", reais).replace(".", ",")
         }
-        return "Cartão com programada de $valueStr"
+        return AppStrings.brand(context, "card_collection_scheduled_badge_format", "Cartão com programada de %1\$s", valueStr)
     }
 
     fun clearSelection() {
@@ -287,7 +288,7 @@ class DSSCardCollectionView @JvmOverloads constructor(
 
         fun configure(image: android.graphics.drawable.Drawable?, finalDigits: String, type: CardType) {
             imageView.setImageDrawable(image)
-            lastDigitsLabel.text = "Final $finalDigits"
+            lastDigitsLabel.text = AppStrings.brand(context, "card_collection_last_digits_format", "Final %1\$s", finalDigits)
 
             val (leadDp, bottomDp) = when (type) {
                 CardType.VISA -> 65f to 15f

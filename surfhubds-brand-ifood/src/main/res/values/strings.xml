@@ -29,11 +29,11 @@
     <string name="login_new_here_full">Novo por aqui? Crie senha de acesso</string>
     <string name="login_create_password_link">Crie senha de acesso</string>
     <string name="login_different_credentials_title">Credenciais Diferentes</string>
-    <string name="login_different_credentials_message">Você está usando credenciais diferentes das salvas para biometria. Deseja atualizar para usar essas novas credenciais com Face ID/Touch ID?</string>
+    <string name="login_different_credentials_message">Você está usando credenciais diferentes das salvas para biometria. Deseja atualizar para usar essas novas credenciais com a biometria?</string>
     <string name="login_update_credentials">Sim, atualizar</string>
     <string name="login_keep_old_credentials">Não, manter as antigas</string>
     <string name="login_welcome_title">Bem-vindo!</string>
-    <string name="login_biometric_prompt">Deseja usar o Face ID/Touch ID para logar automaticamente nas próximas vezes?</string>
+    <string name="login_biometric_prompt">Deseja usar a biometria para logar automaticamente nas próximas vezes?</string>
     <string name="login_fallback_passcode">Usar código do dispositivo</string>
     <string name="login_authenticate_reason">Autentique-se para continuar</string>
     <string name="login_credentials_not_found">Credenciais não encontradas.</string>

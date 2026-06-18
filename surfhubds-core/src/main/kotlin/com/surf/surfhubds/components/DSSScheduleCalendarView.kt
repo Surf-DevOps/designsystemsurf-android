@@ -51,6 +51,8 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
     private var minDate: Date? = null
     private var displayedMonth: Int = 0
     private var displayedYear: Int = 0
+    /** Espelha `highlightsToday` do iOS: quando `true`, o dia de hoje ganha destaque. */
+    private var highlightsToday: Boolean = false
     private val enabledDays = HashSet<Int>()
 
     private val calendarUtil: Calendar = Calendar.getInstance()
@@ -150,16 +152,31 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
      * @param daysBack Quantos dias para trás a partir de [maxDate] são habilitados.
      * @param startFromMinDate Se `true`, o calendário abre mostrando o mês da data mínima
      *   em vez da máxima. (iOS: `startFromMinDate`, default `false`.)
+     * @param selectsToday Se `true`, pré-seleciona o dia de hoje, abre o calendário no mês
+     *   atual e destaca o dia de hoje. (iOS: `selectsToday`, default `false`.)
      */
     @JvmOverloads
-    fun configure(maxDate: Date, daysBack: Int, startFromMinDate: Boolean = false) {
+    fun configure(
+        maxDate: Date,
+        daysBack: Int,
+        startFromMinDate: Boolean = false,
+        selectsToday: Boolean = false,
+    ) {
         this.maxDate = maxDate
         val c = Calendar.getInstance().apply { time = maxDate }
         c.add(Calendar.DAY_OF_MONTH, -daysBack)
         this.minDate = c.time
-        this.selectedDate = null
-        val referenceDate = (if (startFromMinDate) this.minDate else null) ?: maxDate
-        calendarUtil.time = referenceDate
+        this.highlightsToday = selectsToday
+        if (selectsToday) {
+            // Pré-seleciona hoje (início do dia) e abre no mês atual — igual ao iOS.
+            val today = startOfToday()
+            this.selectedDate = today
+            calendarUtil.time = today
+        } else {
+            this.selectedDate = null
+            val referenceDate = (if (startFromMinDate) this.minDate else null) ?: maxDate
+            calendarUtil.time = referenceDate
+        }
         displayedMonth = calendarUtil.get(Calendar.MONTH) + 1
         displayedYear = calendarUtil.get(Calendar.YEAR)
         computeEnabledDays()
@@ -167,7 +184,19 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         updateNavigationButtons()
         buildDaysGrid()
         updateDescriptionLabel()
+        // Notifica o consumidor da data pré-selecionada (para habilitar o botão de confirmar
+        // sem exigir um toque). Espelha a intenção do `selectsToday` do iOS.
+        if (selectsToday) {
+            selectedDate?.let { delegate?.onSelectDateIso(this, isoFormatter.format(it)) }
+        }
     }
+
+    private fun startOfToday(): Date = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.time
 
     fun configure(maxDateIso: String, daysBack: Int) {
         val parsed = try { isoFormatter.parse(maxDateIso) } catch (_: Throwable) { null } ?: return
@@ -303,7 +332,8 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
                             sc.get(Calendar.MONTH) + 1 == displayedMonth &&
                             sc.get(Calendar.YEAR) == displayedYear
                     } ?: false
-                    cell = makeDayCell(day, isEnabled, isSelected)
+                    val isToday = highlightsToday && isTodayCell(day)
+                    cell = makeDayCell(day, isEnabled, isSelected, isToday)
                     dayNumber++
                 }
                 rowStack.addView(cell, LinearLayout.LayoutParams(0, 40f.dpToPx(context), 1f))
@@ -332,7 +362,14 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         return container
     }
 
-    private fun makeDayCell(day: Int, enabled: Boolean, selected: Boolean): View {
+    private fun isTodayCell(day: Int): Boolean {
+        val t = Calendar.getInstance()
+        return t.get(Calendar.DAY_OF_MONTH) == day &&
+            t.get(Calendar.MONTH) + 1 == displayedMonth &&
+            t.get(Calendar.YEAR) == displayedYear
+    }
+
+    private fun makeDayCell(day: Int, enabled: Boolean, selected: Boolean, isToday: Boolean = false): View {
         val container = FrameLayout(context)
         val label = TextView(context).apply {
             text = day.toString(); textSize = 15f
@@ -355,7 +392,9 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
             }
             enabled -> {
                 label.typeface = DSSFont.bold(context, 15f).typeface
-                label.setTextColor(DSSColors.textPrimary())
+                // iOS: dia de hoje habilitado e não selecionado usa a cor primaryButton;
+                // os demais dias habilitados usam textPrimary.
+                label.setTextColor(if (isToday) DSSColors.primaryButton() else DSSColors.textPrimary())
                 container.addView(label, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER })
             }
             else -> {

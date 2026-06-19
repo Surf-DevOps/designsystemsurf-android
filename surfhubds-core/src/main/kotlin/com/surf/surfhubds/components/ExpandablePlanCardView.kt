@@ -194,8 +194,9 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         cardBackground.addView(
             toggleButton,
             LinearLayout.LayoutParams(140f.dpToPx(context), 40f.dpToPx(context)).apply {
-                gravity = Gravity.CENTER_HORIZONTAL
+                gravity = Gravity.END
                 bottomMargin = 16f.dpToPx(context)
+                rightMargin = 16f.dpToPx(context)
             },
         )
 
@@ -236,10 +237,13 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             isFocusable = true
         }
 
-        // Slider "Repetir recarga": trilha primary, texto branco, thumb branco.
-        // (DSSSwipeView já tem innerColor=WHITE / iconColor=BLACK por padrão, como o iOS.)
+        // Slider "Repetir recarga": mesmas cores do cardPlan da Home (DSSCardPlanRechargeView).
+        // primary pode virar branco no dark/black -> amarra knob/texto ao contraste do track
+        // e a seta à cor do track, garantindo contraste em todos os schemes.
         renewButtonSlider.outerColor = DSSColors.primary()
-        renewButtonSlider.labelTextColor = android.graphics.Color.WHITE
+        renewButtonSlider.innerColor = DSSColors.contrastOnPrimary()
+        renewButtonSlider.iconColor = DSSColors.primary()
+        renewButtonSlider.labelTextColor = DSSColors.contrastOnPrimary()
         renewButtonSlider.delegate = DSSSwipeView.Delegate {
             listener?.didTapRepeatRecharge(this@ExpandablePlanCardView, consolidatedDetail)
         }
@@ -352,7 +356,10 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         val ilimitadosItems: List<DSSPlanCollectionView.CheckListItem> = if (plan.unlimitedItems.isNotEmpty()) {
             plan.unlimitedItems
         } else if (plan.voz.lowercase().contains("ilimitad")) {
-            listOf(DSSPlanCollectionView.CheckListItem(AppStrings.brand(context, "schedule_success_calls_code_41", "Ligações usando o código 41"), null))
+            listOf(DSSPlanCollectionView.CheckListItem(
+                AppStrings.brand(context, "schedule_success_calls_code_41", "Ligações usando o código 41"),
+                androidx.core.content.ContextCompat.getDrawable(context, com.surf.surfhubds.R.drawable.dss_ic_phone),
+            ))
         } else {
             emptyList()
         }
@@ -528,7 +535,7 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         }
         cardBackground.background = DrawableFactory.rounded(
             context = context,
-            backgroundColor = DSSColors.surface(),
+            backgroundColor = DSSColors.backgroundSecondary(),
             cornerRadiusDp = 15f,
             strokeColor = cardStrokeColor,
             strokeWidthDp = cardStrokeWidth,

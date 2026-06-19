@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -105,19 +106,26 @@ class DSSLabelTextField @JvmOverloads constructor(
         editText.textSize = 16f
         editText.typeface = DSSFont.light(context, 16f).typeface
         editText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
-                val next = nextField
-                when {
-                    // 1) nextField explícito.
-                    next != null -> next.editText.requestFocus()
-                    else -> {
-                        // 2) fallback: avança pro próximo campo focável abaixo (OK/Next -> próximo campo).
-                        val down = editText.focusSearch(View.FOCUS_DOWN)
-                        if (down != null && down !== editText) down.requestFocus() else editText.clearFocus()
+            when (actionId) {
+                // NEXT: avança pro próximo campo (explícito ou o focável abaixo).
+                EditorInfo.IME_ACTION_NEXT -> {
+                    val next = nextField
+                    when {
+                        next != null -> next.editText.requestFocus()
+                        else -> {
+                            val down = editText.focusSearch(View.FOCUS_DOWN)
+                            if (down != null && down !== editText) down.requestFocus() else hideKeyboard()
+                        }
                     }
+                    true
                 }
-                true
-            } else false
+                // DONE (último campo da tela): fecha o teclado em vez de pular pra outro focável.
+                EditorInfo.IME_ACTION_DONE -> {
+                    hideKeyboard()
+                    true
+                }
+                else -> false
+            }
         }
         fieldRow.addView(editText, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT, 50f.dpToPx(context),
@@ -235,6 +243,13 @@ class DSSLabelTextField @JvmOverloads constructor(
         this.previousField = previous
         this.nextField = next
         editText.imeOptions = if (next != null) EditorInfo.IME_ACTION_NEXT else EditorInfo.IME_ACTION_DONE
+    }
+
+    /** Fecha o teclado e tira o foco do campo (ação DONE do último campo da tela). */
+    private fun hideKeyboard() {
+        editText.clearFocus()
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
     private fun onRightTapped() {

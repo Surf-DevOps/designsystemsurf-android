@@ -8,12 +8,14 @@ import android.view.Gravity
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.fragment.app.FragmentActivity
 import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.applyDssTheme
 import com.surf.surfhubds.util.dpToPx
 
 /**
- * Port do `CVVAlertPresenter` do iOS — alerta simples para coleta de CVV (3 dígitos).
+ * Coleta de CVV (3 dígitos). Renderiza pelo [DSSAppDialog] (card do DSS) quando a
+ * [Activity] é uma [FragmentActivity]; caso contrário cai no [AlertDialog] legado.
  */
 object CVVAlertPresenter {
 
@@ -21,6 +23,32 @@ object CVVAlertPresenter {
      * Apresenta um alerta para coletar CVV (3 dígitos) e retorna via callback.
      */
     fun present(activity: Activity, completion: (String) -> Unit) {
+        val fragmentActivity = activity as? FragmentActivity
+        if (fragmentActivity != null) {
+            DSSAppDialog.input(
+                activity = fragmentActivity,
+                title = AppStrings.brand(activity, "cvv_title", "Digite o CVV"),
+                message = AppStrings.brand(activity, "cvv_message", "Informe o código de segurança do cartão (3 dígitos)."),
+                confirmText = "Confirmar",
+                cancelText = "Cancelar",
+                hint = AppStrings.brand(activity, "cvv_placeholder", "CVV (3 dígitos)"),
+                inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD,
+                secure = true,
+                maxLength = 3,
+                digitsOnly = true,
+                centered = true,
+                validate = { text ->
+                    val digits = text.filter { it.isDigit() }
+                    if (digits.length != 3) {
+                        AppStrings.brand(activity, "cvv_invalid", "CVV inválido. Digite exatamente 3 dígitos.")
+                    } else {
+                        null
+                    }
+                },
+                onConfirm = { text -> completion(text.filter { it.isDigit() }) },
+            )
+            return
+        }
         showCvvDialog(activity, completion)
     }
 

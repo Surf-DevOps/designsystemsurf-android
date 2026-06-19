@@ -4,14 +4,17 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.FragmentActivity
+import com.surf.surfhubds.components.DSSAppDialog
 import com.surf.surfhubds.theme.DSSColors
 
 /**
  * Port das extensions `UIViewController+Alerts.swift`. No Android, extension functions
  * em [Context].
  *
- * Os alerts aparecem com um blur do fundo (snapshot borrado atrás do dialog), igual ao
- * iOS. O blur só é aplicado quando o [Context] é uma Activity.
+ * Renderizam pelo [DSSAppDialog] (card do DSS com botões da brand) quando o [Context]
+ * resolve para uma [FragmentActivity]. Sem FragmentActivity, caem no [AlertDialog] do
+ * sistema com blur de fundo (snapshot borrado atrás do dialog).
  */
 
 fun Context.showSurfAlert(
@@ -20,6 +23,17 @@ fun Context.showSurfAlert(
     primaryButtonTitle: String = "OK",
     primaryAction: (() -> Unit)? = null,
 ) {
+    val activity = DSSBlur.activityOf(this) as? FragmentActivity
+    if (activity != null) {
+        DSSAppDialog.alert(
+            activity = activity,
+            title = title,
+            message = message,
+            buttonText = primaryButtonTitle,
+            onDismiss = primaryAction,
+        )
+        return
+    }
     val dialog = AlertDialog.Builder(this)
         .setTitle(title)
         .setMessage(message)
@@ -40,6 +54,19 @@ fun Context.showSurfAlert(
     secondaryButtonTitle: String,
     secondaryAction: () -> Unit,
 ) {
+    val activity = DSSBlur.activityOf(this) as? FragmentActivity
+    if (activity != null) {
+        DSSAppDialog.confirm(
+            activity = activity,
+            title = title,
+            message = message,
+            confirmText = primaryButtonTitle,
+            cancelText = secondaryButtonTitle,
+            onConfirm = primaryAction,
+            onCancel = secondaryAction,
+        )
+        return
+    }
     val dialog = AlertDialog.Builder(this)
         .setTitle(title)
         .setMessage(message)

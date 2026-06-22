@@ -179,6 +179,8 @@ class DSSAppDialog : DialogFragment() {
         val cancelButton = DSSPrincipalButton(ctx).apply {
             defaultWidthDp = 0f
             configure(title = cancelText, action = {
+                DSSBlur.removeBackdrop(backdrop)
+                backdrop = null
                 dismissAllowingStateLoss()
                 onCancel?.invoke()
             })

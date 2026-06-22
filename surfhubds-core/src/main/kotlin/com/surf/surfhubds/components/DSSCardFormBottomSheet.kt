@@ -294,6 +294,13 @@ class DSSCardFormBottomSheet : BottomSheetDialogFragment() {
         cvvField.editText.inputType = InputType.TYPE_CLASS_NUMBER
         holderField.editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PERSON_NAME
 
+        // Keyboard navigation: Next avança entre campos; Done fecha no último.
+        numberField.setupNavigation(next = expiryField)
+        expiryField.setupNavigation(previous = numberField, next = cvvField)
+        cvvField.setupNavigation(previous = expiryField, next = holderField)
+        holderField.setupNavigation(previous = cvvField, next = documentField)
+        documentField.setupNavigation(previous = holderField)
+
         scroll.addView(root, ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
         ))

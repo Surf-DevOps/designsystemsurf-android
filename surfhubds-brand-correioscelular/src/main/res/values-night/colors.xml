@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Gerado pelo brand-builder para "CorreiosCelular" (slug: correioscelular). -->
 <resources>
-    <color name="primary">#ADC6FF</color>
-    <color name="onPrimary">#002E69</color>
-    <color name="primaryContainer">#004494</color>
-    <color name="onPrimaryContainer">#D6E2FF</color>
-
-    <color name="secondary">#C3C5DD</color>
-    <color name="onSecondary">#2C2F42</color>
-    <color name="secondaryContainer">#424659</color>
-    <color name="onSecondaryContainer">#DFE1F9</color>
-
-    <color name="surface">#1B1B1F</color>
-    <color name="onSurface">#E4E1E6</color>
-    <color name="surfaceVariant">#44464F</color>
-    <color name="onSurfaceVariant">#C5C6D0</color>
-
-    <color name="background">#1B1B1F</color>
-    <color name="onBackground">#E4E1E6</color>
-
-    <color name="error">#FFB4AB</color>
-    <color name="onError">#690005</color>
-
-    <color name="outline">#8E9099</color>
+    <color name="primary">#FFFFFF</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="primaryContainer">#FFFFFF</color>
+    <color name="onPrimaryContainer">#FFFFFF</color>
+    <color name="secondary">#FFFFFF</color>
+    <color name="onSecondary">#FFFFFF</color>
+    <color name="secondaryContainer">#FFFFFF</color>
+    <color name="onSecondaryContainer">#FFFFFF</color>
+    <color name="surface">#1C1C1E</color>
+    <color name="onSurface">#FFFFFF</color>
+    <color name="surfaceVariant">#FFFFFF</color>
+    <color name="onSurfaceVariant">#B0B0B0</color>
+    <color name="background">#FFFFFF</color>
+    <color name="onBackground">#FFFFFF</color>
+    <color name="error">#E74C3C</color>
+    <color name="onError">#FFFFFF</color>
+    <color name="outline">#FFFFFF</color>
     <color name="scrim">#000000</color>
 </resources>

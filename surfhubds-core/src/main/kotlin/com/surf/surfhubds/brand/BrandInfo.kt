@@ -182,14 +182,14 @@ data class BrandInfo(
             )
             Brand.CORREIOSCELULAR -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do \nmercado!",
+                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://www.correioscelular.com.br/termos-de-adesao1/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://www.correioscelular.com.br/politica-de-privacidade/",
                 chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surftelecomappv2&params=null",
                 whatsApp = "5511980002020",
-                forceUpdateURL = "https://play.google.com/store/apps/details?id=com.surf.correioscelular",
+                forceUpdateURL = "https://apps.apple.com/br/app/correios-celular/id1339687909",
                 coMvno = "1",
                 mvnoName = "Correios celular",
                 noMvno = "CORREIOS",

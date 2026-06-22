@@ -5,14 +5,13 @@ import com.surf.surfhubds.theme.colorValueWithAlpha
 import com.surf.surfhubds.tokens.ColorTokens
 import com.surf.surfhubds.tokens.ColorValue
 
+// Gerado pelo brand-builder — espelho do CorreiosCelularTheme.swift (iOS).
 class CorreiosCelularTheme : DefaultTheme() {
     override fun buildColors(): ColorTokens = ColorTokens(
         primary = ColorValue.fromHex("#00416B", "#FFFFFF"),
         secondary = ColorValue.fromHex("#FFD400", "#FFFFFF"),
         primaryButton = ColorValue.fromHex("#00416B", "#FFFFFF"),
-        // dark/black: primary/primaryButton viram branco -> conteúdo precisa ser escuro
-        // (antes #FFFFFF = branco no branco). Azul da marca contrasta no botão branco.
-        buttonText = ColorValue.fromHex("#FFD400", "#00416B", "#00416B"),
+        buttonText = ColorValue.fromHex("#FFD400", "#FFFFFF"),
         surface = ColorValue.fromHex("#FFFFFF", "#1C1C1E"),
         background = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
         backgroundSecondary = ColorValue.fromHex("#F8F8F8", "#FFFFFF"),

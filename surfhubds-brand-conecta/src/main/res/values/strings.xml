@@ -387,8 +387,8 @@
     <string name="benefits_nsu_label">NSU (apenas números)</string>
     <string name="benefits_nsu_placeholder">0000000000000</string>
     <string name="benefits_continue_button">Continuar</string>
-    <string name="benefits_invalid_code_mandou_ganhou">Código inválido.\n- Verifique se o código foi digitado corretamente;\n- Certifique-se de que o comprovante utilizado tenha sido gerado nos últimos 3 dias.</string>
-    <string name="benefits_invalid_code_loterico">Código inválido.\n- Verifique se o código foi digitado corretamente;\n- Certifique-se de que o comprovante utilizado tenha sido gerado nos últimos 3 dias.\n- Comprovantes de jogos não são válidos para resgate de benefícios.</string>
+    <string name="benefits_invalid_code_mandou_ganhou">Código inválido.\n- Verifique se o código foi digitado corretamente;\n- Certifique-se de que o comprovante utilizado tenha sido gerado nos últimos 7 dias.</string>
+    <string name="benefits_invalid_code_loterico">Código inválido.\n- Verifique se o código foi digitado corretamente;\n- Certifique-se de que o comprovante utilizado tenha sido gerado nos últimos 7 dias.\n- Comprovantes de jogos não são válidos para resgate de benefícios.</string>
     <string name="benefits_success_title">Bônus resgatado com sucesso!</string>
     <string name="benefits_new_redeem">Novo resgate</string>
     <string name="benefits_finish">Finalizar</string>

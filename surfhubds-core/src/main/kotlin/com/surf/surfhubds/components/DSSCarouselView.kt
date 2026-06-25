@@ -168,11 +168,15 @@ class DSSCarouselView @JvmOverloads constructor(
         private val imageView = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
         private val label = TextView(context).apply {
             // iOS DSSCarouselCollectionViewCell: label.font = DSSFont.light(12).
-            textSize = 12f
-            typeface = DSSFont.light(context, 12f).typeface
+            // Fonte maior a pedido do design (texto do carousel destacado).
+            textSize = 18f
+            typeface = DSSFont.light(context, 18f).typeface
             // iOS: numberOfLines = 0 (ilimitado). No Android, maxLines = 0 esconde o texto;
-            // o equivalente a "ilimitado" é Int.MAX_VALUE.
+            // o equivalente a "ilimitado" é Int.MAX_VALUE. Sem ellipsize/singleLine para
+            // garantir que o texto SEMPRE quebre em várias linhas (nunca trunque).
             maxLines = Int.MAX_VALUE
+            isSingleLine = false
+            ellipsize = null
             setTextColor(DSSColors.textPrimary())
             gravity = Gravity.CENTER
         }

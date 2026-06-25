@@ -86,13 +86,15 @@ class DSSSecondaryButton @JvmOverloads constructor(
 
     private fun refresh() {
         // iOS: default de titleColor e borderColor = DSSColors.primaryButton. Overrides seguem valendo.
+        // A cor do texto SEMPRE acompanha a cor da borda (mesma cor), conforme design.
+        val borderColor = borderColorOverride ?: DSSColors.primaryButton()
         setBackground(DrawableFactory.rounded(
             context = context,
             backgroundColor = android.graphics.Color.TRANSPARENT,
             cornerRadiusDp = cornerRadiusDp,
-            strokeColor = borderColorOverride ?: DSSColors.primaryButton(),
+            strokeColor = borderColor,
             strokeWidthDp = borderWidthDp,
         ))
-        setTextColor(customTitleColor ?: DSSColors.primaryButton())
+        setTextColor(borderColor)
     }
 }

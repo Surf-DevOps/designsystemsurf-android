@@ -49,21 +49,18 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
         text = AppStrings.brand(context, "schedule_empty_message", "Você não possui uma recarga \nprogramada na sua linha.\nPrograme agora e aproveite!")
         textSize = 16f
         typeface = DSSFont.regular(context, 16f).typeface
-        gravity = Gravity.CENTER
+        gravity = Gravity.START
     }
     private val benefitsStack = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
-        gravity = Gravity.CENTER_HORIZONTAL
+        gravity = Gravity.START
     }
     private val scheduleButton = DSSPrincipalButton(context).apply {
         text = AppStrings.brand(context, "schedule_empty_button", "Programar recarga")
-        textSize = 15f
+        textSize = 17f
         // iOS: `.boldSystemFont(ofSize: 17)` e `cornerRadius = 28`.
-        typeface = DSSFont.bold(context, 15f).typeface
-        cornerRadiusDp = 22f
-        // Botão menor: remove o min width fixo de 320 p/ ajustar ao conteúdo.
-        defaultWidthDp = 0f
-        defaultHeightDp = 44f
+        typeface = DSSFont.bold(context, 17f).typeface
+        cornerRadiusDp = 28f
     }
 
     init {
@@ -97,7 +94,6 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
                 this.text = "✓ $text"
                 textSize = 18f
                 typeface = DSSFont.regular(context, 18f).typeface
-                gravity = Gravity.CENTER
             }
             benefitsStack.addView(l)
         }
@@ -113,14 +109,11 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
             },
         )
         scheduleButton.onTap = { onScheduleRechargeTapped?.invoke() }
-        // Botão menor: largura ajustada ao conteúdo (com padding) e altura reduzida,
-        // centralizado horizontalmente.
-        scheduleButton.setPadding(28f.dpToPx(context), 0, 28f.dpToPx(context), 0)
         column.addView(
             scheduleButton,
             LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                44f.dpToPx(context),
+                320f.dpToPx(context),
+                50f.dpToPx(context),
             ).apply {
                 topMargin = 32f.dpToPx(context)
                 gravity = Gravity.CENTER_HORIZONTAL

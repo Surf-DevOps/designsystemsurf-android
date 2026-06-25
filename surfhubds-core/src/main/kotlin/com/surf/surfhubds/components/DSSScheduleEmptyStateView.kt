@@ -61,6 +61,9 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
         // iOS: `.boldSystemFont(ofSize: 17)` e `cornerRadius = 28`.
         typeface = DSSFont.bold(context, 17f).typeface
         cornerRadiusDp = 28f
+        // Botão um pouco menor que o bloco de texto (320). O minWidth padrão é 320,
+        // então baixamos o defaultWidthDp p/ a largura do layout (280) valer de fato.
+        defaultWidthDp = 280f
     }
 
     init {
@@ -112,7 +115,7 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
         column.addView(
             scheduleButton,
             LinearLayout.LayoutParams(
-                320f.dpToPx(context),
+                280f.dpToPx(context),
                 50f.dpToPx(context),
             ).apply {
                 topMargin = 32f.dpToPx(context)

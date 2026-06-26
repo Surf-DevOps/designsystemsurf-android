@@ -49,11 +49,11 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
         text = AppStrings.brand(context, "schedule_empty_message", "Você não possui uma recarga \nprogramada na sua linha.\nPrograme agora e aproveite!")
         textSize = 16f
         typeface = DSSFont.regular(context, 16f).typeface
-        gravity = Gravity.START
+        gravity = Gravity.CENTER
     }
     private val benefitsStack = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
-        gravity = Gravity.START
+        gravity = Gravity.CENTER_HORIZONTAL
     }
     private val scheduleButton = DSSPrincipalButton(context).apply {
         text = AppStrings.brand(context, "schedule_empty_button", "Programar recarga")
@@ -97,6 +97,7 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
                 this.text = "✓ $text"
                 textSize = 18f
                 typeface = DSSFont.regular(context, 18f).typeface
+                gravity = Gravity.CENTER_HORIZONTAL
             }
             benefitsStack.addView(l)
         }

@@ -101,10 +101,11 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
             benefitsStack.addView(l)
         }
         // iOS: stack centralizado horizontalmente, labels alinhadas à esquerda (wrap content).
+        // Largura fixa igual ao título (320dp) para que a borda esquerda coincida.
         column.addView(
             benefitsStack,
             LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
+                320f.dpToPx(context),
                 LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply {
                 topMargin = 24f.dpToPx(context)

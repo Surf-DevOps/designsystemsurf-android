@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.marginStart
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
@@ -53,7 +54,7 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
     }
     private val benefitsStack = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
-        gravity = Gravity.START
+        gravity = Gravity.CENTER_HORIZONTAL
     }
     private val scheduleButton = DSSPrincipalButton(context).apply {
         text = AppStrings.brand(context, "schedule_empty_button", "Programar recarga")

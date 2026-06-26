@@ -80,11 +80,11 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
                 gravity = Gravity.CENTER_HORIZONTAL
             },
         )
-        // iOS pina leading/trailing do título ao botão (largura 320).
+        // Mesma largura do botão (280dp) para alinhar a borda esquerda.
         column.addView(
             titleLabel,
             LinearLayout.LayoutParams(
-                320f.dpToPx(context),
+                280f.dpToPx(context),
                 LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply {
                 topMargin = 24f.dpToPx(context)
@@ -100,12 +100,11 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
             }
             benefitsStack.addView(l)
         }
-        // iOS: stack centralizado horizontalmente, labels alinhadas à esquerda (wrap content).
-        // Largura fixa igual ao título (320dp) para que a borda esquerda coincida.
+        // Mesma largura do botão (280dp) para alinhar a borda esquerda.
         column.addView(
             benefitsStack,
             LinearLayout.LayoutParams(
-                320f.dpToPx(context),
+                280f.dpToPx(context),
                 LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply {
                 topMargin = 24f.dpToPx(context)

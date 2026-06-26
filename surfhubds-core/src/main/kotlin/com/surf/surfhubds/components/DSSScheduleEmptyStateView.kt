@@ -51,10 +51,14 @@ class DSSScheduleEmptyStateView @JvmOverloads constructor(
         textSize = 16f
         typeface = DSSFont.regular(context, 16f).typeface
         gravity = Gravity.START
+        // 10dp de margem em relação à borda esquerda do botão.
+        setPadding(10f.dpToPx(context), 0, 0, 0)
     }
     private val benefitsStack = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER_HORIZONTAL
+        // 10dp de margem em relação à borda esquerda do botão.
+        setPadding(10f.dpToPx(context), 0, 0, 0)
     }
     private val scheduleButton = DSSPrincipalButton(context).apply {
         text = AppStrings.brand(context, "schedule_empty_button", "Programar recarga")

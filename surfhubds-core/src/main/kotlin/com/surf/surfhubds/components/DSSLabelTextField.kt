@@ -2,7 +2,10 @@ package com.surf.surfhubds.components
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
@@ -18,6 +21,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.content.ContextCompat
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
@@ -317,8 +321,50 @@ class DSSLabelTextField @JvmOverloads constructor(
         titleLabel.setTextColor(textColor)
         editText.setTextColor(textColor)
         editText.setHintTextColor(hintIconColor)
+        // O cursor de texto NÃO herda a cor do texto: por padrão o AppCompatEditText o tinge com
+        // `colorControlActivated`/`colorAccent` do tema, que em vários brands/temas coincide com o
+        // fundo do campo e some. Setamos explicitamente a cor do cursor igual à do texto (sempre
+        // visível por construção) para que nenhum app/tema (dark ou light) gere cursor invisível.
+        applyCursorColor(textColor)
         leftButton.setColorFilter(hintIconColor, android.graphics.PorterDuff.Mode.SRC_IN)
         rightButton.setColorFilter(hintIconColor, android.graphics.PorterDuff.Mode.SRC_IN)
+    }
+
+    /**
+     * Define a cor do cursor (caret) do [editText] de forma independente do tema, garantindo
+     * visibilidade em qualquer brand/scheme. Usa a API pública no Android Q+ e reflexão como
+     * fallback em API 24–28. É best-effort: qualquer falha é ignorada para nunca quebrar o tema.
+     */
+    private fun applyCursorColor(@ColorInt color: Int) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                editText.textCursorDrawable = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    setSize(2f.dpToPx(context), 0)
+                    setColor(color)
+                }
+                return
+            }
+            // API 24–28: não há setter público — tinge o drawable de cursor via reflexão.
+            val cursorRes = TextView::class.java.getDeclaredField("mCursorDrawableRes")
+                .apply { isAccessible = true }.getInt(editText)
+            val drawable = ContextCompat.getDrawable(context, cursorRes) ?: return
+            drawable.colorFilter = PorterDuffColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN)
+            val editor = TextView::class.java.getDeclaredField("mEditor")
+                .apply { isAccessible = true }.get(editText) ?: return
+            val editorClass = editor.javaClass
+            try {
+                // Android P (28): campo único `mDrawableForCursor`.
+                editorClass.getDeclaredField("mDrawableForCursor")
+                    .apply { isAccessible = true }.set(editor, drawable)
+            } catch (_: NoSuchFieldException) {
+                // API 24–27: array de 2 drawables `mCursorDrawable`.
+                editorClass.getDeclaredField("mCursorDrawable")
+                    .apply { isAccessible = true }.set(editor, arrayOf(drawable, drawable))
+            }
+        } catch (_: Throwable) {
+            // Best-effort: se a reflexão falhar em algum device, mantém o comportamento padrão.
+        }
     }
 
     private fun attachWatcher() {

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      area_margin / icon_margin / text_size do SlideToActView (slidetoact 0.11.0)
+      NÃO têm setter público — só são lidos do defStyle/AttributeSet no construtor.
+      Antes eram setados via reflection nos campos privados, o que quebrava no
+      build de release (R8 renomeia os campos) e fazia a seta do thumb sumir.
+
+      Aqui eles vêm de um style aplicado via defStyleAttr (dssSwipeSliderStyle),
+      injetado por um ContextThemeWrapper — sem reflection e sem layout XML.
+      Com slider 44dp: thumb = 44 - 2*4 = 36dp, seta = 36 - 2*8 = 20dp.
+    -->
+    <attr name="dssSwipeSliderStyle" format="reference" />
+
+    <style name="DSS.SwipeSlider">
+        <item name="area_margin">4dp</item>
+        <item name="icon_margin">8dp</item>
+        <item name="text_size">16sp</item>
+    </style>
+
+    <style name="ThemeOverlay.DSS.SwipeSlider" parent="">
+        <item name="dssSwipeSliderStyle">@style/DSS.SwipeSlider</item>
+    </style>
+</resources>

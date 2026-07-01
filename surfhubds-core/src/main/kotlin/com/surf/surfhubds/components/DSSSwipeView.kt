@@ -3,14 +3,15 @@ package com.surf.surfhubds.components
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.view.ContextThemeWrapper
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
 import com.ncorti.slidetoact.SlideToActView
+import com.surf.surfhubds.R
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
-import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSSwipeView` do iOS — "slide to confirm". Internamente embrulha
@@ -27,8 +28,22 @@ class DSSSwipeView @JvmOverloads constructor(
 
     fun interface Delegate { fun didFinish(sender: DSSSwipeView) }
 
-    /** Acesso direto à view da lib pra ajustes finos não cobertos pelas props. */
-    val slide: SlideToActView = SlideToActView(context).apply {
+    /**
+     * Acesso direto à view da lib pra ajustes finos não cobertos pelas props.
+     *
+     * `area_margin` / `icon_margin` / `text_size` não têm setter público na lib —
+     * só são lidos do `defStyleAttr`/`AttributeSet` no construtor. Por isso o
+     * `SlideToActView` é criado com um [ContextThemeWrapper] que aponta
+     * `dssSwipeSliderStyle` → `@style/DSS.SwipeSlider`, e esse attr é passado como
+     * `defStyleAttr`. A versão antiga setava os campos privados via reflection, o
+     * que quebrava no build de release (R8 renomeia os campos) e fazia a seta do
+     * thumb sumir. Ver [R.style.DSS_SwipeSlider].
+     */
+    val slide: SlideToActView = SlideToActView(
+        ContextThemeWrapper(context, R.style.ThemeOverlay_DSS_SwipeSlider),
+        null,
+        R.attr.dssSwipeSliderStyle,
+    ).apply {
         animDuration = 200
         isAnimateCompletion = false
     }
@@ -64,20 +79,8 @@ class DSSSwipeView @JvmOverloads constructor(
         slide.iconColor = iconColor
         slide.textColor = labelTextColor
         slide.text = labelText
-        // Valores exatos do XML do flachip-android:
-        //   app:area_margin="4dp"  app:icon_margin="8dp"
-        // Em slidetoact 0.11.0 os campos privados são:
-        //   `mActualAreaMargin` (mutável) ← usar este pra area_margin
-        //   `mOriginAreaMargin` (final, lido só na inflate via attrs)
-        //   `mIconMargin` (final Kotlin val) ← precisa override via reflection
-        // O `mAreaMargin` que eu usava antes não existe (a reflection falhava
-        // silenciosamente, deixando os defaults da lib).
-        // Com slider 44dp: thumb = 44 - 2*4 = 36dp, seta = 36 - 2*8 = 20dp.
-        setPrivateDimen("mActualAreaMargin", 4f.dpToPx(context))
-        setPrivateDimen("mOriginAreaMargin", 4f.dpToPx(context))
-        setPrivateDimen("mIconMargin", 8f.dpToPx(context))
-        // iOS: slide.textFont = DSSFont.light(16) → 16sp. `mTextSize` é privado (px).
-        setPrivateDimen("mTextSize", 16f.dpToPx(context))
+        // area_margin (4dp), icon_margin (8dp) e text_size (16sp) vêm do style
+        // aplicado via defStyleAttr — ver KDoc de `slide`.
         slide.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener {
             override fun onSlideComplete(view: SlideToActView) {
                 onCompleted?.invoke()
@@ -85,22 +88,6 @@ class DSSSwipeView @JvmOverloads constructor(
             }
         }
         setupThemeObserver()
-    }
-
-    private fun setPrivateDimen(fieldName: String, value: Int) {
-        val ok = runCatching {
-            val field = SlideToActView::class.java.getDeclaredField(fieldName)
-            field.isAccessible = true
-            field.setInt(slide, value)
-            slide.requestLayout()
-            slide.invalidate()
-        }
-        if (ok.isFailure) {
-            android.util.Log.w(
-                "DSSSwipeView",
-                "Falha ao setar $fieldName via reflection: ${ok.exceptionOrNull()?.message}",
-            )
-        }
     }
 
     override fun applyTheme(theme: Theme) {

@@ -190,9 +190,17 @@ class DSSCarouselView @JvmOverloads constructor(
             stack.addView(imageView, LinearLayout.LayoutParams(300.dpToPx(context), 300.dpToPx(context)))
             stack.addView(
                 label,
+                // Largura MATCH_PARENT (não fixa 350dp): a largura fixa estourava a área útil
+                // da célula (larguraDaCélula - 40dp de margens) em telas estreitas ou quando o
+                // carousel é menor que ~390dp, cortando o texto na horizontal (à esquerda no
+                // brand .flachip, que alinha START). Preenchendo a largura disponível o texto
+                // sempre quebra dentro dos limites e nunca é cortado.
                 // Altura WRAP_CONTENT (não fixa 100dp): com fonte maior + \n o texto crescia
                 // além de 100dp e a parte de baixo ficava cortada. minHeight mantém o respiro.
-                LinearLayout.LayoutParams(350.dpToPx(context), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ).apply {
                     topMargin = 10.dpToPx(context)
                 },
             )

@@ -25,7 +25,7 @@ data class BrandInfo(
     companion object {
         fun current(brand: Brand): BrandInfo = when (brand) {
             Brand.FLACHIP -> BrandInfo(
-                carouselText1 = "Bônus todo mês par primea quem é sócio-torcedor e assinante do FlaTV+",
+                carouselText1 = "Bônus todo mês pra premiar quem é sócio-torcedor e assinante do FlaTV+",
                 carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado para postar aquela foto no Maraca.",
                 carouselText3 = "Faça a portabilidade e ganhe bônus de internet todo mês!",
                 termsOfertaURL = "https://fla-chip.com.br/regulamento-de-oferta/",

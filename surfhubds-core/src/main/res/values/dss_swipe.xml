@@ -12,7 +12,11 @@
     -->
     <attr name="dssSwipeSliderStyle" format="reference" />
 
-    <style name="DSS.SwipeSlider">
+    <!-- parent="" obrigatorio: sem ele o AAPT2 infere o parent implicito pelo nome
+         pontuado (DSS.SwipeSlider -> parent "DSS"), que nao existe, e o link falha
+         com "resource style/DSS not found". Este e um bag de attrs (defStyle) e nao
+         um tema, entao nao deve herdar de nada. -->
+    <style name="DSS.SwipeSlider" parent="">
         <item name="area_margin">4dp</item>
         <item name="icon_margin">8dp</item>
         <item name="text_size">16sp</item>

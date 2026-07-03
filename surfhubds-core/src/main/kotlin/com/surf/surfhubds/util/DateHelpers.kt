@@ -42,9 +42,13 @@ internal object DateHelpers {
         return cal.time
     }
 
+    /**
+     * Dias restantes até [until] a partir de agora, clampados em >= 0
+     * (espelha o `max(0, ...)` do `Date.daysRemaining(until:)` do iOS).
+     */
     fun daysRemaining(until: Date): Int {
         val diff = until.time - Date().time
-        return TimeUnit.MILLISECONDS.toDays(diff).toInt()
+        return maxOf(0, TimeUnit.MILLISECONDS.toDays(diff).toInt())
     }
 
     fun formatDDMM(date: Date): String =
@@ -58,7 +62,7 @@ internal object DateHelpers {
      * iOS: `Float(totalDays - remaining) / Float(totalDays)`.
      */
     fun progress(date: Date, totalDays: Int): Float {
-        val remaining = daysRemainingClamped(date)
+        val remaining = daysRemaining(date)
         return (totalDays - remaining).toFloat() / totalDays.toFloat()
     }
 
@@ -77,10 +81,4 @@ internal object DateHelpers {
         fmt.timeZone = zone
         return fmt.format(date)
     }
-
-    /**
-     * Dias restantes até [until] a partir de agora, clampados em >= 0
-     * (espelha o `max(0, ...)` do `Date.daysRemaining(until:)` do iOS).
-     */
-    private fun daysRemainingClamped(until: Date): Int = maxOf(0, daysRemaining(until))
 }

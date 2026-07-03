@@ -192,7 +192,7 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
                 else -> "válido até ${DateHelpers.formatDDMM(end)}"
             }
             val totalDays = data.validityDays.coerceAtLeast(1)
-            val used = (totalDays - days.coerceAtLeast(0)).coerceAtLeast(0)
+            val used = (totalDays - days).coerceAtLeast(0)
             validityView.progressDaysView.progress = ((used.toFloat() / totalDays) * 100).toInt()
             applyProgressTint(validityView.progressDaysView, progressColorForDays(days))
         } else {

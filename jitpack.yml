@@ -3,6 +3,18 @@ jdk:
 
 before_install:
   - sed -i.bak "s/^VERSION_NAME=.*/VERSION_NAME=${VERSION#v}/" gradle.properties
+  # A imagem do JitPack nao traz platforms;android-34 nem build-tools;34.0.0.
+  # O auto-download do AGP falha nesse ambiente com
+  # "Failed to read or create install properties file", quebrando o build de
+  # forma intermitente. Instalamos os componentes manualmente via sdkmanager
+  # (o mesmo diretorio ja aceita licencas), assim o AGP os encontra prontos e
+  # nao dispara o proprio downloader.
+  - |
+    SDKMANAGER="$(command -v sdkmanager || true)"
+    [ -x "$SDKMANAGER" ] || SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+    [ -x "$SDKMANAGER" ] || SDKMANAGER="$ANDROID_HOME/tools/bin/sdkmanager"
+    yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+    "$SDKMANAGER" "platforms;android-34" "build-tools;34.0.0"
 
 install:
   - ./gradlew publishToMavenLocal

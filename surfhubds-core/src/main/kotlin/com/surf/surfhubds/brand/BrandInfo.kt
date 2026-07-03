@@ -151,14 +151,14 @@ data class BrandInfo(
             )
             Brand.PAGUEMENOS -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do \nmercado!",
+                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://paguemenoscelular.com.br/termo-de-adesao/",
                 termsOfertaURL = "https://paguemenoscelular.com.br/regulamento-oferta/",
                 termsPrivacidadeURL = "https://paguemenoscelular.com.br/politica-de-privacidade/",
                 chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surfpaguemenosweb",
                 whatsApp = "5585920002288",
-                forceUpdateURL = "https://play.google.com/store/apps/details?id=br.com.surfmobile.paguemenoscelular",
+                forceUpdateURL = "https://apps.apple.com/us/app/paguemenos-celular/id6756713285",
                 coMvno = "405",
                 mvnoName = "PagueMenos Celular",
                 noMvno = "PAGUE MENOS CELULAR",

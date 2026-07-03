@@ -36,7 +36,9 @@ jobs:
           echo "Disparando build do JitPack para $TAG (módulo core)..."
           core_pom="$(pom surfhubds-core)"
           code=000
-          for i in $(seq 1 40); do
+          # O passo de sdkmanager no jitpack.yml adicionou ~5 min ao build; a
+          # janela precisa cobrir builds de ~12 min com folga.
+          for i in $(seq 1 100); do
             code=$(curl -s -o /dev/null -w "%{http_code}" "$core_pom")
             echo "[$i] surfhubds-core POM HTTP $code"
             [ "$code" = "200" ] && break

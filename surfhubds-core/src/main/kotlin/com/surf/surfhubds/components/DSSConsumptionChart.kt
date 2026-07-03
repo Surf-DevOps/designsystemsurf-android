@@ -106,7 +106,17 @@ class DSSConsumptionChart @JvmOverloads constructor(
                 leftMargin = 4f.dpToPx(context)
             },
         )
-        centerStack.addView(totalRow)
+        // WRAP_CONTENT explicito: sem isso o LinearLayout vertical usa MATCH_PARENT como
+        // default, tornando o totalRow um "match-width child". Isso dispara uma segunda
+        // passada de medicao que reconstrange o totalRow a largura do centerStack, e a seta
+        // (16dp + 4dp) rouba esse espaco — cortando ~1 caractere do totalLabel ("30.8GB"->"30.8G").
+        centerStack.addView(
+            totalRow,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ),
+        )
         centerStack.addView(
             usedLabel,
             LinearLayout.LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT).apply {

@@ -42,8 +42,8 @@ class BottomSheetEsimInstallationView @JvmOverloads constructor(
         textSize = 16f
         typeface = DSSFont.regular(context, 16f).typeface
         gravity = Gravity.CENTER
-        // iOS: `autorizationLabel` não define `numberOfLines`, então usa o default = 1.
-        maxLines = 1
+        // Sem limite de linhas: a mensagem de autorização quebra em quantas linhas
+        // precisar, para não ser truncada.
     }
 
     private val continueButton = DSSPrincipalButton(context).apply {

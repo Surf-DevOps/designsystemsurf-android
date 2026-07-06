@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="surfhubds_brand_name">matizconecta</string>
+    <string name="app_name">Matiz Conecta</string>
     <string name="common_confirm">Confirmar</string>
     <string name="common_cancel">Cancelar</string>
     <string name="common_error">Erro</string>

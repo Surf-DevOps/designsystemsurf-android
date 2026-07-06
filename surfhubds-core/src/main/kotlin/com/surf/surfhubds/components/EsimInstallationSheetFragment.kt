@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.bottomsheet.BottomSheetDragHandleView
@@ -91,9 +92,19 @@ class EsimInstallationSheetFragment : BottomSheetDialogFragment() {
         dialog.setOnShowListener {
             val sheet = dialog.findViewById<View>(
                 com.google.android.material.R.id.design_bottom_sheet,
-            )
+            ) ?: return@setOnShowListener
             // iOS: `preferredCornerRadius = 16` aplicado ao próprio sheet.
-            sheet?.background = sheetBackground()
+            sheet.background = sheetBackground()
+            // O sheet abraça o conteúdo (sem espaço vazio embaixo) e abre já
+            // totalmente expandido — em vez de um detent fixo mais alto que o conteúdo.
+            sheet.layoutParams = sheet.layoutParams.apply {
+                height = ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+            BottomSheetBehavior.from(sheet).apply {
+                isFitToContents = true
+                skipCollapsed = true
+                state = BottomSheetBehavior.STATE_EXPANDED
+            }
         }
         return dialog
     }

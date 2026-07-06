@@ -105,7 +105,8 @@ class BottomSheetEsimInstallationView @JvmOverloads constructor(
         column.addView(authorizationLabel, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply {
-            topMargin = 54f.dpToPx(context)
+            // Gap título->texto reduzido (era 54dp) para o bloco ficar compacto.
+            topMargin = 28f.dpToPx(context)
             leftMargin = 24f.dpToPx(context)
             rightMargin = 24f.dpToPx(context)
         })
@@ -121,6 +122,9 @@ class BottomSheetEsimInstallationView @JvmOverloads constructor(
             LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply {
             topMargin = 24f.dpToPx(context)
+            // Margem abaixo do "Não concordo" para não ficar colado na borda do sheet
+            // (agora que o sheet abraça o conteúdo).
+            bottomMargin = 32f.dpToPx(context)
             gravity = Gravity.CENTER_HORIZONTAL
         })
     }

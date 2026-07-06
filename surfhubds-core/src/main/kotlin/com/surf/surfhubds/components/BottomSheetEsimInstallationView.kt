@@ -92,7 +92,9 @@ class BottomSheetEsimInstallationView @JvmOverloads constructor(
         // laterais ficam por subview, não no container.
         addView(column, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
             gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-            topMargin = 80f.dpToPx(context)
+            // Offset do topo reduzido (era 80dp) para subir todo o conteúdo — o link
+            // "Não concordo" estava muito embaixo. Mantém folga abaixo do grabber.
+            topMargin = 40f.dpToPx(context)
         })
 
         // iOS: titleLabel só tem centerX -> largura intrínseca centralizada.

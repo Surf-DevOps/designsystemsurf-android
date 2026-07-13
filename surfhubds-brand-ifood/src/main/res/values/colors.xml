@@ -1,31 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Baseline do app (neutro). As cores reais da brand são aplicadas em runtime
-     pelo ThemeManager (<Pascal>Theme.kt do DSS). O módulo da brand pode
-     sobrescrever estes tokens via XML se quiser. -->
+<!-- Gerado pelo brand-builder para "Ifood" (slug: ifood). -->
 <resources>
     <color name="primary">#EB0033</color>
     <color name="onPrimary">#FFFFFF</color>
-    <color name="primaryContainer">#DCE3FF</color>
-    <color name="onPrimaryContainer">#001A41</color>
-    <color name="secondary">#5856D6</color>
+    <color name="primaryContainer">#F8F8F8</color>
+    <color name="onPrimaryContainer">#212121</color>
+    <color name="secondary">#890019</color>
     <color name="onSecondary">#FFFFFF</color>
-    <color name="secondaryContainer">#E3DFFF</color>
-    <color name="onSecondaryContainer">#14004A</color>
+    <color name="secondaryContainer">#F8F8F8</color>
+    <color name="onSecondaryContainer">#212121</color>
     <color name="surface">#FFFFFF</color>
-    <color name="onSurface">#1A1A1A</color>
-    <color name="surfaceVariant">#E1E2EC</color>
-    <color name="onSurfaceVariant">#44464F</color>
+    <color name="onSurface">#212121</color>
+    <color name="surfaceVariant">#F8F8F8</color>
+    <color name="onSurfaceVariant">#757575</color>
     <color name="background">#FFFFFF</color>
-    <color name="onBackground">#1A1A1A</color>
+    <color name="onBackground">#212121</color>
     <color name="error">#DC3545</color>
     <color name="onError">#FFFFFF</color>
     <color name="outline">#595959</color>
     <color name="scrim">#000000</color>
-    <color name="ic_launcher_background">#FF0031</color>
 
     <!-- tokens DS -->
     <color name="ds_primary">#EB0033</color>
-    <color name="ds_secondary">#5856D6</color>
+    <color name="ds_secondary">#890019</color>
     <color name="ds_background">#FFFFFF</color>
     <color name="ds_background_secondary">#F8F8F8</color>
     <color name="ds_text_primary">#212121</color>
@@ -38,5 +35,4 @@
     <color name="ds_warning">#E08B00</color>
     <color name="ds_border">#595959</color>
     <color name="ds_disabled">#BDBDBD</color>
-    <color name="splash_background">#FF0031</color>
 </resources>

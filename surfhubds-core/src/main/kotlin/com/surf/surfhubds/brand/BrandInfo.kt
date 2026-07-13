@@ -107,6 +107,7 @@ data class BrandInfo(
                 carouselText1 = "A operadora de celular que te acompanha em cada entrega.",
                 carouselText2 = "Aqui entregador SUPER DIAMANTE tem plano GRÁTIS garantido todo mês.",
                 carouselText3 = "Waze e Whatsapp ilimitado para te ajudar ainda mais na correria do dia a dia.",
+                termsAdesaoURL = "",
                 termsOfertaURL = "https://chipdoentregador.com.br/regulamento-de-ofertas/",
                 termsPrivacidadeURL = "https://ifoodchip.com.br/politica-de-privacidade/",
                 chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surfifoodweb",

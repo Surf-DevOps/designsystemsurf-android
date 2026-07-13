@@ -5,6 +5,7 @@ import com.surf.surfhubds.theme.colorValueWithAlpha
 import com.surf.surfhubds.tokens.ColorTokens
 import com.surf.surfhubds.tokens.ColorValue
 
+// Gerado pelo brand-builder — espelho do UberTheme.swift (iOS).
 class UberTheme : DefaultTheme() {
     override fun buildColors(): ColorTokens = ColorTokens(
         primary = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),

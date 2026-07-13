@@ -201,8 +201,8 @@ data class BrandInfo(
             )
             Brand.UBER -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do \nmercado!",
+                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://uberchip.com.br/termo-de-adesao/",
                 termsOfertaURL = "https://uberchip.com.br/regulamento-oferta/",
                 termsPrivacidadeURL = "https://uberchip.com.br/politica-de-privacidade/",

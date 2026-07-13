@@ -89,8 +89,8 @@ data class BrandInfo(
             )
             Brand.FLUXO -> BrandInfo(
                 carouselText1 = "A sua operadora de celular.",
-                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do \nmercado!",
+                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "",
                 termsOfertaURL = "https://fluxoon.com.br/regulamento-de-oferta/",
                 termsPrivacidadeURL = "https://fluxoon.com.br/politica-de-privacidade/",

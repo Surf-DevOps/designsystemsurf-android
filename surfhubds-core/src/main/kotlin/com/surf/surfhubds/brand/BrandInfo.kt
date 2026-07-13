@@ -41,8 +41,8 @@ data class BrandInfo(
             )
             Brand.BANDSPORTS -> BrandInfo(
                 carouselText1 = "A operadora de celular para você que é apaixonado por esportes.",
-                carouselText2 = "Aqui você pode programar suas recargas\ne ficar sempre conectado.",
-                carouselText3 = "Além de acompanhar seu consumo e\nescolher entre os melhores planos pré do \nmercado!",
+                carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
+                carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://bandsportscelular.com.br/termodeadesao/",
                 termsOfertaURL = "https://bandsportscelular.com.br/regulamento-de-oferta-2/",
                 termsPrivacidadeURL = "https://bandsportscelular.com.br/politicadeprivacidade/",

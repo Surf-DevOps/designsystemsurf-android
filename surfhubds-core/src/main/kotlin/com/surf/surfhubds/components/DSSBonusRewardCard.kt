@@ -2,16 +2,12 @@ package com.surf.surfhubds.components
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
-import com.surf.surfhubds.R
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
@@ -27,7 +23,7 @@ import com.surf.surfhubds.util.dpToPx
  * (ex.: Compre e Ganhe), na mesma linguagem visual dos cards de pacote:
  * canto 16, fundo system/secondarySystemBackground, título em destaque
  * bold(22) na cor primária e selo de elegibilidade em pill. Selecionado
- * ganha borda accent 2dp + checkmark; tocar de novo desseleciona via
+ * ganha borda accent 2dp e fundo accent ~5%; tocar de novo desseleciona via
  * [toggleSelection]. Cards não elegíveis ficam esmaecidos e ignoram seleção.
  */
 class DSSBonusRewardCard @JvmOverloads constructor(
@@ -58,19 +54,10 @@ class DSSBonusRewardCard @JvmOverloads constructor(
         textSize = 13f
         maxLines = 1
     }
-    private val checkmarkView = ImageView(context).apply {
-        setImageDrawable(ContextCompat.getDrawable(context, R.drawable.dss_ic_check))
-        scaleType = ImageView.ScaleType.FIT_CENTER
-        visibility = GONE
-    }
     private val column = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
     }
     private val headerRow = LinearLayout(context).apply {
-        orientation = LinearLayout.HORIZONTAL
-        gravity = Gravity.CENTER_VERTICAL
-    }
-    private val pointsRow = LinearLayout(context).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
     }
@@ -109,17 +96,6 @@ class DSSBonusRewardCard @JvmOverloads constructor(
             ),
         )
 
-        pointsRow.addView(
-            requiredPointsLabel,
-            LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
-                marginEnd = 12f.dpToPx(context)
-            },
-        )
-        pointsRow.addView(
-            checkmarkView,
-            LinearLayout.LayoutParams(24f.dpToPx(context), 24f.dpToPx(context)),
-        )
-
         column.addView(
             headerRow,
             LinearLayout.LayoutParams(
@@ -128,7 +104,7 @@ class DSSBonusRewardCard @JvmOverloads constructor(
             ),
         )
         column.addView(
-            pointsRow,
+            requiredPointsLabel,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -209,7 +185,7 @@ class DSSBonusRewardCard @JvmOverloads constructor(
         background = when {
             _selected -> DrawableFactory.rounded(
                 context = context,
-                backgroundColor = cardBackground,
+                backgroundColor = withAlpha(accent, 0x0D), // ~5%
                 cornerRadiusDp = cornerRadiusDp,
                 strokeColor = accent,
                 strokeWidthDp = 2f,
@@ -231,8 +207,6 @@ class DSSBonusRewardCard @JvmOverloads constructor(
         titleLabel.setTextColor(if (isBlack) Color.WHITE else DSSColors.primary())
         requiredPointsLabel.setTextColor(if (isBlack) Color.WHITE else DSSColors.textPrimary())
         availablePointsLabel.setTextColor(DSSColors.textSecondary())
-        checkmarkView.setColorFilter(accent, PorterDuff.Mode.SRC_IN)
-        checkmarkView.visibility = if (_selected) VISIBLE else GONE
 
         val badgeColor = if (_eligible) DSSColors.success() else DSSColors.error()
         badgeLabel.text = if (_eligible) eligibleBadgeText else ineligibleBadgeText

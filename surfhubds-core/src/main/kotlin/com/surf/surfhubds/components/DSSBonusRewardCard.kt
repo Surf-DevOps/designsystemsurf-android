@@ -1,12 +1,17 @@
 package com.surf.surfhubds.components
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
+import com.surf.surfhubds.R
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
@@ -19,11 +24,11 @@ import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSBonusRewardCard` do iOS — card de bônus resgatável
- * (ex.: Compre e Ganhe): mostra o bônus, os pontos necessários, os pontos
- * disponíveis do usuário e um selo de elegibilidade (tokens success/error).
- * Cards não elegíveis ficam esmaecidos e ignoram seleção.
- *
- * Estilo: canto de 12dp, borda `divider` (accent 2dp quando selecionado).
+ * (ex.: Compre e Ganhe), na mesma linguagem visual dos cards de pacote:
+ * canto 16, fundo system/secondarySystemBackground, título em destaque
+ * bold(22) na cor primária e selo de elegibilidade em pill. Selecionado
+ * ganha borda accent 2dp + checkmark; tocar de novo desseleciona via
+ * [toggleSelection]. Cards não elegíveis ficam esmaecidos e ignoram seleção.
  */
 class DSSBonusRewardCard @JvmOverloads constructor(
     context: Context,
@@ -32,8 +37,8 @@ class DSSBonusRewardCard @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr), ThemeAware {
 
     private val titleLabel = TextView(context).apply {
-        typeface = DSSFont.bold(context, 16f).typeface
-        textSize = 16f
+        typeface = DSSFont.bold(context, 22f).typeface
+        textSize = 22f
         maxLines = 2
         ellipsize = android.text.TextUtils.TruncateAt.END
     }
@@ -44,19 +49,28 @@ class DSSBonusRewardCard @JvmOverloads constructor(
         gravity = Gravity.CENTER
     }
     private val requiredPointsLabel = TextView(context).apply {
-        typeface = DSSFont.medium(context, 14f).typeface
+        typeface = DSSFont.regular(context, 14f).typeface
         textSize = 14f
         maxLines = 1
     }
     private val availablePointsLabel = TextView(context).apply {
-        typeface = DSSFont.regular(context, 13f).typeface
+        typeface = DSSFont.light(context, 13f).typeface
         textSize = 13f
         maxLines = 1
+    }
+    private val checkmarkView = ImageView(context).apply {
+        setImageDrawable(ContextCompat.getDrawable(context, R.drawable.dss_ic_check))
+        scaleType = ImageView.ScaleType.FIT_CENTER
+        visibility = GONE
     }
     private val column = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
     }
     private val headerRow = LinearLayout(context).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+    }
+    private val pointsRow = LinearLayout(context).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
     }
@@ -67,7 +81,7 @@ class DSSBonusRewardCard @JvmOverloads constructor(
     val isCardSelected: Boolean get() = _selected
     val isEligible: Boolean get() = _eligible
 
-    var cornerRadiusDp: Float = 12f
+    var cornerRadiusDp: Float = 16f
         set(value) { field = value; refresh() }
 
     /** Texto do selo quando elegível. */
@@ -75,7 +89,7 @@ class DSSBonusRewardCard @JvmOverloads constructor(
         set(value) { field = value; refresh() }
 
     /** Texto do selo quando não elegível. */
-    var ineligibleBadgeText: String = "Pontos insuficientes"
+    var ineligibleBadgeText: String = "Inelegível"
         set(value) { field = value; refresh() }
 
     init {
@@ -91,8 +105,19 @@ class DSSBonusRewardCard @JvmOverloads constructor(
             badgeLabel,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                20f.dpToPx(context),
+                LinearLayout.LayoutParams.WRAP_CONTENT,
             ),
+        )
+
+        pointsRow.addView(
+            requiredPointsLabel,
+            LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                marginEnd = 12f.dpToPx(context)
+            },
+        )
+        pointsRow.addView(
+            checkmarkView,
+            LinearLayout.LayoutParams(24f.dpToPx(context), 24f.dpToPx(context)),
         )
 
         column.addView(
@@ -103,7 +128,7 @@ class DSSBonusRewardCard @JvmOverloads constructor(
             ),
         )
         column.addView(
-            requiredPointsLabel,
+            pointsRow,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -151,6 +176,7 @@ class DSSBonusRewardCard @JvmOverloads constructor(
         titleLabel.text = title
         requiredPointsLabel.text = requiredPointsText
         availablePointsLabel.text = availablePointsText
+        availablePointsLabel.visibility = if (availablePointsText.isEmpty()) GONE else VISIBLE
         _eligible = isEligible
         if (!isEligible) _selected = false
         refresh()
@@ -163,44 +189,57 @@ class DSSBonusRewardCard @JvmOverloads constructor(
         refresh()
     }
 
-    fun toggleSelection() = setSelectedState(!_selected)
+    /** Alterna a seleção (permite desselecionar tocando de novo). */
+    fun toggleSelection(): Boolean {
+        setSelectedState(!_selected)
+        return _selected
+    }
 
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {
-        // iOS: colorScheme == .black ? DSSColors.primaryButton : DSSColors.primary
-        val accent = if (ThemeManager.colorScheme == ColorScheme.BLACK) {
-            DSSColors.primaryButton()
-        } else {
-            DSSColors.primary()
-        }
-        background = if (_selected) {
-            DrawableFactory.rounded(
+        val scheme = ThemeManager.colorScheme
+        val isBlack = scheme == ColorScheme.BLACK
+        val isDark = isBlack || scheme == ColorScheme.DARK
+        val accent = if (isBlack) DSSColors.primaryButton() else DSSColors.primary()
+
+        // iOS: systemBackground no claro, secondarySystemBackground no escuro;
+        // borda systemGray3 no dark sem seleção (como o card de pacotes).
+        val cardBackground = if (isDark) Color.rgb(28, 28, 30) else Color.WHITE
+        background = when {
+            _selected -> DrawableFactory.rounded(
                 context = context,
-                backgroundColor = withAlpha(accent, 0x0D), // ~5%
+                backgroundColor = cardBackground,
                 cornerRadiusDp = cornerRadiusDp,
                 strokeColor = accent,
                 strokeWidthDp = 2f,
             )
-        } else {
-            DrawableFactory.rounded(
+            !isBlack && isDark -> DrawableFactory.rounded(
                 context = context,
-                backgroundColor = DSSColors.surface(),
+                backgroundColor = cardBackground,
                 cornerRadiusDp = cornerRadiusDp,
-                strokeColor = DSSColors.divider(),
-                strokeWidthDp = 1f,
+                strokeColor = Color.rgb(72, 72, 74), // systemGray3 (dark)
+                strokeWidthDp = 2f,
+            )
+            else -> DrawableFactory.rounded(
+                context = context,
+                backgroundColor = cardBackground,
+                cornerRadiusDp = cornerRadiusDp,
             )
         }
 
-        titleLabel.setTextColor(DSSColors.textPrimary())
-        requiredPointsLabel.setTextColor(DSSColors.textPrimary())
+        titleLabel.setTextColor(if (isBlack) Color.WHITE else DSSColors.primary())
+        requiredPointsLabel.setTextColor(if (isBlack) Color.WHITE else DSSColors.textPrimary())
         availablePointsLabel.setTextColor(DSSColors.textSecondary())
+        checkmarkView.setColorFilter(accent, PorterDuff.Mode.SRC_IN)
+        checkmarkView.visibility = if (_selected) VISIBLE else GONE
 
         val badgeColor = if (_eligible) DSSColors.success() else DSSColors.error()
         badgeLabel.text = if (_eligible) eligibleBadgeText else ineligibleBadgeText
         badgeLabel.setTextColor(badgeColor)
         val hPad = 8f.dpToPx(context)
-        badgeLabel.setPadding(hPad, 0, hPad, 0)
+        val vPad = 4f.dpToPx(context)
+        badgeLabel.setPadding(hPad, vPad, hPad, vPad)
         badgeLabel.background = DrawableFactory.rounded(
             context = context,
             backgroundColor = withAlpha(badgeColor, 0x1F), // ~12%

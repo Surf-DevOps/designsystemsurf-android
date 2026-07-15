@@ -60,6 +60,15 @@ fun String.formatToBRL(): String {
     return formatBRL(value)
 }
 
+/** 12345 -> "12.345" (agrupamento pt_BR, sem casas decimais). */
+fun Int.formatPoints(): String {
+    val fmt = NumberFormat.getIntegerInstance(brLocale)
+    return fmt.format(this)
+}
+
+/** 12.5 -> "R$ 12,50". */
+fun Double.formatToBRL(): String = formatBRL(this)
+
 private fun formatBRL(value: Double): String {
     val fmt = NumberFormat.getCurrencyInstance(brLocale)
     return fmt.format(value)

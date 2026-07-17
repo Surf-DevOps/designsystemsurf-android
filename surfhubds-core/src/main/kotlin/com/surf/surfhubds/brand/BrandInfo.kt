@@ -206,7 +206,7 @@ data class BrandInfo(
                 termsAdesaoURL = "https://uberchip.com.br/termo-de-adesao/",
                 termsOfertaURL = "https://uberchip.com.br/regulamento-oferta/",
                 termsPrivacidadeURL = "https://uberchip.com.br/politica-de-privacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surfuberweb",
+                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=uberchipapp&params=mtq5otc1ntq3ntu%3D",
                 whatsApp = "5511920918719",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=br.com.surfmobile.uberchip",
                 coMvno = "48",

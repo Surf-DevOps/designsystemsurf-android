@@ -1,0 +1,14 @@
+<!-- Equivalente ao SF Symbol "person.badge.plus" (weight .medium) usado no
+     DSSNoRegistrationBottomSheet do iOS. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <!-- pessoa -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M10,12c2.21,0 4,-1.79 4,-4s-1.79,-4 -4,-4 -4,1.79 -4,4 1.79,4 4,4z"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M10,13.5c-3.31,0 -8,1.66 -8,4.5v1.5c0,0.55 0.45,1 1,1h14c0.55,0 1,-0.45 1,-1V18c0,-2.84 -4.69,-4.5 -8,-4.5z"/>
+    <!-- badge "+" -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M19.25,6.5h-1.5V5c0,-0.41 -0.34,-0.75 -0.75,-0.75S16.25,4.59 16.25,5v1.5h-1.5c-0.41,0 -0.75,0.34 -0.75,0.75s0.34,0.75 0.75,0.75h1.5V9.5c0,0.41 0.34,0.75 0.75,0.75s0.75,-0.34 0.75,-0.75V8h1.5c0.41,0 0.75,-0.34 0.75,-0.75S19.66,6.5 19.25,6.5z"/>
+</vector>

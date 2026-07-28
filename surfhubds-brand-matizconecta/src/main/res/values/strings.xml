@@ -745,4 +745,8 @@
     <string name="compre_ganhe_unavailable_sheet_title">Resgate indisponível</string>
     <string name="compre_ganhe_unavailable_sheet_min">Mínimo de pontos necessários: %1$s pontos</string>
     <string name="compre_ganhe_unavailable_sheet_message">Você não possui pontos o suficiente para troca</string>
+    <!-- DSSNoRegistrationBottomSheet -->
+    <string name="no_registration_title_format">Você ainda não tem cadastro na %1$s</string>
+    <string name="no_registration_message">Não encontramos esse documento na nossa base. Faça seu cadastro para continuar.</string>
+    <string name="no_registration_register_button">Cadastrar</string>
 </resources>

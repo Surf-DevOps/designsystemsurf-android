@@ -748,7 +748,7 @@
     <string name="compre_ganhe_unavailable_sheet_min">Mínimo de pontos necessários: %1$s pontos</string>
     <string name="compre_ganhe_unavailable_sheet_message">Você não possui pontos o suficiente para troca</string>
     <!-- DSSNoRegistrationBottomSheet -->
-    <string name="no_registration_title_format">Você ainda não tem cadastro na %1$s</string>
-    <string name="no_registration_message">Não encontramos esse documento na nossa base. Faça seu cadastro para continuar.</string>
-    <string name="no_registration_register_button">Cadastrar</string>
+    <string name="no_registration_title">Crie sua senha para este app</string>
+    <string name="no_registration_message">Este app do %1$s é novo. A senha do app antigo não funciona aqui, mas criar uma nova leva menos de 2 minutos.</string>
+    <string name="no_registration_register_button">Criar minha senha</string>
 </resources>

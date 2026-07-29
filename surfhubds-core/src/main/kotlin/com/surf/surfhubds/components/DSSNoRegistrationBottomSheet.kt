@@ -9,7 +9,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -29,8 +28,8 @@ import com.surf.surfhubds.util.dpToPx
 
 /**
  * Port do `DSSNoRegistrationBottomSheet` do iOS — bottom sheet exibido quando o login
- * responde sucesso mas o documento informado não possui cadastro na base. Traz ícone
- * circular, título com o nome da brand, mensagem e o botão "Cadastrar".
+ * responde sucesso mas o documento informado não possui cadastro na base. Traz o ícone
+ * de cadeado aberto, título, mensagem citando o nome da brand e o botão de criar senha.
  *
  * O "chrome" do iOS (cantos superiores 24, blur de fundo, toque fora → dismiss e
  * swipe-to-dismiss) já é aplicado automaticamente pelo
@@ -102,29 +101,21 @@ class DSSNoRegistrationBottomSheet : BottomSheetDialogFragment() {
         }
         root.addView(handle, LinearLayout.LayoutParams(40f.dpToPx(ctx), 5f.dpToPx(ctx)))
 
-        // Ícone: círculo 80x80 com DSSColors.success e o glyph branco 32pt centralizado
-        // (iOS: SF Symbol "person.badge.plus", pointSize 32, weight .medium, tint branco).
-        val iconContainer = FrameLayout(ctx).apply {
-            background = DrawableFactory.rounded(
-                context = ctx, backgroundColor = DSSColors.success(), cornerRadiusDp = 40f,
-            )
-        }
+        // Ícone: cadeado aberto em contorno, sem badge/círculo atrás, tingido com a cor
+        // da brand.
         val icon = ImageView(ctx).apply {
-            setImageResource(R.drawable.dss_person_badge_plus)
+            setImageResource(R.drawable.dss_lock_open)
             scaleType = ImageView.ScaleType.FIT_CENTER
-            setColorFilter(Color.WHITE)
+            setColorFilter(DSSColors.primary())
         }
-        iconContainer.addView(icon, FrameLayout.LayoutParams(
-            32f.dpToPx(ctx), 32f.dpToPx(ctx), Gravity.CENTER,
-        ))
-        root.addView(iconContainer, LinearLayout.LayoutParams(
-            80f.dpToPx(ctx), 80f.dpToPx(ctx),
+        root.addView(icon, LinearLayout.LayoutParams(
+            36f.dpToPx(ctx), 36f.dpToPx(ctx),
         ).apply { topMargin = 24f.dpToPx(ctx) })
 
-        // Título — iOS: DSSFont.bold(20), textPrimary, centralizado, formatado com o
-        // mvnoName da brand corrente.
+        // Título — DSSFont.bold(20), textPrimary, centralizado. Não leva o nome da
+        // brand: quem cita a brand agora é a mensagem.
         val titleLabel = TextView(ctx).apply {
-            text = title(ctx)
+            text = AppStrings.brand(ctx, "no_registration_title", TITLE)
             typeface = DSSFont.bold(ctx, 20f).typeface
             textSize = 20f
             gravity = Gravity.CENTER
@@ -134,9 +125,10 @@ class DSSNoRegistrationBottomSheet : BottomSheetDialogFragment() {
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT,
         ).apply { topMargin = 20f.dpToPx(ctx) })
 
-        // Mensagem — iOS: DSSFont.regular(15), textSecondary, centralizada.
+        // Mensagem — DSSFont.regular(15), textSecondary, centralizada, formatada com o
+        // mvnoName da brand corrente.
         val messageLabel = TextView(ctx).apply {
-            text = AppStrings.brand(ctx, "no_registration_message", MESSAGE)
+            text = message(ctx)
             typeface = DSSFont.regular(ctx, 15f).typeface
             textSize = 15f
             gravity = Gravity.CENTER
@@ -162,9 +154,9 @@ class DSSNoRegistrationBottomSheet : BottomSheetDialogFragment() {
         return scroll
     }
 
-    private fun title(ctx: Context): String {
+    private fun message(ctx: Context): String {
         val brandName = BrandInfo.current(BrandResolver.current(ctx)).mvnoName
-        return AppStrings.brand(ctx, "no_registration_title_format", TITLE_FORMAT, brandName)
+        return AppStrings.brand(ctx, "no_registration_message", MESSAGE_FORMAT, brandName)
     }
 
     private fun registerTapped() {
@@ -186,10 +178,11 @@ class DSSNoRegistrationBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
-        private const val TITLE_FORMAT = "Você ainda não tem cadastro na %s"
-        private const val MESSAGE =
-            "Não encontramos esse documento na nossa base. Faça seu cadastro para continuar."
-        private const val REGISTER_BUTTON = "Cadastrar"
+        private const val TITLE = "Crie sua senha para este app"
+        private const val MESSAGE_FORMAT =
+            "Este app do %s é novo. A senha do app antigo não funciona aqui, mas criar " +
+                "uma nova leva menos de 2 minutos."
+        private const val REGISTER_BUTTON = "Criar minha senha"
 
         fun present(
             activity: FragmentActivity,

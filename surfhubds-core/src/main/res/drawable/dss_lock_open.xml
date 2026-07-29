@@ -1,0 +1,27 @@
+<!-- Cadeado aberto (contorno), usado pelo DSSNoRegistrationBottomSheet. Traçado em
+     branco + strokeColor para poder ser tingido por setColorFilter no componente. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <!-- corpo -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineJoin="round"
+        android:pathData="M7,10.75 L17,10.75 A2.25,2.25 0 0 1 19.25,13 L19.25,18.5 A2.25,2.25 0 0 1 17,20.75 L7,20.75 A2.25,2.25 0 0 1 4.75,18.5 L4.75,13 A2.25,2.25 0 0 1 7,10.75 Z"/>
+    <!-- haste aberta: presa à direita, abertura à esquerda -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M15.5,10.75 L15.5,7.6 A3.25,3.25 0 0 0 9,7.6"/>
+    <!-- segredo -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M12,14.5 L12,17"/>
+</vector>

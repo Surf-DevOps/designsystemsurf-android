@@ -18,6 +18,7 @@ import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.brazilianLocalDigits
 import com.surf.surfhubds.util.dpToPx
 import java.text.NumberFormat
 import java.util.Locale
@@ -188,17 +189,12 @@ class DSSResumeCard @JvmOverloads constructor(
     }
 
     private fun formatPhone(number: String): String {
-        val clean = number.filter { it.isDigit() }
-        if (clean.length < 10) return number
-        var phone = clean
-        if (clean.length == 13 && clean.startsWith("55")) phone = clean.drop(2)
-        if (phone.length == 11) {
-            val area = phone.substring(0, 2)
-            val first = phone.substring(2, 7)
-            val second = phone.substring(7)
-            return "($area) $first-$second"
-        }
-        return number
+        // O "55" só é removido como DDI quando a contagem de dígitos comprova isso;
+        // com 10/11 dígitos o "55" inicial é DDD (RS) e precisa ser preservado.
+        val phone = brazilianLocalDigits(number.filter { it.isDigit() }) ?: return number
+        val area = phone.take(2)
+        val subscriber = phone.drop(2)
+        return "($area) ${subscriber.dropLast(4)}-${subscriber.takeLast(4)}"
     }
 
     private fun formatPrice(cents: Int): String {

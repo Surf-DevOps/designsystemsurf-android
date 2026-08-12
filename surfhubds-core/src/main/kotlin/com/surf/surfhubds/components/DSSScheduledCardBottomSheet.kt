@@ -26,6 +26,7 @@ import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.ImageLoader
+import com.surf.surfhubds.util.brazilianLocalDigits
 import com.surf.surfhubds.util.dpToPx
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -353,7 +354,11 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
         return formatPhoneNumber(normalized)
     }
 
-    /** Equivalente ao `String.normalizeBrazilianPhone(_:)` do iOS. */
+    /**
+     * Equivalente ao `String.normalizeBrazilianPhone(_:)` do iOS. O `55` inicial só é
+     * DDI quando a quantidade de dígitos comprova isso — um número local do DDD 55
+     * (RS) tem 10/11 dígitos e precisa manter o prefixo.
+     */
     private fun normalizeBrazilianPhone(raw: String): String? {
         val digits = raw.trim().filter { it.isDigit() }
         if (digits.isEmpty()) return null
@@ -363,22 +368,17 @@ class DSSScheduledCardBottomSheet : BottomSheetDialogFragment() {
         if (cleaned.startsWith("00")) cleaned = cleaned.dropWhile { it == '0' }
         while (cleaned.startsWith("0")) cleaned = cleaned.substring(1)
 
-        // Garante prefixo do Brasil.
-        if (!cleaned.startsWith("55")) cleaned = "55$cleaned"
-
         // E.164 BR: 55 + DDD(2) + número(8 ou 9) => 12 ou 13 dígitos.
-        return if (cleaned.length == 12 || cleaned.length == 13) cleaned else null
+        val local = brazilianLocalDigits(cleaned) ?: return null
+        return "55$local"
     }
 
     /** Equivalente ao `String.formatPhoneNumber()` do iOS. */
     private fun formatPhoneNumber(value: String): String {
-        if (!value.startsWith("55")) return value
-        val trimmed = value.substring(2)
-        if (trimmed.length != 11) return value
-        val ddd = trimmed.substring(0, 2)
-        val prefix = trimmed.substring(2, 7)
-        val suffix = trimmed.substring(7)
-        return "($ddd) $prefix-$suffix"
+        val local = brazilianLocalDigits(value.filter { it.isDigit() }) ?: return value
+        val ddd = local.take(2)
+        val subscriber = local.drop(2)
+        return "($ddd) ${subscriber.dropLast(4)}-${subscriber.takeLast(4)}"
     }
 
     private fun resolveCardImage(card: CardModel): Drawable? {

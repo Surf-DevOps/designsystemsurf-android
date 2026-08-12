@@ -26,6 +26,7 @@ import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.brazilianLocalDigits
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -400,8 +401,11 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
     /**
      * Converte um telefone brasileiro em E.164 (5511989795250). Espelha
      * `String.normalizeBrazilianPhone` do iOS: remove não-dígitos, descarta
-     * prefixo internacional com zeros (`00`/`000`) e zeros à esquerda, garante o
-     * prefixo `55` e só aceita se o resultado tiver 12 ou 13 dígitos.
+     * prefixo internacional com zeros (`00`/`000`) e zeros à esquerda e só aceita
+     * se o resultado tiver 12 ou 13 dígitos.
+     *
+     * O `55` inicial só conta como DDI quando a quantidade de dígitos comprova isso
+     * — um número local do DDD 55 (RS) tem 10/11 dígitos e mantém o prefixo.
      */
     private fun normalizeBrazilianPhone(raw: String): String? {
         val digits = raw.trim().filter(Char::isDigit)
@@ -416,31 +420,31 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
         while (cleaned.startsWith("0")) {
             cleaned = cleaned.drop(1)
         }
-        // Garante prefixo do Brasil
-        if (!cleaned.startsWith("55")) {
-            cleaned = "55$cleaned"
-        }
         // E.164 BR: 55 + DDD(2) + número(8 ou 9) => 12 ou 13 dígitos
-        return if (cleaned.length == 12 || cleaned.length == 13) cleaned else null
+        val local = brazilianLocalDigits(cleaned) ?: return null
+        return "55$local"
     }
 
     private fun stripDDI(e164: String): String {
-        return if (e164.startsWith("55") && e164.length > 11) e164.removePrefix("55") else e164
+        val digits = e164.filter(Char::isDigit)
+        // Só remove o "55" quando ele é DDI (12/13 dígitos); com 10/11 o "55" é DDD.
+        return if (digits.length == 12 || digits.length == 13) {
+            digits.removePrefix("55")
+        } else {
+            e164
+        }
     }
 
     /**
-     * Espelha `String.formatPhoneNumber()` do iOS (usado no label): só formata
-     * quando o número tem prefixo `55` e exatamente 11 dígitos locais
-     * (`(DD) 9XXXX-XXXX`); caso contrário devolve a string inalterada.
+     * Espelha `String.formatPhoneNumber()` do iOS (usado no label): formata como
+     * `(DD) 9XXXX-XXXX` quando o valor é um telefone brasileiro (local ou E.164);
+     * caso contrário devolve a string inalterada.
      */
     private fun formatBrazilianPhone(e164: String): String {
-        if (!e164.startsWith("55")) return e164
-        val trimmed = e164.drop(2)
-        if (trimmed.length != 11) return e164
-        val ddd = trimmed.take(2)
-        val prefix = trimmed.drop(2).take(5)
-        val suffix = trimmed.takeLast(4)
-        return "($ddd) $prefix-$suffix"
+        val local = brazilianLocalDigits(e164.filter(Char::isDigit)) ?: return e164
+        val ddd = local.take(2)
+        val subscriber = local.drop(2)
+        return "($ddd) ${subscriber.dropLast(4)}-${subscriber.takeLast(4)}"
     }
 
     private fun formatBrazilianPhoneNumbersOnly(numbers: String): String {

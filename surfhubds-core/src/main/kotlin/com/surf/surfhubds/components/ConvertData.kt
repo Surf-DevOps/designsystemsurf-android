@@ -33,10 +33,19 @@ object ConvertData {
         return ((used / total.toDouble()) * 100).toInt()
     }
 
-    /** "11 99999-9999" → "5511999999999". */
+    /**
+     * "11 99999-9999" → "5511999999999".
+     *
+     * O DDI só é adicionado quando o número está no formato local (10 ou 11 dígitos);
+     * assim um número do DDD 55 (RS) ou um valor que já traz o DDI não ganha "55"
+     * duplicado.
+     */
     fun formatPhoneNumberToInternational(rawNumber: String): String {
         val digits = rawNumber.filter { it.isDigit() }
-        if (digits.length < 10) return ""
-        return "55$digits"
+        return when {
+            digits.length == 10 || digits.length == 11 -> "55$digits"
+            (digits.length == 12 || digits.length == 13) && digits.startsWith("55") -> digits
+            else -> ""
+        }
     }
 }

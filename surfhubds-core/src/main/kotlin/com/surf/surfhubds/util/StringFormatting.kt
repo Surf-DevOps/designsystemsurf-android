@@ -15,23 +15,48 @@ private val brLocale = Locale("pt", "BR")
 
 enum class DateFormatType { ONLY_DATE, DATE_AND_TIME, SHORT_MONTH }
 
+/**
+ * Formata um telefone brasileiro como `(DD) 9XXXX-XXXX` (ou `(DD) XXXX-XXXX` para
+ * fixo). Aceita tanto E.164 (`55` + 10/11 dígitos) quanto o número local.
+ *
+ * O `55` inicial só é tratado como DDI quando a quantidade total de dígitos não
+ * cabe em um número local, porque o DDD 55 (RS) também começa com `55` — a
+ * checagem é sempre prefixo **e** quantidade de dígitos.
+ */
 fun String.formatPhoneNumber(): String {
-    if (!startsWith("55")) return this
-    val trimmed = drop(2)
-    if (trimmed.length != 11) return this
-    val ddd = trimmed.take(2)
-    val prefix = trimmed.drop(2).take(5)
-    val suffix = trimmed.takeLast(4)
-    return "($ddd) $prefix-$suffix"
+    val local = brazilianLocalDigits(filter(Char::isDigit)) ?: return this
+    val ddd = local.take(2)
+    val subscriber = local.drop(2)
+    return "($ddd) ${subscriber.dropLast(4)}-${subscriber.takeLast(4)}"
 }
 
+/**
+ * Normaliza para E.164 BR (`55` + DDD + número => 12 ou 13 dígitos) ou devolve
+ * `null` quando o valor não é um telefone brasileiro válido.
+ *
+ * Um número local do DDD 55 (ex.: `55999998888`) começa com `55` sem ter DDI; por
+ * isso o prefixo do país é decidido pela quantidade de dígitos, e não pelo prefixo.
+ */
 fun String.Companion.normalizeBrazilianPhone(raw: String): String? {
     var cleaned = raw.trim().replace(Regex("\\D"), "")
     if (cleaned.isEmpty()) return null
     if (cleaned.startsWith("00")) cleaned = cleaned.dropWhile { it == '0' }
     while (cleaned.startsWith("0")) cleaned = cleaned.drop(1)
-    if (!cleaned.startsWith("55")) cleaned = "55$cleaned"
-    return if (cleaned.length in 12..13) cleaned else null
+    val local = brazilianLocalDigits(cleaned) ?: return null
+    return "55$local"
+}
+
+/**
+ * Reduz uma sequência de dígitos ao número local brasileiro (DDD + 8 ou 9 dígitos),
+ * removendo o DDI `55` apenas quando o comprimento comprova que ele é DDI.
+ * Devolve `null` para qualquer coisa que não seja telefone brasileiro.
+ */
+internal fun brazilianLocalDigits(digits: String): String? = when {
+    // 10 (DDD + fixo) ou 11 (DDD + celular): já é local, mesmo começando com "55".
+    digits.length == 10 || digits.length == 11 -> digits
+    // 12 ou 13: só é BR se o "55" extra for realmente DDI.
+    (digits.length == 12 || digits.length == 13) && digits.startsWith("55") -> digits.drop(2)
+    else -> null
 }
 
 fun String.formatDate(type: DateFormatType): String {

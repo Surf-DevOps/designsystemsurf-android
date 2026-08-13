@@ -456,7 +456,7 @@
     <string name="schedule_cancel_error_contact_support">Não foi possível cancelar a programada. Entre em contato com o suporte.</string>
 
     <!-- Migrado do app correioscelular-android -->
-    <string name="app_name">Celular correios</string>
+    <string name="app_name">Correios Celular</string>
     <string name="common_error_generic">Algo deu errado. Tente novamente.</string>
     <string name="common_finish">Concluir</string>
     <string name="common_resend">Reenviar</string>

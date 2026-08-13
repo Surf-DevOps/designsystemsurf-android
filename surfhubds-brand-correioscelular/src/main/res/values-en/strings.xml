@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Celular correios</string>
+    <string name="app_name">Correios Celular</string>
     <string name="common_error_generic">Something went wrong. Please try again.</string>
     <string name="login_phone_label">Phone</string>
     <string name="login_create_access">Create account</string>

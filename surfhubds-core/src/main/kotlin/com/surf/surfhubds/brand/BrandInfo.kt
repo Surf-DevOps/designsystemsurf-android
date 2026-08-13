@@ -194,7 +194,7 @@ data class BrandInfo(
                 whatsApp = "5511980002020",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=br.com.correios.android.correioscelular",
                 coMvno = "1",
-                mvnoName = "Correios celular",
+                mvnoName = "Correios Celular",
                 noMvno = "CORREIOS",
                 scheduleEligible = true,
                 recurrenceEligible = true,

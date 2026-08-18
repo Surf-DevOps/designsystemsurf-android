@@ -198,6 +198,20 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         set(Calendar.MILLISECOND, 0)
     }.time
 
+    /**
+     * Meia-noite local do dia informado. `Calendar.set(y, m, d)` NÃO zera a hora — mantém o
+     * wall-clock atual —, e o [isoFormatter] emite em UTC: um toque depois das 21:00 (BRT)
+     * virava o dia seguinte na string ISO entregue ao consumidor.
+     */
+    private fun startOfDay(year: Int, monthIndex: Int, day: Int): Date =
+        Calendar.getInstance().apply {
+            set(year, monthIndex, day)
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+
     fun configure(maxDateIso: String, daysBack: Int) {
         val parsed = try { isoFormatter.parse(maxDateIso) } catch (_: Throwable) { null } ?: return
         configure(parsed, daysBack)
@@ -227,7 +241,24 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
             val cal = Calendar.getInstance().apply { set(minYear, minMonth - 1, 1) }
             val daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
             for (d in minDay..daysInMonth) enabledDays.add(d)
+        } else if (isBetween(displayedYear, displayedMonth, minYear, minMonth, maxYear, maxMonth)) {
+            // Mês inteiramente dentro do intervalo (min < mês < max): todos os dias valem.
+            // Antes caía no `else` implícito e o mês ficava sem nenhum dia clicável.
+            val cal = Calendar.getInstance().apply { set(displayedYear, displayedMonth - 1, 1) }
+            for (d in 1..cal.getActualMaximum(Calendar.DAY_OF_MONTH)) enabledDays.add(d)
         }
+    }
+
+    private fun isBetween(
+        year: Int,
+        month: Int,
+        minYear: Int,
+        minMonth: Int,
+        maxYear: Int,
+        maxMonth: Int,
+    ): Boolean {
+        val value = year * 12 + month
+        return value > minYear * 12 + minMonth && value < maxYear * 12 + maxMonth
     }
 
     private fun updateMonthLabel() {
@@ -407,11 +438,11 @@ class DSSScheduleCalendarView @JvmOverloads constructor(
         if (enabled || selected) {
             container.isClickable = true
             container.setOnClickListener {
-                val c = Calendar.getInstance().apply { set(displayedYear, displayedMonth - 1, day) }
-                selectedDate = c.time
+                val picked = startOfDay(displayedYear, displayedMonth - 1, day)
+                selectedDate = picked
                 buildDaysGrid()
                 updateDescriptionLabel()
-                delegate?.onSelectDateIso(this, isoFormatter.format(c.time))
+                delegate?.onSelectDateIso(this, isoFormatter.format(picked))
             }
         }
         return container

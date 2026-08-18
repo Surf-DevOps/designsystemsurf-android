@@ -118,6 +118,7 @@
     <string name="schedule_select_card_description">Selecione o cartão para cobrança das \nrenovações. Você pode altera-lo quando \nquiser</string>
     <string name="schedule_confirm_plan">Confirmar plano</string>
     <string name="schedule_select_plan_message">Selecione um plano para continuar.</string>
+    <string name="schedule_select_date_message">Selecione uma data para continuar.</string>
     <string name="schedule_plan_type_pre">Pré</string>
     <string name="schedule_plan_type_control">Controle</string>
     <string name="schedule_change_plan_title">Trocar plano da programada</string>
@@ -126,6 +127,7 @@
     <string name="schedule_success_subtitle">Suas recargas serão feitas automaticamente a cada 30 dias a partir do dia escolhido.</string>
     <string name="schedule_success_due_date">Vencimento: %s</string>
     <string name="schedule_success_next_recharge">Próxima recarga: %s</string>
+    <string name="schedule_recharge_not_created">Não foi possível criar sua recarga programada. Nenhuma cobrança futura foi agendada. Tente novamente.</string>
     <string name="payment_summary">Resumo</string>
     <string name="payment_total">Total</string>
     <string name="payment_finalize_recharge">Finalizar recarga</string>

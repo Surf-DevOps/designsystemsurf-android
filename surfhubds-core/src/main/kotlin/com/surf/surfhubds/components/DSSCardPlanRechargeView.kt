@@ -110,17 +110,39 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     }
 
     private fun setupTree() {
-        val width122 = 122f.dpToPx(context)
-        val height90 = 90f.dpToPx(context)
+        val minBlockWidth = 122f.dpToPx(context)
         // iOS: contentCard fica 10pt abaixo da validity, e o renewButton 10pt abaixo
         // do contentCard (setupConstraintsCard: constant: 10 em ambos).
         val gap10 = 10f.dpToPx(context)
+        val fontScale = resources.configuration.fontScale
 
-        // Linha superior: validity (esq) | spacer flexível | data (dir)
-        val topRow = LinearLayout(context).apply { orientation = HORIZONTAL }
-        topRow.addView(validityView, LayoutParams(width122, height90))
-        topRow.addView(View(context), LayoutParams(0, 1, 1f))
-        topRow.addView(dataView, LayoutParams(width122, height90))
+        // Os blocos eram fixos em 122x90dp. Na escala 1.0 o conteúdo já ocupava ~87dp dos
+        // 90dp, então qualquer aumento de fonte do sistema cortava "válido até .." e
+        // "disponível ..GB". Agora a altura é sempre WRAP_CONTENT e 122dp virou largura
+        // MÍNIMA — na escala 1.0 o resultado é idêntico ao anterior.
+        validityView.minimumWidth = minBlockWidth
+        dataView.minimumWidth = minBlockWidth
+
+        // Acima de [STACK_FONT_SCALE] os dois blocos não caberiam lado a lado sem quebrar
+        // "24GB"/"25 dias" no meio, então empilham e cada um usa a largura inteira.
+        val stacked = fontScale >= STACK_FONT_SCALE
+        val topRow = LinearLayout(context).apply {
+            orientation = if (stacked) VERTICAL else HORIZONTAL
+        }
+        if (stacked) {
+            topRow.addView(validityView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
+            topRow.addView(
+                dataView,
+                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                    topMargin = gap10
+                },
+            )
+        } else {
+            // Linha superior: validity (esq) | spacer flexível | data (dir)
+            topRow.addView(validityView, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
+            topRow.addView(View(context), LayoutParams(0, 1, 1f))
+            topRow.addView(dataView, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
+        }
         addView(topRow, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
 
         addView(
@@ -136,12 +158,24 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
             //   <SlideToActView android:layout_height="44dp"
             //                   app:area_margin="4dp" app:icon_margin="8dp" />
             // Os margins são configurados em DSSSwipeView.
-            LayoutParams(LayoutParams.MATCH_PARENT, 44f.dpToPx(context)).apply {
+            //
+            // O `text_size` (16sp) do SlideToActView só é lido do style no construtor, não
+            // tem setter — então a altura acompanha a escala da fonte, senão o texto
+            // "Repetir recarga R$ .." seria cortado dentro dos 44dp fixos. Em 1.0 dá
+            // exatamente 44dp.
+            LayoutParams(LayoutParams.MATCH_PARENT, sliderHeight(fontScale)).apply {
                 topMargin = gap10
                 gravity = Gravity.BOTTOM
             },
         )
     }
+
+    /**
+     * Altura do slider proporcional à escala de fonte, limitada a [MAX_SLIDER_SCALE] para o
+     * thumb não virar um botão gigante nas escalas de acessibilidade mais altas.
+     */
+    private fun sliderHeight(fontScale: Float): Int =
+        (44f * fontScale.coerceIn(1f, MAX_SLIDER_SCALE)).dpToPx(context)
 
     /** Configura via parâmetros nomeados (mesmo método de iOS). */
     fun configure(
@@ -262,5 +296,11 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     private companion object {
         /** iOS UIColor.systemGray3 (dark) = (72,72,74) — borda do card no modo dark. */
         val SYSTEM_GRAY3_DARK = Color.argb(255, 72, 72, 74)
+
+        /** A partir desta escala de fonte validade e dados empilham em vez de ficar lado a lado. */
+        const val STACK_FONT_SCALE = 1.3f
+
+        /** Teto para o crescimento da altura do slider. */
+        const val MAX_SLIDER_SCALE = 1.6f
     }
 }

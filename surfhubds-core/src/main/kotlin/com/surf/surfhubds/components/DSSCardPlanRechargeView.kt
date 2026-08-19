@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import com.surf.surfhubds.theme.DSSColors
@@ -114,35 +113,19 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
         // iOS: contentCard fica 10pt abaixo da validity, e o renewButton 10pt abaixo
         // do contentCard (setupConstraintsCard: constant: 10 em ambos).
         val gap10 = 10f.dpToPx(context)
-        val fontScale = resources.configuration.fontScale
 
         // Os blocos eram fixos em 122x90dp. Na escala 1.0 o conteúdo já ocupava ~87dp dos
-        // 90dp, então qualquer aumento de fonte do sistema cortava "válido até .." e
-        // "disponível ..GB". Agora a altura é sempre WRAP_CONTENT e 122dp virou largura
-        // MÍNIMA — na escala 1.0 o resultado é idêntico ao anterior.
+        // 90dp, então qualquer aumento de fonte cortava "válido até .." e "disponível ..GB".
+        // Agora a altura é WRAP_CONTENT e 122dp virou largura MÍNIMA.
         validityView.minimumWidth = minBlockWidth
         dataView.minimumWidth = minBlockWidth
 
-        // Acima de [STACK_FONT_SCALE] os dois blocos não caberiam lado a lado sem quebrar
-        // "24GB"/"25 dias" no meio, então empilham e cada um usa a largura inteira.
-        val stacked = fontScale >= STACK_FONT_SCALE
-        val topRow = LinearLayout(context).apply {
-            orientation = if (stacked) VERTICAL else HORIZONTAL
-        }
-        if (stacked) {
-            topRow.addView(validityView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
-            topRow.addView(
-                dataView,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    topMargin = gap10
-                },
-            )
-        } else {
-            // Linha superior: validity (esq) | spacer flexível | data (dir)
-            topRow.addView(validityView, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
-            topRow.addView(View(context), LayoutParams(0, 1, 1f))
-            topRow.addView(dataView, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
-        }
+        // Linha superior: validity (esq) | spacer flexível | data (dir). Vira coluna sozinha
+        // quando os dois não couberem lado a lado — ver [DSSAdaptiveRow].
+        val topRow = DSSAdaptiveRow(context).apply { stackedGap = gap10 }
+        topRow.addView(validityView, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
+        topRow.addSpacer()
+        topRow.addView(dataView, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
         addView(topRow, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
 
         addView(
@@ -154,28 +137,26 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
 
         addView(
             renewButtonSlider,
-            // 44dp espelha exatamente o XML do flachip-android:
+            // 44dp espelha o XML do flachip-android:
             //   <SlideToActView android:layout_height="44dp"
             //                   app:area_margin="4dp" app:icon_margin="8dp" />
             // Os margins são configurados em DSSSwipeView.
             //
-            // O `text_size` (16sp) do SlideToActView só é lido do style no construtor, não
-            // tem setter — então a altura acompanha a escala da fonte, senão o texto
-            // "Repetir recarga R$ .." seria cortado dentro dos 44dp fixos. Em 1.0 dá
-            // exatamente 44dp.
-            LayoutParams(LayoutParams.MATCH_PARENT, sliderHeight(fontScale)).apply {
+            // A altura acompanha a escala da fonte porque o `text_size` (16sp) do
+            // SlideToActView só é lido do style no construtor e não tem setter: com 44dp
+            // fixos o texto "Repetir recarga R$ .." era cortado. Proporcional (não por
+            // limiar), com teto para o thumb não virar um botão gigante.
+            LayoutParams(LayoutParams.MATCH_PARENT, sliderHeight()).apply {
                 topMargin = gap10
                 gravity = Gravity.BOTTOM
             },
         )
     }
 
-    /**
-     * Altura do slider proporcional à escala de fonte, limitada a [MAX_SLIDER_SCALE] para o
-     * thumb não virar um botão gigante nas escalas de acessibilidade mais altas.
-     */
-    private fun sliderHeight(fontScale: Float): Int =
-        (44f * fontScale.coerceIn(1f, MAX_SLIDER_SCALE)).dpToPx(context)
+    private fun sliderHeight(): Int {
+        val scale = resources.configuration.fontScale.coerceIn(1f, MAX_SLIDER_SCALE)
+        return (44f * scale).dpToPx(context)
+    }
 
     /** Configura via parâmetros nomeados (mesmo método de iOS). */
     fun configure(
@@ -296,9 +277,6 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     private companion object {
         /** iOS UIColor.systemGray3 (dark) = (72,72,74) — borda do card no modo dark. */
         val SYSTEM_GRAY3_DARK = Color.argb(255, 72, 72, 74)
-
-        /** A partir desta escala de fonte validade e dados empilham em vez de ficar lado a lado. */
-        const val STACK_FONT_SCALE = 1.3f
 
         /** Teto para o crescimento da altura do slider. */
         const val MAX_SLIDER_SCALE = 1.6f

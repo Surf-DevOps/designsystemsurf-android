@@ -40,9 +40,11 @@ class DSSScheduleOfferCardView @JvmOverloads constructor(
     private val planNameLabel = TextView(context).apply {
         textSize = 20f
         typeface = DSSFont.bold(context, 20f).typeface
-        // iOS: numberOfLines padrão = 1 (priceLabel é compression-resistant) -> trunca no fim
-        maxLines = 1
-        ellipsize = android.text.TextUtils.TruncateAt.END
+        // Era maxLines=1 + ellipsize END (paridade iOS): com a fonte ampliada o nome era
+        // comprimido pelo preço e virava "Plano 50 - Me...". Deixar quebrar em linha é o
+        // que preserva a informação em qualquer escala.
+        setSingleLine(false)
+        maxLines = Int.MAX_VALUE
     }
     private val priceLabel = TextView(context).apply { gravity = Gravity.END; maxLines = 1 }
     private val badge = TextView(context).apply {
@@ -73,7 +75,11 @@ class DSSScheduleOfferCardView @JvmOverloads constructor(
         card.setPadding(hPad, vPad, hPad, vPad)
         card.addView(headerLabel)
 
-        val nameRow = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        // Nome | preço: quebra em coluna sozinho quando os dois não couberem na linha.
+        val nameRow = DSSAdaptiveRow(context).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            stackedGap = 4f.dpToPx(context)
+        }
         nameRow.addView(planNameLabel, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         nameRow.addView(priceLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         card.addView(
@@ -83,11 +89,14 @@ class DSSScheduleOfferCardView @JvmOverloads constructor(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply { topMargin = 8f.dpToPx(context) },
         )
+        // Altura era fixa em 28dp e cortava o texto em cima e embaixo com a fonte ampliada.
+        // O padding do próprio badge já dá a forma de pílula; 28dp fica só como mínimo.
+        badge.minHeight = 28f.dpToPx(context)
         card.addView(
             badge,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                28f.dpToPx(context),
+                LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply { topMargin = 12f.dpToPx(context) },
         )
         card.addView(

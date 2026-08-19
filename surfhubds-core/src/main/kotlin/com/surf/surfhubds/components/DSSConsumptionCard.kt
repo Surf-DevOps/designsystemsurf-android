@@ -93,11 +93,17 @@ class DSSConsumptionCard @JvmOverloads constructor(
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun setupTree() {
-        // Container ocupando 65dp de altura
-        addView(
-            container,
-            LayoutParams(LayoutParams.MATCH_PARENT, 65f.dpToPx(context)),
-        )
+        // `container` era um FrameLayout de 65dp com os dois blocos posicionados por gravity
+        // START / END. Em FrameLayout nada impede sobreposição: com a fonte ampliada os dois
+        // cresciam e "Total disponível" era desenhado por cima do valor. Agora é uma linha de
+        // verdade (que vira coluna quando não couber) e a altura acompanha o conteúdo.
+        val row = DSSAdaptiveRow(context).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            stackedGap = 4f.dpToPx(context)
+            minimumHeight = 65f.dpToPx(context)
+            val h = 20f.dpToPx(context)
+            setPadding(h, 8f.dpToPx(context), h, 8f.dpToPx(context))
+        }
 
         // ícone à esquerda + título
         val leftStack = LinearLayout(context).apply {
@@ -112,10 +118,14 @@ class DSSConsumptionCard @JvmOverloads constructor(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
             ).apply { leftMargin = 12f.dpToPx(context) },
         )
-        val leftLp = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        leftLp.gravity = Gravity.START or Gravity.CENTER_VERTICAL
-        leftLp.leftMargin = 20f.dpToPx(context)
-        container.addView(leftStack, leftLp)
+        row.addView(
+            leftStack,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            ),
+        )
+        row.addSpacer()
 
         // direita: used / total
         val rightStack = LinearLayout(context).apply {
@@ -130,10 +140,18 @@ class DSSConsumptionCard @JvmOverloads constructor(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
             ).apply { leftMargin = 5f.dpToPx(context) },
         )
-        val rightLp = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        rightLp.gravity = Gravity.END or Gravity.CENTER_VERTICAL
-        rightLp.rightMargin = 20f.dpToPx(context)
-        container.addView(rightStack, rightLp)
+        row.addView(
+            rightStack,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            ),
+        )
+
+        container.addView(row, FrameLayout.LayoutParams(
+            LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT,
+        ))
+        addView(container, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
     }
 
     private fun refresh() {

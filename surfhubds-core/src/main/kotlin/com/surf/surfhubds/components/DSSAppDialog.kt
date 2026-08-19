@@ -170,9 +170,13 @@ class DSSAppDialog : DialogFragment() {
             return
         }
 
-        val buttonsRow = LinearLayout(ctx).apply {
-            orientation = LinearLayout.HORIZONTAL
+        // Era um LinearLayout com dois filhos de peso 1: com a fonte ampliada cada botão
+        // ficava com metade da largura, o rótulo quebrava em duas linhas e a altura da linha
+        // não acompanhava — "Tentar novamente" saía cortado ao meio. O DSSAdaptiveRow mede a
+        // largura natural dos rótulos e empilha os botões quando não couberem lado a lado.
+        val buttonsRow = DSSAdaptiveRow(ctx).apply {
             weightSum = 2f
+            stackedGap = 8f.dpToPx(ctx)
         }
         val gap = 6f.dpToPx(ctx)
 

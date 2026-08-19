@@ -54,7 +54,9 @@ class DSSUsageCard @JvmOverloads constructor(
     private val iconView = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
     private val titleLabel = TextView(context).apply { textSize = 16f; typeface = DSSFont.light(context, 16f).typeface }
     private val divider = View(context)
-    private val infoRow = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+    // Adaptive: com a fonte ampliada a coluna da esquerda quebrava em duas linhas e o
+    // "% utilizados" ficava encostado nela. Não caindo na linha, os dois empilham.
+    private val infoRow = DSSAdaptiveRow(context).apply { gravity = Gravity.CENTER_VERTICAL }
     private val availableLabel = TextView(context).apply { textSize = 16f; typeface = DSSFont.light(context, 16f).typeface }
     private val totalLabel = TextView(context).apply { textSize = 14f; typeface = DSSFont.light(context, 14f).typeface }
     private val usedLabel = TextView(context).apply { textSize = 14f; typeface = DSSFont.light(context, 14f).typeface; gravity = Gravity.END }
@@ -85,8 +87,15 @@ class DSSUsageCard @JvmOverloads constructor(
         val leftCol = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
         leftCol.addView(availableLabel)
         leftCol.addView(totalLabel)
+        infoRow.stackedGap = 4f.dpToPx(context)
         infoRow.addView(leftCol, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        infoRow.addView(usedLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+        infoRow.addView(
+            usedLabel,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply { leftMargin = 8f.dpToPx(context) },
+        )
         container.addView(
             infoRow,
             LinearLayout.LayoutParams(

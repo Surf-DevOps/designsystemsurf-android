@@ -3,8 +3,10 @@ package com.surf.surfhubds.components
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -19,6 +21,8 @@ import com.surf.surfhubds.util.DateHelpers
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
+import kotlin.math.ceil
+import kotlin.math.max
 
 /**
  * Port do `DSSCardPlanRechargeView` do iOS — cartão principal de plano + recarga,
@@ -124,7 +128,7 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
         // quando os dois não couberem lado a lado — ver [DSSAdaptiveRow].
         val topRow = DSSAdaptiveRow(context).apply { stackedGap = gap10 }
         topRow.addView(validityView, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
-        topRow.addSpacer()
+        topRow.addSpacer(minWidth = 12f.dpToPx(context))
         topRow.addView(dataView, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
         addView(topRow, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
 
@@ -153,9 +157,20 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
         )
     }
 
+    /**
+     * Altura mínima que cabe o rótulo do slider. Escalar a altura por `fontScale` engordava
+     * o thumb (que é derivado da altura) e ele passava por cima do texto; aqui a altura só
+     * cresce quando a linha de 16sp realmente não couber nos 44dp originais.
+     */
     private fun sliderHeight(): Int {
-        val scale = resources.configuration.fontScale.coerceIn(1f, MAX_SLIDER_SCALE)
-        return (44f * scale).dpToPx(context)
+        val base = 44f.dpToPx(context)
+        val textPx = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_SP, SLIDER_TEXT_SP, resources.displayMetrics,
+        )
+        val metrics = Paint().apply { textSize = textPx }.fontMetrics
+        val lineHeight = ceil((-metrics.top + metrics.bottom).toDouble()).toInt()
+        // 2*area_margin (4dp) do SlideToActView + uma folga de respiro.
+        return max(base, lineHeight + 16f.dpToPx(context))
     }
 
     /** Configura via parâmetros nomeados (mesmo método de iOS). */
@@ -278,7 +293,7 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
         /** iOS UIColor.systemGray3 (dark) = (72,72,74) — borda do card no modo dark. */
         val SYSTEM_GRAY3_DARK = Color.argb(255, 72, 72, 74)
 
-        /** Teto para o crescimento da altura do slider. */
-        const val MAX_SLIDER_SCALE = 1.6f
+        /** `text_size` do SlideToActView (ver res/values/dss_swipe.xml). */
+        const val SLIDER_TEXT_SP = 16f
     }
 }

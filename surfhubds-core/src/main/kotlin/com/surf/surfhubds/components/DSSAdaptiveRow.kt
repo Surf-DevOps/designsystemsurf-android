@@ -39,9 +39,14 @@ class DSSAdaptiveRow @JvmOverloads constructor(
     /**
      * Espaçador flexível: empurra os filhos para as pontas no modo linha e desaparece no
      * modo coluna (onde cada filho já ocupa a largura inteira).
+     *
+     * @param minWidth folga MÍNIMA entre os filhos. Sem ela, quando os filhos couberem por
+     *   pouco o espaçador colapsa a zero e os textos ficam encostados um no outro. Essa
+     *   folga entra na conta de caber, então a linha quebra antes de os textos se tocarem.
      */
-    fun addSpacer() {
-        addView(View(context).apply { tag = SPACER_TAG }, LayoutParams(0, 1, 1f))
+    @JvmOverloads
+    fun addSpacer(minWidth: Int = 0) {
+        addView(View(context).apply { tag = SPACER_TAG }, LayoutParams(minWidth, 1, 1f))
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -60,8 +65,12 @@ class DSSAdaptiveRow @JvmOverloads constructor(
         var total = 0
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (child.tag == SPACER_TAG || child.visibility == GONE) continue
             val lp = child.layoutParams as LayoutParams
+            if (child.tag == SPACER_TAG) {
+                total += lp.width  // folga mínima exigida
+                continue
+            }
+            if (child.visibility == GONE) continue
             child.measure(
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
                 MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.UNSPECIFIED),

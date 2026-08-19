@@ -93,9 +93,11 @@ class DSSContentCardView @JvmOverloads constructor(
         if (type == PaymentType.PIX) "Pix" else AppStrings.brand(context, "card_plan_credit_card", "Cartão de crédito")
 
     private fun buildOptionRow(type: PaymentType, name: String, editing: Boolean): android.view.View {
-        val row = LinearLayout(context).apply {
-            orientation = HORIZONTAL
+        // Adaptativa: em fontScale 2.0 "Cartão de crédito" e o link "Alterar" não cabiam na
+        // linha e ficavam colados/cortados na borda do card.
+        val row = DSSAdaptiveRow(context).apply {
             gravity = Gravity.CENTER_VERTICAL
+            stackedGap = 4f.dpToPx(context)
         }
         val sz = 30f.dpToPx(context)
         val icon = ImageView(context).apply {
@@ -138,7 +140,7 @@ class DSSContentCardView @JvmOverloads constructor(
                 leftMargin = (if (editing) 4f else 25f).dpToPx(context)
             },
         )
-        row.addView(FrameLayout(context), LayoutParams(0, 1, 1f))
+        row.addSpacer(minWidth = 12f.dpToPx(context))
         row.addView(action)
         return row
     }

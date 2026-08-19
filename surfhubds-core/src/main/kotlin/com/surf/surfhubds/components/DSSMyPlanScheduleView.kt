@@ -147,9 +147,10 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
 
         offerCard.addView(headerLabel)
 
-        val nameRow = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        val nameRow = DSSAdaptiveRow(context).apply { gravity = Gravity.CENTER_VERTICAL }
         nameRow.addView(planNameLabel, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         nameRow.addView(priceLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+        nameRow.stackedGap = 4f.dpToPx(context)
         offerCard.addView(
             nameRow,
             LinearLayout.LayoutParams(
@@ -158,9 +159,21 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
             ).apply { topMargin = 8f.dpToPx(context) },
         )
 
-        val badgeRow = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        badgeRow.addView(renewalBadge, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 28f.dpToPx(context)))
-        badgeRow.addView(View(context), LinearLayout.LayoutParams(0, 1, 1f))
+        // Badge tinha 28dp fixos (cortava o texto ampliado) e a linha badge|Antecipar não
+        // cabia, empurrando o link para fora da borda da tela.
+        renewalBadge.minHeight = 28f.dpToPx(context)
+        val badgeRow = DSSAdaptiveRow(context).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            stackedGap = 8f.dpToPx(context)
+        }
+        badgeRow.addView(
+            renewalBadge,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ),
+        )
+        badgeRow.addSpacer(minWidth = 12f.dpToPx(context))
         badgeRow.addView(anteciparLink)
         offerCard.addView(
             badgeRow,
@@ -205,7 +218,7 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
             saveButton,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                50f.dpToPx(context),
+                LinearLayout.LayoutParams.WRAP_CONTENT,
             ).apply { topMargin = 16f.dpToPx(context); leftMargin = 8f.dpToPx(context); rightMargin = 8f.dpToPx(context) },
         )
     }

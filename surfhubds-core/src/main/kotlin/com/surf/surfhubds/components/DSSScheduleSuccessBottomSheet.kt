@@ -396,7 +396,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
         private val SYSTEM_BLUE = Color.parseColor("#007AFF")
 
         private val displayFormatter: SimpleDateFormat by lazy {
-            SimpleDateFormat("dd MMM. yyyy", Locale("pt", "BR"))
+            SimpleDateFormat("dd MMM yyyy", Locale("pt", "BR"))
         }
         private val isoFormatter: SimpleDateFormat by lazy {
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US).apply {
@@ -409,7 +409,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             }
         }
 
-        /** Conveniência: converte uma string ISO 8601 para o formato exibido "dd MMM. yyyy". */
+        /** Conveniência: converte uma string ISO 8601 para o formato exibido "dd MMM yyyy". */
         fun displayDate(iso: String): String {
             // iOS tenta primeiro com segundos fracionados (isoFormatter) e depois sem (isoFormatterNoFraction).
             val parsed: Date? = parseOrNull(isoFormatter, iso) ?: parseOrNull(isoFormatterNoFraction, iso)

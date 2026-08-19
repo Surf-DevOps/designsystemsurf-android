@@ -14,6 +14,7 @@ import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
 
 /**
@@ -137,8 +138,7 @@ class DSSScheduleOfferCardView @JvmOverloads constructor(
         planNameLabel.text = planName
         badge.text = badgeText
         descriptionLabel.text = descriptionText
-        val reais = priceCents / 100
-        priceLabel.text = "R$$reais/mês"
+        priceLabel.text = "R$${Utility.formatPriceCompact(priceCents)}/mês"
         priceLabel.typeface = DSSFont.bold(context, 16f).typeface
         priceLabel.textSize = 16f
         if (date != null) {

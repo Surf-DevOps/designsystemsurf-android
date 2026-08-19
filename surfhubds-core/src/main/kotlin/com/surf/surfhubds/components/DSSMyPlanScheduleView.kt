@@ -14,6 +14,7 @@ import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.dpToPx
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -43,7 +44,7 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
     private val isoFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
         timeZone = TimeZone.getTimeZone("UTC")
     }
-    private val displayFormatter = SimpleDateFormat("dd MMM. yyyy", Locale("pt", "BR"))
+    private val displayFormatter = SimpleDateFormat("dd MMM yyyy", Locale("pt", "BR"))
 
     private var isAnticipationMode = false
     private var backendDate: Date? = null
@@ -274,8 +275,7 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
         } else {
             dateLabel.text = renewalDateIso
         }
-        val reais = priceCents / 100
-        priceLabel.text = "R$$reais/mês"
+        priceLabel.text = "R$${Utility.formatPriceCompact(priceCents)}/mês"
         priceLabel.typeface = DSSFont.bold(context, 16f).typeface
         priceLabel.textSize = 16f
     }

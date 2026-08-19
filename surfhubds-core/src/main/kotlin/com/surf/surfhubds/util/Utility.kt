@@ -102,6 +102,22 @@ object Utility {
         return fmt.format(reais)
     }
 
+    /**
+     * Reais SEM casas decimais quando o valor é inteiro, e COM duas casas quando há centavos.
+     *
+     * Existe porque as telas divergiam: `priceCents / 100` (divisão INTEIRA) mostrava um valor
+     * de 5001 centavos como "R$50", enquanto a faixa de programada, que dividia por 100.0,
+     * mostrava "R$50,01" para o mesmo dado. Truncar esconde a diferença em vez de resolvê-la.
+     */
+    fun formatPriceCompact(priceInCents: Int): String {
+        if (priceInCents % 100 == 0) return (priceInCents / 100).toString()
+        val fmt = NumberFormat.getNumberInstance(brLocale).apply {
+            minimumFractionDigits = 2
+            maximumFractionDigits = 2
+        }
+        return fmt.format(priceInCents / 100.0)
+    }
+
     fun formatDateToDDMM(iso8601String: String): String {
         val date = parseISO8601(iso8601String) ?: return ""
         return SimpleDateFormat("dd/MM", brLocale).format(date)

@@ -19,6 +19,7 @@ import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
 import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.AppStrings
+import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 import kotlin.math.roundToInt
@@ -124,12 +125,7 @@ class DSSCardCollectionView @JvmOverloads constructor(
      */
     private fun programadaText(card: Card): String? {
         val recurrence = card.recurrence ?: return null
-        val reais = recurrence.planValue / 100.0
-        val valueStr = if (reais == reais.roundToInt().toDouble()) {
-            "R$${reais.toInt()}"
-        } else {
-            String.format(java.util.Locale.US, "R$%.2f", reais).replace(".", ",")
-        }
+        val valueStr = "R$${Utility.formatPriceCompact(recurrence.planValue.roundToInt())}"
         return AppStrings.brand(context, "card_collection_scheduled_badge_format", "Cartão com programada de %1\$s", valueStr)
     }
 

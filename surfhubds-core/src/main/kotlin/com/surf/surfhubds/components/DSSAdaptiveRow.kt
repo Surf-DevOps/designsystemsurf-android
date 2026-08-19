@@ -71,11 +71,20 @@ class DSSAdaptiveRow @JvmOverloads constructor(
                 continue
             }
             if (child.visibility == GONE) continue
-            child.measure(
-                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-                MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.UNSPECIFIED),
-            )
-            total += child.measuredWidth + lp.leftMargin + lp.rightMargin
+            // Largura exata declarada manda. Medir com UNSPECIFIED um filho de tamanho fixo
+            // devolve o tamanho INTRÍNSECO do conteúdo — para um ImageView isso é o tamanho do
+            // drawable, muito maior que os poucos dp que ele realmente ocupa, e a linha
+            // quebrava mesmo com espaço sobrando.
+            val width = if (lp.width > 0) {
+                lp.width
+            } else {
+                child.measure(
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                    MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.UNSPECIFIED),
+                )
+                child.measuredWidth
+            }
+            total += width + lp.leftMargin + lp.rightMargin
         }
         return total
     }
@@ -99,7 +108,9 @@ class DSSAdaptiveRow @JvmOverloads constructor(
             // Mutação direta dos campos do LayoutParams (em vez de setLayoutParams) para não
             // disparar requestLayout no meio do measure.
             if (value) {
-                lp.width = LayoutParams.MATCH_PARENT
+                // Filho de largura FIXA (ícone, chevron) mantém a largura: esticar para
+                // MATCH_PARENT fazia o ImageView com FIT_CENTER centralizar o desenho.
+                lp.width = if ((rowWidths[child] ?: 0) > 0) rowWidths[child]!! else LayoutParams.MATCH_PARENT
                 // Em coluna o peso passaria a distribuir ALTURA e esticaria os filhos.
                 lp.weight = 0f
                 lp.topMargin = if (firstContent) 0 else stackedGap

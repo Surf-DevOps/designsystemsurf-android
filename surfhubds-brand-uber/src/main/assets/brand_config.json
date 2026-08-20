@@ -1,6 +1,6 @@
 {
   "brandIdentifier": "uber",
-  "primaryColorHex": "#FFFFFF",
+  "primaryColorHex": "#000000",
   "enableChat": true,
   "apiBaseURL": ""
 }

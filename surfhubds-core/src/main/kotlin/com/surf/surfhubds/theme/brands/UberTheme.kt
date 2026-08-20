@@ -8,9 +8,9 @@ import com.surf.surfhubds.tokens.ColorValue
 // Gerado pelo brand-builder — espelho do UberTheme.swift (iOS).
 class UberTheme : DefaultTheme() {
     override fun buildColors(): ColorTokens = ColorTokens(
-        primary = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
+        primary = ColorValue.fromHex("#000000", "#FFFFFF"),
         secondary = ColorValue.fromHex("#BEC8D0", "#1C1C1E"),
-        primaryButton = ColorValue.fromHex("#FFFFFF", "#FFFFFF"),
+        primaryButton = ColorValue.fromHex("#000000", "#FFFFFF"),
         buttonText = ColorValue.fromHex("#FFFFFF", "#000000"),
         surface = ColorValue.fromHex("#FFFFFF", "#1C1C1E"),
         background = ColorValue.fromHex("#FFFFFF", "#1C1C1E"),

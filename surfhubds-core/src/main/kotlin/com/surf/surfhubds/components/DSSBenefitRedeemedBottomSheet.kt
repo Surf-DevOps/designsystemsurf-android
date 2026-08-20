@@ -42,7 +42,7 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
 
     var delegate: Delegate? = null
 
-    /** Ilustração "ilBenefitSuccess" provida pelo módulo de brand. */
+    /** Ilustração de sucesso; por padrão a "Imagem de Sucesso" (success_image) da brand. */
     var illustration: Drawable? = null
 
     private var bonusText: String = ""
@@ -116,23 +116,19 @@ class DSSBenefitRedeemedBottomSheet : BottomSheetDialogFragment() {
         root.addView(handle, LinearLayout.LayoutParams(40f.dpToPx(ctx), 5f.dpToPx(ctx)))
 
         // Success icon / brand illustration.
-        // iOS: ImageLoader.image(named: "ilBenefitSuccess") ?? SF Symbol "checkmark.seal.fill",
-        // com tintColor = DSSColors.primary.
+        // "Imagem de Sucesso" (success_image) da brand, mesma fonte usada pelo
+        // DSSScheduledCardBottomSheet. Antes procurava "ilBenefitSuccess", nome que nenhum
+        // módulo de brand define, então caía sempre no checkbox do próprio Android.
         val successIcon = ImageView(ctx).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
-            val explicit = illustration
-            if (explicit != null) {
-                setImageDrawable(explicit)
+            val drawable = illustration ?: ImageLoader.image(ctx, "success_image")
+            if (drawable != null) {
+                setImageDrawable(drawable)
             } else {
-                val brandImage = ImageLoader.image(ctx, "ilbenefitsuccess")
-                if (brandImage != null) {
-                    setImageDrawable(brandImage)
-                } else {
-                    setImageResource(android.R.drawable.checkbox_on_background)
-                }
+                // Sem imagem da brand: ícone genérico, aí sim tingido com a cor primária.
+                setImageResource(android.R.drawable.checkbox_on_background)
+                setColorFilter(DSSColors.primary())
             }
-            // iOS: iv.tintColor = DSSColors.primary aplicado em todos os casos.
-            setColorFilter(DSSColors.primary())
         }
         root.addView(successIcon, LinearLayout.LayoutParams(
             80f.dpToPx(ctx), 80f.dpToPx(ctx),

@@ -16,6 +16,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import com.surf.surfhubds.R
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
@@ -87,17 +88,19 @@ class DSSConsumptionChart @JvmOverloads constructor(
         setColorFilter(DSSColors.primary(), PorterDuff.Mode.SRC_IN)
     }
 
+    private val centerStack = LinearLayout(context).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER
+    }
+
+    // Linha do total: [totalLabel] [4dp] [arrow 16x16] (iOS: arrow trailing do totalLabel, centerY igual).
+    private val totalRow = LinearLayout(context).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER
+    }
+
     init {
         addView(arcView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
-        val centerStack = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-        }
-        // Linha do total: [totalLabel] [4dp] [arrow 16x16] (iOS: arrow trailing do totalLabel, centerY igual).
-        val totalRow = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-        }
         totalRow.addView(totalLabel)
         totalRow.addView(
             arrowButton,
@@ -123,15 +126,35 @@ class DSSConsumptionChart @JvmOverloads constructor(
                 topMargin = 4f.dpToPx(context)
             },
         )
+        // Sem deslocamento aqui: o alinhamento fino sai no onLayout, que precisa das
+        // alturas ja medidas para reproduzir a ancora do iOS.
         val lp = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
             gravity = Gravity.CENTER
-            // iOS: totalLabel.centerY = centerY - 10 -> bloco de texto deslocado 10dp para cima.
-            topMargin = (-10f).dpToPx(context)
         }
         addView(centerStack, lp)
         setOnClickListener { chartAction?.invoke() }
         updateLabels()
         setupThemeObserver()
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        alignCenterStack()
+    }
+
+    /**
+     * O iOS ancora o CENTRO do totalLabel em `centerY - 10` e deixa o usedLabel pendurado
+     * abaixo. Centrar o bloco inteiro (totalRow + usedLabel), como era feito aqui, sobe o
+     * numero por METADE da altura do usedLabel — com as duas linhas de "disponivel / de
+     * X GB" isso dava uns 19dp a mais, e o texto ficava alto dentro do arco.
+     *
+     * translationY nao dispara novo layout, entao nao ha risco de laco.
+     */
+    private fun alignCenterStack() {
+        if (totalRow.height == 0) return
+        val target = height / 2f - 10f.dpToPx(context)
+        val currentTotalRowCenter = centerStack.top + totalRow.top + totalRow.height / 2f
+        centerStack.translationY = target - currentTotalRowCenter
     }
 
     override fun applyTheme(theme: Theme) {
@@ -140,9 +163,14 @@ class DSSConsumptionChart @JvmOverloads constructor(
     }
 
     private fun loadArrowUpRight(): Drawable? {
-        // Procura `ic_arrow_up_right` nos recursos do app, sem falhar se ausente (espelha "arrow.up.right" do iOS).
-        val resId = resources.getIdentifier("ic_arrow_up_right", "drawable", context.packageName)
-        return if (resId != 0) AppCompatResources.getDrawable(context, resId) else null
+        // Um app pode sobrescrever a seta declarando `ic_arrow_up_right` nos proprios recursos.
+        val appRes = resources.getIdentifier("ic_arrow_up_right", "drawable", context.packageName)
+        if (appRes != 0) return AppCompatResources.getDrawable(context, appRes)
+        // Padrao do DS. Antes so havia a busca no app acima: como nenhum app declara esse
+        // nome, a seta simplesmente nunca aparecia — enquanto no iOS ela sempre esteve la
+        // (SF Symbol `arrow.up.right`). `ic_arrow_up_forward` e o mesmo desenho (a mesma
+        // que o TextWithActionLinkView ja usa) e recebe o tint de primary logo acima.
+        return AppCompatResources.getDrawable(context, R.drawable.ic_arrow_up_forward)
     }
 
     private fun updateLabels() {

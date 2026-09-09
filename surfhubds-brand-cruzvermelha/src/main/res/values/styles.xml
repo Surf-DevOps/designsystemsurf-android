@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+      Label do BottomNavigationView com textSize em DP (não SP) de propósito:
+      dp não acompanha o ajuste de tamanho de fonte do sistema, então a barra fica
+      sempre do mesmo tamanho (igual ao emulador) independente do "Tamanho da fonte"
+      configurado no aparelho do usuário.
+    -->
+    <style name="BottomNavLabelTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">@dimen/bottom_nav_label_size</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+</resources>

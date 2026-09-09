@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Gerado pelo brand-builder para "CRUZVERMELHA" (slug: cruzvermelha). -->
+<!-- CruzVermelhaChip (slug: cruzvermelha).
+     Portado de CRUZVERMELHATheme.swift (DSS-iOS), variante .dark. -->
 <resources>
     <color name="primary">#D90915</color>
     <color name="onPrimary">#FFFFFF</color>
     <color name="primaryContainer">#1C1C1E</color>
     <color name="onPrimaryContainer">#FFFFFF</color>
     <color name="secondary">#FFFFFF</color>
-    <color name="onSecondary">#FFFFFF</color>
+    <color name="onSecondary">#212121</color>
     <color name="secondaryContainer">#1C1C1E</color>
     <color name="onSecondaryContainer">#FFFFFF</color>
     <color name="surface">#1C1C1E</color>
@@ -19,4 +20,24 @@
     <color name="onError">#FFFFFF</color>
     <color name="outline">#FFFFFF</color>
     <color name="scrim">#000000</color>
+
+    <!-- tokens DS -->
+    <color name="ds_primary">#D90915</color>
+    <color name="ds_secondary">#FFFFFF</color>
+    <color name="ds_background">#000000</color>
+    <color name="ds_background_secondary">#1C1C1E</color>
+    <color name="ds_text_primary">#FFFFFF</color>
+    <color name="ds_text_secondary">#B0B0B0</color>
+    <color name="ds_text_tertiary">#808080</color>
+    <color name="ds_text_link">#0A84FF</color>
+    <color name="ds_surface">#1C1C1E</color>
+    <color name="ds_button_text">#FFFFFF</color>
+    <color name="ds_primary_button">#D90915</color>
+    <color name="ds_error">#E74C3C</color>
+    <color name="ds_success">#4CAF50</color>
+    <color name="ds_warning">#E08B00</color>
+    <color name="ds_border">#FFFFFF</color>
+    <color name="ds_border_focus">#EA1E2C</color>
+    <color name="ds_divider">#424242</color>
+    <color name="ds_disabled">#BDBDBD</color>
 </resources>

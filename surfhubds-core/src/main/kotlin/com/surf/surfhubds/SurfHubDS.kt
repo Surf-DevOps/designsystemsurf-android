@@ -10,6 +10,7 @@ import com.surf.surfhubds.theme.DefaultTheme
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.brands.BandSportsTheme
+import com.surf.surfhubds.theme.brands.CRUZVERMELHATheme
 import com.surf.surfhubds.theme.brands.CarrefourChipTheme
 import com.surf.surfhubds.theme.brands.ConectaTheme
 import com.surf.surfhubds.theme.brands.CorreiosCelularTheme
@@ -99,6 +100,7 @@ object SurfHubDS {
         Brand.CARREFOURCHIP -> CarrefourChipTheme()
         Brand.CORREIOSCELULAR -> CorreiosCelularTheme()
         Brand.PERNAMBUCANASCHIP -> PernambucanasChipTheme()
+        Brand.CRUZVERMELHA -> CRUZVERMELHATheme()
         Brand.DEFAULT -> DefaultTheme()
     }
 }

@@ -14,6 +14,7 @@ enum class Brand(val raw: String) {
     CARREFOURCHIP("carrefourchip"),
     CORREIOSCELULAR("correioscelular"),
     PERNAMBUCANASCHIP("pernambucanaschip"),
+    CRUZVERMELHA("cruzvermelha"),
     DEFAULT("default");
 
     companion object {

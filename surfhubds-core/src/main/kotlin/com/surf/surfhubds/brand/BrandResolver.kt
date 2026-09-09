@@ -41,6 +41,7 @@ object BrandResolver {
             "carrefourchip" in pkg -> Brand.CARREFOURCHIP
             "correios" in pkg -> Brand.CORREIOSCELULAR
             "pernambucanaschip" in pkg -> Brand.PERNAMBUCANASCHIP
+            "cruzvermelha" in pkg -> Brand.CRUZVERMELHA
             "uber" in pkg -> Brand.UBER
             else -> Brand.DEFAULT
         }

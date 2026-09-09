@@ -127,6 +127,7 @@ object DSSLoadingView {
         Brand.CARREFOURCHIP -> "gif_carrefourchip"
         Brand.CORREIOSCELULAR -> "gif_correioscelular"
         Brand.PERNAMBUCANASCHIP -> "gif_pernambucanaschip"
+        Brand.CRUZVERMELHA -> "gif_cruzvermelha"
         Brand.UBER -> "gif_uber"
     }
 

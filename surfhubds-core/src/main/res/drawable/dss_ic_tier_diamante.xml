@@ -1,0 +1,11 @@
+<!--
+  Losango do tier Uber Pro (Diamante). Duas faces (esquerda clara, direita escura) para dar
+  o mesmo relevo do mock; por isso as cores ficam no vetor e NAO sao tingidas em runtime
+  (um tint unico achataria o losango).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp" android:height="20dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#4A4A4A" android:pathData="M12,3 L4,12 L12,21 Z"/>
+    <path android:fillColor="#111111" android:pathData="M12,3 L20,12 L12,21 Z"/>
+</vector>

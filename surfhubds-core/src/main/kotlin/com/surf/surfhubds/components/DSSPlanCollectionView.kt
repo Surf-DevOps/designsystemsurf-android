@@ -93,6 +93,18 @@ class DSSPlanCollectionView @JvmOverloads constructor(
     /** `planId` (noPlano) do plano vigente, comparado com os planos da lista. */
     private var currentPlanId: String? = null
 
+    /**
+     * Tier Uber Pro do motorista. Quando não-nulo, a tarja de validade ganha o tom do tier
+     * e o valor de dados ganha o losango correspondente; `null` mantém o visual padrão.
+     *
+     * Só a aparência muda — o bônus de internet já vem aplicado no catálogo pelo backend.
+     */
+    var planTier: DSSPlanTier? = null
+        set(value) {
+            field = value
+            adapter.notifyDataSetChanged()
+        }
+
     init {
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = adapter
@@ -185,6 +197,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             holder.cell.configure(
                 plan = plan,
                 showPlanName = showPlanNames,
+                tier = planTier,
             )
             val isExpanded = position == expandedIndex
             holder.cell.setExpanded(isExpanded, animated = false)
@@ -236,6 +249,10 @@ class DSSPlanCollectionView @JvmOverloads constructor(
         private val downArrow = ImageView(context)
         private val untilLabel = TextView(context)
         private val dataLabel = TextView(context)
+        private val tierIcon = ImageView(context)
+
+        /** Tier vigente do card; guardado porque [applyTheme] repinta a tarja de validade. */
+        private var tier: DSSPlanTier? = null
 
         // Expandable
         private val expandableContainer = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
@@ -432,6 +449,16 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
             }
+            tierIcon.apply {
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                visibility = View.GONE
+            }
+            dataRow.addView(
+                tierIcon,
+                LinearLayout.LayoutParams(20f.dpToPx(context), 20f.dpToPx(context)).apply {
+                    rightMargin = 8f.dpToPx(context)
+                },
+            )
             dataRow.addView(
                 dataLabel,
                 LinearLayout.LayoutParams(
@@ -559,7 +586,33 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             mainColumn.addView(expandableContainer)
         }
 
-        fun configure(plan: PlanModel, showPlanName: Boolean) {
+        /**
+         * Pinta a tarja de validade e o losango conforme o [tier]. Sem tier (fora do app da
+         * Uber) volta ao tom da primary da brand, que é o visual padrão do card.
+         *
+         * Chamado tanto por [configure] quanto por [applyTheme]: a troca de tema repinta a
+         * tarja, e sem esta chamada o card perderia o tom do tier ao alternar claro/escuro.
+         */
+        private fun applyTierStyle() {
+            val accent = tier?.accentColor ?: DSSColors.primary()
+            validityLabel.background = DrawableFactory.rounded(
+                context = context,
+                backgroundColor = ColorUtils.setAlphaComponent(accent, 26),
+                cornerRadiusDp = 10f,
+            )
+            val icon = tier?.iconRes
+            if (icon != null) {
+                tierIcon.setImageResource(icon)
+                tierIcon.visibility = View.VISIBLE
+            } else {
+                tierIcon.setImageDrawable(null)
+                tierIcon.visibility = View.GONE
+            }
+        }
+
+        fun configure(plan: PlanModel, showPlanName: Boolean, tier: DSSPlanTier? = null) {
+            this.tier = tier
+            applyTierStyle()
             validityLabel.text = plan.validityText
             val displayPrice = if (plan.parcelas > 1) plan.priceCents / plan.parcelas else plan.priceCents
             // iOS: parcelas>1 -> "Nx R$<valor>" (sem espaço); parcelas==1 -> "R$ <valor>" (com espaço).
@@ -756,11 +809,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             container.elevation = 0f
 
             validityLabel.setTextColor(DSSColors.textPrimary())
-            validityLabel.background = DrawableFactory.rounded(
-                context = context,
-                backgroundColor = ColorUtils.setAlphaComponent(DSSColors.primary(), 26),
-                cornerRadiusDp = 10f,
-            )
+            applyTierStyle()
             priceLabel.setTextColor(DSSColors.textPrimary())
             planNameLabel.setTextColor(DSSColors.textPrimary())
             untilLabel.setTextColor(DSSColors.textPrimary())

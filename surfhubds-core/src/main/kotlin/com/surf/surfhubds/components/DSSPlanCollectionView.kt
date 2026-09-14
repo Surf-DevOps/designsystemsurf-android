@@ -105,6 +105,16 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             adapter.notifyDataSetChanged()
         }
 
+    /**
+     * Densidade do card. Default [DSSPlanCardStyle.STANDARD] — só o app que troca muda de
+     * cara, os demais seguem com o card histórico.
+     */
+    var planCardStyle: DSSPlanCardStyle = DSSPlanCardStyle.STANDARD
+        set(value) {
+            field = value
+            adapter.notifyDataSetChanged()
+        }
+
     init {
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = adapter
@@ -198,6 +208,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 plan = plan,
                 showPlanName = showPlanNames,
                 tier = planTier,
+                style = planCardStyle,
             )
             val isExpanded = position == expandedIndex
             holder.cell.setExpanded(isExpanded, animated = false)
@@ -253,6 +264,13 @@ class DSSPlanCollectionView @JvmOverloads constructor(
 
         /** Tier vigente do card; guardado porque [applyTheme] repinta a tarja de validade. */
         private var tier: DSSPlanTier? = null
+
+        /** Estilo vigente; guardado pelo mesmo motivo do [tier]. */
+        private var cardStyle: DSSPlanCardStyle = DSSPlanCardStyle.STANDARD
+
+        /** Coluna e linha da franquia: as métricas do estilo mexem nos paddings/margens delas. */
+        private lateinit var headerColumn: LinearLayout
+        private lateinit var headerDataRow: LinearLayout
 
         // Expandable
         private val expandableContainer = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
@@ -366,6 +384,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 setPadding(pad, pad, pad, pad)
                 minimumHeight = 130f.dpToPx(context)
             }
+            headerColumn = column
 
             validityLabel.apply {
                 textSize = 12f
@@ -449,6 +468,7 @@ class DSSPlanCollectionView @JvmOverloads constructor(
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
             }
+            headerDataRow = dataRow
             tierIcon.apply {
                 scaleType = ImageView.ScaleType.FIT_CENTER
                 visibility = View.GONE
@@ -598,8 +618,15 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             validityLabel.background = DrawableFactory.rounded(
                 context = context,
                 backgroundColor = ColorUtils.setAlphaComponent(accent, 26),
-                cornerRadiusDp = 10f,
+                cornerRadiusDp = cardStyle.validityCornerRadiusDp,
             )
+            // No compacto o texto da tarja pega o tom do tier, como no desenho. Sem tier ele
+            // volta pra cor de texto do tema — é o que [applyTheme] já faz.
+            if (cardStyle.tintsValidityTextWithTier && tier != null) {
+                validityLabel.setTextColor(accent)
+            } else {
+                validityLabel.setTextColor(DSSColors.textPrimary())
+            }
             val icon = tier?.iconRes
             if (icon != null) {
                 tierIcon.setImageResource(icon)
@@ -610,8 +637,60 @@ class DSSPlanCollectionView @JvmOverloads constructor(
             }
         }
 
-        fun configure(plan: PlanModel, showPlanName: Boolean, tier: DSSPlanTier? = null) {
+        /**
+         * Aplica as métricas do [cardStyle] no header.
+         *
+         * As views do header são montadas uma vez no `init` com os valores do STANDARD; aqui
+         * elas são remedidas. Roda no [configure], então a célula reciclada sempre chega com
+         * o estilo da lista, mesmo que ela tenha sido criada antes da troca.
+         */
+        private fun applyCardStyle() {
+            val pad = cardStyle.headerPaddingDp.dpToPx(context)
+            headerColumn.setPadding(pad, pad, pad, pad)
+            headerColumn.minimumHeight = cardStyle.headerMinHeightDp.dpToPx(context)
+
+            validityLabel.textSize = cardStyle.validityTextSizeSp
+            validityLabel.typeface = DSSFont.light(context, cardStyle.validityTextSizeSp).typeface
+            validityLabel.setPadding(
+                cardStyle.validityPaddingHorizontalDp.dpToPx(context),
+                cardStyle.validityPaddingVerticalDp.dpToPx(context),
+                cardStyle.validityPaddingHorizontalDp.dpToPx(context),
+                cardStyle.validityPaddingVerticalDp.dpToPx(context),
+            )
+            priceLabel.textSize = cardStyle.priceTextSizeSp
+            priceLabel.typeface = DSSFont.bold(context, cardStyle.priceTextSizeSp).typeface
+            planNameLabel.textSize = cardStyle.planNameTextSizeSp
+            planNameLabel.typeface = DSSFont.regular(context, cardStyle.planNameTextSizeSp).typeface
+            untilLabel.textSize = cardStyle.untilTextSizeSp
+            untilLabel.typeface = DSSFont.light(context, cardStyle.untilTextSizeSp).typeface
+            dataLabel.textSize = cardStyle.dataTextSizeSp
+            dataLabel.typeface = DSSFont.bold(context, cardStyle.dataTextSizeSp).typeface
+
+            (untilLabel.layoutParams as? LinearLayout.LayoutParams)?.let {
+                it.topMargin = cardStyle.untilTopMarginDp.dpToPx(context)
+                untilLabel.layoutParams = it
+            }
+            (headerDataRow.layoutParams as? LinearLayout.LayoutParams)?.let {
+                it.topMargin = cardStyle.dataTopMarginDp.dpToPx(context)
+                headerDataRow.layoutParams = it
+            }
+            (tierIcon.layoutParams as? LinearLayout.LayoutParams)?.let {
+                val side = cardStyle.tierIconSizeDp.dpToPx(context)
+                it.width = side
+                it.height = side
+                tierIcon.layoutParams = it
+            }
+        }
+
+        fun configure(
+            plan: PlanModel,
+            showPlanName: Boolean,
+            tier: DSSPlanTier? = null,
+            style: DSSPlanCardStyle = DSSPlanCardStyle.STANDARD,
+        ) {
             this.tier = tier
+            this.cardStyle = style
+            applyCardStyle()
             applyTierStyle()
             validityLabel.text = plan.validityText
             val displayPrice = if (plan.parcelas > 1) plan.priceCents / plan.parcelas else plan.priceCents

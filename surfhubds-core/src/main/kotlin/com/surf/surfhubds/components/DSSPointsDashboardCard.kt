@@ -2,6 +2,9 @@ package com.surf.surfhubds.components
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ClipDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -10,6 +13,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import com.surf.surfhubds.R
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
@@ -148,20 +152,24 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
         availableValue: String,
         availableCaption: String,
         availableProgress: Int,
+        availableProgressMax: Int = 100,
         expiringTitle: String,
         expiringValue: String,
         expiringCaption: String,
-        expiringProgress: Int
+        expiringProgress: Int,
+        expiringProgressMax: Int = 100
     ) {
         availableTitleLabel.text = availableTitle
         availableValueLabel.text = availableValue
         availableCaptionLabel.text = availableCaption
-        availableProgressBar.progress = availableProgress
+        availableProgressBar.max = availableProgressMax.coerceAtLeast(1)
+        availableProgressBar.progress = availableProgress.coerceIn(0, availableProgressBar.max)
         
         expiringTitleLabel.text = expiringTitle
         expiringValueLabel.text = expiringValue
         expiringCaptionLabel.text = expiringCaption
-        expiringProgressBar.progress = expiringProgress
+        expiringProgressBar.max = expiringProgressMax.coerceAtLeast(1)
+        expiringProgressBar.progress = expiringProgress.coerceIn(0, expiringProgressBar.max)
         refresh()
     }
 
@@ -192,8 +200,47 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
         availableIcon.setColorFilter(DSSColors.primary())
         expiringIcon.setColorFilter(DSSColors.secondary())
 
-        // Progress Bars coloring
-        availableProgressBar.progressDrawable = ctx.getDrawable(R.drawable.dss_points_progress_green)
-        expiringProgressBar.progressDrawable = ctx.getDrawable(R.drawable.dss_points_progress_orange)
+        // Barras montadas em runtime: os tokens seguem o tema e a paleta da brand,
+        // ao contrario de um drawable XML de cor fixa.
+        availableProgressBar.setProgressDrawableKeepingLevel(
+            progressBarDrawable(fill = DSSColors.success())
+        )
+        expiringProgressBar.setProgressDrawableKeepingLevel(
+            progressBarDrawable(fill = DSSColors.secondary())
+        )
+    }
+
+    /** Track neutro + preenchimento arredondado, equivalente ao layer-list/clip do XML. */
+    private fun progressBarDrawable(@ColorInt fill: Int): Drawable {
+        val track = DrawableFactory.rounded(
+            context = context,
+            backgroundColor = DSSColors.divider(),
+            cornerRadiusDp = PROGRESS_CORNER_DP
+        )
+        val bar = ClipDrawable(
+            DrawableFactory.rounded(
+                context = context,
+                backgroundColor = fill,
+                cornerRadiusDp = PROGRESS_CORNER_DP
+            ),
+            Gravity.START,
+            ClipDrawable.HORIZONTAL
+        )
+        return LayerDrawable(arrayOf(track, bar)).apply {
+            setId(0, android.R.id.background)
+            setId(1, android.R.id.progress)
+        }
+    }
+
+    /** Trocar o progressDrawable zera o nivel desenhado; reaplica o progresso corrente. */
+    private fun ProgressBar.setProgressDrawableKeepingLevel(drawable: Drawable) {
+        val current = progress
+        progressDrawable = drawable
+        progress = 0
+        progress = current
+    }
+
+    private companion object {
+        const val PROGRESS_CORNER_DP = 4f
     }
 }

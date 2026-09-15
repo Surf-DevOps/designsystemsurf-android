@@ -24,16 +24,30 @@ enum class DSSPlanTier(
 
     companion object {
         /**
-         * Converte o campo `tier` da API (`"Ouro"`, `"Platina"`, `"Diamante"`, `"Azul"`).
+         * Converte o campo `tier` de `spec-mobile/v1/tier/uber/...`.
+         *
+         * O endpoint fala três vocabulários para a mesma coisa, e todos são aceitos:
+         *  - código cru: `"TIER_1"`..`"TIER_4"`
+         *  - `display_name` em inglês: `"Blue"`, `"Gold"`, `"Platinum"`, `"Diamond"`
+         *  - português, como este enum nomeia: `"Azul"`, `"Ouro"`, `"Platina"`, `"Diamante"`
+         *
+         * Antes só o português era reconhecido, e como o endpoint responde em inglês na
+         * maior parte dos ambientes, a recarga ficava com o visual padrão mesmo com tier
+         * válido. Os três seguem aceitos porque nada garante que todos os ambientes
+         * respondam igual.
          *
          * Tolerante a caixa, espaços e acento (`"platina"`, `"PLATINA"`, `"Platina "`), e
          * devolve `null` para qualquer valor desconhecido ou vazio — nesse caso o card fica
          * com o visual padrão em vez de quebrar.
          */
         @JvmStatic
-        fun from(raw: String?): DSSPlanTier? {
-            val normalized = raw?.trim()?.uppercase()?.replace("Â", "A") ?: return null
-            return entries.firstOrNull { it.name == normalized }
-        }
+        fun from(raw: String?): DSSPlanTier? =
+            when (raw?.trim()?.uppercase()?.replace("Â", "A")) {
+                "TIER_1", "BLUE", "AZUL" -> AZUL
+                "TIER_2", "GOLD", "OURO" -> OURO
+                "TIER_3", "PLATINUM", "PLATINA" -> PLATINA
+                "TIER_4", "DIAMOND", "DIAMANTE" -> DIAMANTE
+                else -> null
+            }
     }
 }

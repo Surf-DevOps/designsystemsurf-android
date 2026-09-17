@@ -1,8 +1,10 @@
 package com.surf.surfhubds.util
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.surf.surfhubds.brand.Brand
 import com.surf.surfhubds.brand.BrandResolver
@@ -40,7 +42,33 @@ object ImageLoader {
             }
         }
         val res = imageRes(context, named, brand)
-        return if (res != 0) ContextCompat.getDrawable(context, res) else null
+        return if (res != 0) ContextCompat.getDrawable(themedContext(context), res) else null
+    }
+
+    /**
+     * Contexto cujo `uiMode` reflete o tema do APP (o que o `AppTheme` definiu via
+     * [AppCompatDelegate]) e nao o tema do APARELHO.
+     *
+     * `AppCompatDelegate.setDefaultNightMode` so reescreve a configuracao de contextos
+     * de Activity. Um `@ApplicationContext` — o que os ViewModels recebem via Hilt —
+     * mantem o `uiMode` do sistema, entao resolver um drawable por ali escolhe a pasta
+     * `-night` pelo modo do APARELHO enquanto os tokens de cor do DS seguem o tema do
+     * APP. Num aparelho no escuro com o app no claro isso servia o PNG branco sobre o
+     * fundo branco (era o caso do `carouselimage1` da brand Uber).
+     */
+    private fun themedContext(context: Context): Context {
+        val nightFlag = when (AppCompatDelegate.getDefaultNightMode()) {
+            AppCompatDelegate.MODE_NIGHT_YES -> Configuration.UI_MODE_NIGHT_YES
+            AppCompatDelegate.MODE_NIGHT_NO -> Configuration.UI_MODE_NIGHT_NO
+            // FOLLOW_SYSTEM / UNSPECIFIED: o modo do aparelho ja e o modo do app.
+            else -> return context
+        }
+        val current = context.resources.configuration
+        if ((current.uiMode and Configuration.UI_MODE_NIGHT_MASK) == nightFlag) return context
+        val config = Configuration(current).apply {
+            uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or nightFlag
+        }
+        return context.createConfigurationContext(config)
     }
 
     @DrawableRes

@@ -672,7 +672,7 @@
     <string name="darkmode_example_error_email_required">Email é obrigatório</string>
     <string name="darkmode_example_error_email_invalid">Email deve conter @</string>
     <string name="darkmode_example_success_message">Todos os campos são válidos!</string>
-    <string name="recharge_history_plan_valid_until_format">plano válido até \\(...)</string>
+    <string name="recharge_history_plan_valid_until_format">plano válido até %1$s</string>
     <string name="recharge_completed_scheduled_recharge">Recarga Programada</string>
     <string name="common_number">Número</string>
     <string name="common_value">Valor</string>

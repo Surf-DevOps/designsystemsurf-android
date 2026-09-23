@@ -595,6 +595,8 @@
     <string name="recharge_history_empty">Sem recargas neste mês</string>
     <string name="recharge_history_renewal_type">Renovação de programada</string>
     <string name="recharge_history_renewed_format">Seu plano no valor de %1$s foi renovado!</string>
+    <string name="recharge_history_renewed_with_plan_format">Seu plano %1$s no valor de %2$s foi renovado!</string>
+    <string name="recharge_history_renewed_named_format">Seu %1$s no valor de %2$s foi renovado!</string>
     <string name="recharge_history_valid_until_format">plano válido até %1$s</string>
     <string name="recurrency_failure_title">FALHA NA RECORRÊNCIA</string>
     <string name="recurrency_failure_subtitle">Realize a recarga via PIX e não fique sem internet!</string>

@@ -275,7 +275,7 @@ class DSSMyPlanScheduleView @JvmOverloads constructor(
         } else {
             dateLabel.text = renewalDateIso
         }
-        priceLabel.text = "R$${Utility.formatPriceCompact(priceCents)}/mês"
+        priceLabel.text = "R$${Utility.formatPrice(priceCents)}/mês"
         priceLabel.typeface = DSSFont.bold(context, 16f).typeface
         priceLabel.textSize = 16f
     }

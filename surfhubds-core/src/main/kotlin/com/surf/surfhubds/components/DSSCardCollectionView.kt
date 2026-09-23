@@ -125,7 +125,7 @@ class DSSCardCollectionView @JvmOverloads constructor(
      */
     private fun programadaText(card: Card): String? {
         val recurrence = card.recurrence ?: return null
-        val valueStr = "R$${Utility.formatPriceCompact(recurrence.planValue.roundToInt())}"
+        val valueStr = "R$${Utility.formatPrice(recurrence.planValue.roundToInt())}"
         return AppStrings.brand(context, "card_collection_scheduled_badge_format", "Cartão com programada de %1\$s", valueStr)
     }
 

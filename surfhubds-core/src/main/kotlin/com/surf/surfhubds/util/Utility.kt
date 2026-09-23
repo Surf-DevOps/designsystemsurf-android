@@ -103,20 +103,18 @@ object Utility {
     }
 
     /**
-     * Reais SEM casas decimais quando o valor é inteiro, e COM duas casas quando há centavos.
+     * Mantido só por compatibilidade: valor monetário agora é SEMPRE com duas casas, então
+     * esta função delega para [formatPrice].
      *
-     * Existe porque as telas divergiam: `priceCents / 100` (divisão INTEIRA) mostrava um valor
-     * de 5001 centavos como "R$50", enquanto a faixa de programada, que dividia por 100.0,
-     * mostrava "R$50,01" para o mesmo dado. Truncar esconde a diferença em vez de resolvê-la.
+     * A variante "compacta" omitia os centavos quando o valor era redondo ("R$50" para 5000),
+     * o que fazia a mesma recarga aparecer como "R$50" numa tela e "R$50,00" em outra. Preço
+     * de recarga se lê com centavos sempre — inclusive quando são zero.
      */
-    fun formatPriceCompact(priceInCents: Int): String {
-        if (priceInCents % 100 == 0) return (priceInCents / 100).toString()
-        val fmt = NumberFormat.getNumberInstance(brLocale).apply {
-            minimumFractionDigits = 2
-            maximumFractionDigits = 2
-        }
-        return fmt.format(priceInCents / 100.0)
-    }
+    @Deprecated(
+        "Valor monetário é sempre com duas casas; use formatPrice.",
+        ReplaceWith("formatPrice(priceInCents)"),
+    )
+    fun formatPriceCompact(priceInCents: Int): String = formatPrice(priceInCents)
 
     fun formatDateToDDMM(iso8601String: String): String {
         val date = parseISO8601(iso8601String) ?: return ""

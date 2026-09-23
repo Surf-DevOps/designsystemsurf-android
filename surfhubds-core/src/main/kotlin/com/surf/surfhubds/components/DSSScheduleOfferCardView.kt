@@ -138,7 +138,7 @@ class DSSScheduleOfferCardView @JvmOverloads constructor(
         planNameLabel.text = planName
         badge.text = badgeText
         descriptionLabel.text = descriptionText
-        priceLabel.text = "R$${Utility.formatPriceCompact(priceCents)}/mês"
+        priceLabel.text = "R$${Utility.formatPrice(priceCents)}/mês"
         priceLabel.typeface = DSSFont.bold(context, 16f).typeface
         priceLabel.textSize = 16f
         if (date != null) {

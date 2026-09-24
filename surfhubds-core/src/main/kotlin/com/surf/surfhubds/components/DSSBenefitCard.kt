@@ -42,16 +42,24 @@ class DSSBenefitCard @JvmOverloads constructor(
     }
 
     private val titleLabel = TextView(context).apply {
-        typeface = DSSFont.bold(context, 12f).typeface
-        textSize = 12f
+        typeface = DSSFont.medium(context, 11f).typeface
+        textSize = 11f
         isAllCaps = true
+        letterSpacing = 0.02f
     }
 
     private val descriptionLabel = TextView(context).apply {
-        typeface = DSSFont.medium(context, 16f).typeface
-        textSize = 16f
+        typeface = DSSFont.regular(context, 14f).typeface
+        textSize = 14f
+        setLineSpacing(0f, 1.1f)
         setSingleLine(false)
     }
+
+    /**
+     * Quando true (padrão) o ícone é tingido com `textOnPrimary` — serve para ícones
+     * monocromáticos. Ilustrações coloridas (ex.: estrela do Compre e Ganhe) passam false.
+     */
+    private var tintIcon: Boolean = true
 
     private val chevronImageView = ImageView(context).apply {
         setImageResource(R.drawable.dss_ic_chevron_right)
@@ -61,12 +69,12 @@ class DSSBenefitCard @JvmOverloads constructor(
     init {
         orientation = HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
-        val padH = 16f.dpToPx(context)
-        val padV = 16f.dpToPx(context)
+        val padH = 20f.dpToPx(context)
+        val padV = 20f.dpToPx(context)
         setPadding(padH, padV, padH, padV)
 
-        // Container do Ícone (48x48 arredondado)
-        val iconSize = 48f.dpToPx(context)
+        // Container do Ícone (40x40 arredondado, fundo primary sólido)
+        val iconSize = 40f.dpToPx(context)
         iconContainer.addView(
             iconImageView,
             FrameLayout.LayoutParams(24f.dpToPx(context), 24f.dpToPx(context), Gravity.CENTER)
@@ -87,6 +95,10 @@ class DSSBenefitCard @JvmOverloads constructor(
         // Chevron (Direita)
         addView(chevronImageView, LayoutParams(20f.dpToPx(context), 20f.dpToPx(context)))
 
+        // Sombra suave no lugar da borda (Figma: card flutuante sem stroke)
+        elevation = 4f.dpToPx(context).toFloat()
+        outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+
         setOnClickListener { onTap?.invoke() }
 
         refresh()
@@ -100,11 +112,13 @@ class DSSBenefitCard @JvmOverloads constructor(
         title: String,
         description: String,
         icon: Drawable? = null,
+        tintIcon: Boolean = true,
         action: (() -> Unit)? = null
     ) {
         titleLabel.text = title
         descriptionLabel.text = description
         iconImageView.setImageDrawable(icon)
+        this.tintIcon = tintIcon
         onTap = action
         refresh()
     }
@@ -118,25 +132,25 @@ class DSSBenefitCard @JvmOverloads constructor(
         background = DrawableFactory.rounded(
             context = ctx,
             backgroundColor = DSSColors.surface(),
-            cornerRadiusDp = 12f,
-            strokeColor = DSSColors.borderDefault(),
-            strokeWidthDp = 1f
+            cornerRadiusDp = 12f
         )
 
-        // Background do Ícone (Círculo ou arredondado suave com cor primária translúcida)
+        // Background do Ícone (quadrado arredondado com primary sólido)
         iconContainer.background = DrawableFactory.rounded(
             context = ctx,
             backgroundColor = DSSColors.primary(),
-            cornerRadiusDp = 10f
+            cornerRadiusDp = 8f
         )
-        iconContainer.background.alpha = 25 // 10% opacidade
 
         // Cores dos Textos
         titleLabel.setTextColor(DSSColors.primary())
         descriptionLabel.setTextColor(DSSColors.textPrimary())
 
-        // Cor do Chevron e Ícone (Tingidos com primary)
         chevronImageView.setColorFilter(DSSColors.primary(), PorterDuff.Mode.SRC_IN)
-        iconImageView.setColorFilter(DSSColors.primary(), PorterDuff.Mode.SRC_IN)
+        if (tintIcon) {
+            iconImageView.setColorFilter(DSSColors.textOnPrimary(), PorterDuff.Mode.SRC_IN)
+        } else {
+            iconImageView.clearColorFilter()
+        }
     }
 }

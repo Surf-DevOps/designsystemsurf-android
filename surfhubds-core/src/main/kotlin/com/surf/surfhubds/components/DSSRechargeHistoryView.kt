@@ -47,6 +47,18 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         val tipo: String = "",
         val vlCredito: Double = 0.0,
         val dtExecucao: String = "",
+        /** `plano.coPlano` do `recarga/relatorio` — chave de lookup da validade no catálogo. */
+        val coPlano: Int? = null,
+        /** `plano.noPlano`: nome de catálogo da oferta recarregada. */
+        val noPlano: String? = null,
+        /** Rótulo do canal (parceiro); só entra quando o join com `tb_plano` não trouxe nome. */
+        val noProduto: String? = null,
+        /**
+         * `desconto.vlPago` do relatório v2: o que o cliente pagou depois do cupom.
+         * `null` quando a recarga não teve cupom (ou quando o app ainda usa a v1) — aí a
+         * linha mostra [vlCredito], como sempre mostrou.
+         */
+        val vlPago: Double? = null,
     )
 
     data class MonthGroup(
@@ -56,6 +68,15 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
 
     /** Callback equivalente ao delegate `didChangeMonth`. */
     var onMonthChange: ((month: String) -> Unit)? = null
+
+    /**
+     * Validade (em dias) de cada plano, indexada por `coPlano`.
+     *
+     * O `recarga/relatorio` não devolve validade nenhuma, só o `coPlano` da oferta
+     * recarregada. Quem monta esse mapa é o app, a partir do catálogo — o DS não tem
+     * como alcançar o cache. Plano ausente cai no [FALLBACK_VALIDITY_DAYS].
+     */
+    private var validityDaysByPlan: Map<Int, Int> = emptyMap()
 
     // MARK: - Estado
 
@@ -127,10 +148,25 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
 
     // MARK: - API pública
 
-    fun configure(items: List<MonthGroup>) {
+    @JvmOverloads
+    fun configure(items: List<MonthGroup>, validityDaysByPlan: Map<Int, Int> = emptyMap()) {
         monthGroups = items
+        this.validityDaysByPlan = validityDaysByPlan
         currentIndex = 0
         renderCurrentMonth()
+    }
+
+    private fun validityDays(item: Transacao): Int {
+        val coPlano = item.coPlano ?: return FALLBACK_VALIDITY_DAYS
+        return validityDaysByPlan[coPlano] ?: FALLBACK_VALIDITY_DAYS
+    }
+
+    companion object {
+        /**
+         * Usado só quando o plano da transação não está no catálogo (oferta antiga, já fora
+         * do portfólio). Mantém o comportamento anterior em vez de esconder a linha.
+         */
+        const val FALLBACK_VALIDITY_DAYS = 30
     }
 
     // MARK: - Lógica de mês
@@ -206,7 +242,7 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         override fun onBindViewHolder(holder: RowViewHolder, position: Int) {
             val topMargin = if (position == 0) 0 else 12f.dpToPx(holder.itemView.context)
             (holder.itemView.layoutParams as? RecyclerView.LayoutParams)?.topMargin = topMargin
-            holder.row.configure(items[position])
+            holder.row.configure(items[position], validityDays(items[position]))
         }
 
         override fun getItemCount(): Int = items.size
@@ -408,11 +444,11 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
             setupThemeObserver()
         }
 
-        fun configure(item: Transacao) {
+        fun configure(item: Transacao, validityDays: Int) {
             titleLabel.text = RechargeHistoryItemPresenter.title(context, item)
             relativeTimeLabel.text = RechargeHistoryItemPresenter.relativeTime(item)
             descriptionLabel.text = RechargeHistoryItemPresenter.description(context, item)
-            validityLabel.text = RechargeHistoryItemPresenter.validity(context, item)
+            validityLabel.text = RechargeHistoryItemPresenter.validity(context, item, validityDays)
         }
 
         override fun applyTheme(theme: Theme) { refresh() }
@@ -478,15 +514,50 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         }
 
         fun description(context: Context, item: Transacao): String {
-            val value = CurrencyFormatter.brl(item.vlCredito)
-            return AppStrings.brand(context, "recharge_history_renewed_format", "Seu plano no valor de %1\$s foi renovado!", value)
+            // Com cupom, o que interessa ao cliente é o que ele pagou (`vlPago`), não o
+            // crédito concedido (`vlCredito`). Sem cupom — ou na v1, que nem devolve o bloco —
+            // `vlPago` é null e o valor segue sendo o de sempre. Cupom estornado volta com
+            // `vlPago == vlBruto`, então também cai no valor cheio.
+            val value = CurrencyFormatter.brl(item.vlPago ?: item.vlCredito)
+            val planName = planName(item)
+                ?: return AppStrings.brand(context, "recharge_history_renewed_format", "Seu plano no valor de %1\$s foi renovado!", value)
+            // Boa parte dos nomes de catálogo já começa com "Plano" ("Plano 40 - Mensal Uber"),
+            // e o template padrão produziria "Seu plano Plano 40...". Nesse caso usa a variante
+            // sem o substantivo, preservando o nome do catálogo como ele é.
+            return if (startsWithPlanNoun(planName)) {
+                AppStrings.brand(context, "recharge_history_renewed_named_format", "Seu %1\$s no valor de %2\$s foi renovado!", planName, value)
+            } else {
+                AppStrings.brand(context, "recharge_history_renewed_with_plan_format", "Seu plano %1\$s no valor de %2\$s foi renovado!", planName, value)
+            }
         }
 
-        fun validity(context: Context, item: Transacao): String {
+        /**
+         * Nome da oferta recarregada. `noPlano` é o nome de catálogo; `noProduto` é o rótulo
+         * do canal (parceiro) e só entra quando o join com `tb_plano` não trouxe nome.
+         */
+        private fun planName(item: Transacao): String? =
+            listOfNotNull(item.noPlano, item.noProduto)
+                .map { it.trim() }
+                .firstOrNull { it.isNotEmpty() }
+
+        /**
+         * `true` quando o nome já abre com o substantivo "plano" — ignorando caixa e acento,
+         * e só como palavra inteira, para não pegar algo como "Planalto".
+         */
+        private fun startsWithPlanNoun(name: String): Boolean {
+            val normalized = java.text.Normalizer.normalize(name, java.text.Normalizer.Form.NFD)
+                .replace(Regex("\\p{Mn}+"), "")
+                .lowercase(Locale.getDefault())
+            if (!normalized.startsWith("plano")) return false
+            val next = normalized.getOrNull("plano".length)
+            return next == null || next == ' ' || next == 's'
+        }
+
+        fun validity(context: Context, item: Transacao, validityDays: Int): String {
             val executionDate = DateParser.parse(item.dtExecucao) ?: return ""
             val cal = Calendar.getInstance().apply {
                 time = executionDate
-                add(Calendar.DAY_OF_MONTH, 30)
+                add(Calendar.DAY_OF_MONTH, validityDays)
             }
             return AppStrings.brand(context, "recharge_history_valid_until_format", "plano válido até %1\$s", DateFormatters.shortBR.format(cal.time))
         }
@@ -546,7 +617,7 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
 
     private object CurrencyFormatter {
         private val formatter = java.text.NumberFormat.getCurrencyInstance(Locale("pt", "BR")).apply {
-            minimumFractionDigits = 0
+            minimumFractionDigits = 2
             maximumFractionDigits = 2
         }
 

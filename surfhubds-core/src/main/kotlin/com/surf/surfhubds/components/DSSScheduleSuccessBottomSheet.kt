@@ -23,6 +23,7 @@ import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.AppStrings
 import com.surf.surfhubds.util.DrawableFactory
+import com.surf.surfhubds.util.Utility
 import com.surf.surfhubds.util.ImageLoader
 import com.surf.surfhubds.util.dpToPx
 import java.text.SimpleDateFormat
@@ -159,8 +160,7 @@ class DSSScheduleSuccessBottomSheet : BottomSheetDialogFragment() {
             setTextColor(DSSColors.textPrimary())
         }
         val priceLabel = TextView(ctx).apply {
-            val reais = c.priceInCents / 100
-            text = "R$$reais/mês"
+            text = "R$${Utility.formatPrice(c.priceInCents)}/mês"
             typeface = DSSFont.bold(ctx, 16f).typeface
             textSize = 16f
             setTextColor(DSSColors.textPrimary())

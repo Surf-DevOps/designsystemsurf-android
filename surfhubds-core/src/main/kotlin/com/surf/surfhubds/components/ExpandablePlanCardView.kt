@@ -338,9 +338,7 @@ class ExpandablePlanCardView @JvmOverloads constructor(
 
         // Preço chega em centavos (ex.: 6999 == R$ 69,99). formatPrice divide por 100.
         val finalPriceCents = if (plan.parcelas > 1) plan.priceCents / plan.parcelas else plan.priceCents
-        val reais = finalPriceCents / 100
-        val cs = finalPriceCents % 100
-        priceLabel.text = if (cs == 0) "R$$reais/mês" else "R$${DSSPlanCollectionView.formatPrice(finalPriceCents)}/mês"
+        priceLabel.text = "R$${DSSPlanCollectionView.formatPrice(finalPriceCents)}/mês"
         validityDateLabel.text = validityDate
 
         // Benefits checkmarks

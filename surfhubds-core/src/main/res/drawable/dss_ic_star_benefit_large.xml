@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Estrela colorida grande (resgate indisponível, tabela de troca). Separada de dss_ic_star_benefit_color para que a brand possa sobrescrever a pequena sem afetar esta. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- raios -->
+    <path
+        android:strokeColor="#F5A623"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round"
+        android:pathData="M12,0.8V2.2M3.2,4.2L4.3,5.2M20.8,4.2L19.7,5.2M1,14.4H2.4M21.6,14.4H23" />
+    <path
+        android:fillColor="#FFC83D"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="0.8"
+        android:strokeLineJoin="round"
+        android:pathData="M12,4.2L14.35,9.05L19.6,9.7L15.75,13.35L16.75,18.6L12,16.05L7.25,18.6L8.25,13.35L4.4,9.7L9.65,9.05Z" />
+</vector>

@@ -82,6 +82,19 @@ class DSSSecondaryButton @JvmOverloads constructor(
         onTap = action
     }
 
+    /**
+     * Estilo pílula compacto do redesign (Figma): contorno de 1dp, altura [heightDp],
+     * cantos totalmente arredondados e texto [textSizeSp] em bold.
+     */
+    fun applyPillStyle(heightDp: Float = 44f, textSizeSp: Float = 15f) {
+        minHeight = heightDp.dpToPx(context)
+        minimumHeight = minHeight
+        borderWidthDp = 1f
+        cornerRadiusDp = heightDp / 2f
+        textSize = textSizeSp
+        typeface = DSSFont.bold(context, textSizeSp).typeface
+    }
+
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {

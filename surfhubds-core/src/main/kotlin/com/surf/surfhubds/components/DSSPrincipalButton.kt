@@ -82,6 +82,18 @@ class DSSPrincipalButton @JvmOverloads constructor(
         onTap = action
     }
 
+    /**
+     * Estilo pílula compacto do redesign (Figma): altura [heightDp], cantos totalmente
+     * arredondados, texto [textSizeSp] em bold e largura livre (segue o layout).
+     */
+    fun applyPillStyle(heightDp: Float = 44f, textSizeSp: Float = 15f) {
+        defaultWidthDp = 0f
+        defaultHeightDp = heightDp
+        cornerRadiusDp = heightDp / 2f
+        textSize = textSizeSp
+        typeface = DSSFont.bold(context, textSizeSp).typeface
+    }
+
     override fun applyTheme(theme: Theme) { refresh() }
 
     private fun refresh() {

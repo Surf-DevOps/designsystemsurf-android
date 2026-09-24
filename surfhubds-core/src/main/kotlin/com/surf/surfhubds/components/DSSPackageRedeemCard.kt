@@ -169,7 +169,8 @@ class DSSPackageRedeemCard @JvmOverloads constructor(
             selectionIndicator.setImageDrawable(null)
         }
 
-        val bgColor = if (isDark) Color.rgb(28, 28, 30) else Color.rgb(248, 248, 248)
+        // Claro: backgroundSecondary (#F8F8F8); escuro: surface (#1C1C1E) — mesmos valores de antes.
+        val bgColor = if (isDark) DSSColors.surface() else DSSColors.backgroundSecondary()
 
         background = DrawableFactory.rounded(
             context = ctx,

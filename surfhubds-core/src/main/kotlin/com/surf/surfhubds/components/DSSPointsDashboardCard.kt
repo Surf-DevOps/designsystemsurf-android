@@ -19,9 +19,7 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeAware
-import com.surf.surfhubds.theme.ThemeManager
 import com.surf.surfhubds.theme.setupThemeObserver
-import com.surf.surfhubds.tokens.ColorScheme
 import com.surf.surfhubds.util.DrawableFactory
 import com.surf.surfhubds.util.dpToPx
 
@@ -198,10 +196,9 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
 
     private fun refresh() {
         val ctx = context
-        val scheme = ThemeManager.colorScheme
-        val isDark = scheme == ColorScheme.DARK || scheme == ColorScheme.BLACK
         
-        val bgColor = if (isDark) Color.rgb(28, 28, 30) else Color.WHITE
+        // surface = branco no claro e #1C1C1E no escuro, os mesmos valores que eram fixos.
+        val bgColor = DSSColors.surface()
         background = if (showsBackground) DrawableFactory.rounded(
             context = ctx,
             backgroundColor = bgColor,

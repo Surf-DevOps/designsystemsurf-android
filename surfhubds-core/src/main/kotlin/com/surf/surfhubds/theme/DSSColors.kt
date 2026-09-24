@@ -35,6 +35,15 @@ object DSSColors {
     @ColorInt fun divider(): Int = c.divider.resolved(scheme)
 
     /**
+     * Divisória mais marcada que [divider] (linhas dentro de cards cinza, puxador de sheet).
+     * Derivada de [textTertiary] para seguir a brand e o tema; no claro dá ~#E7E7E7.
+     */
+    @ColorInt fun dividerStrong(): Int = ColorUtils.setAlphaComponent(textTertiary(), 0x40)
+
+    /** Contorno discreto de campos, pílulas e seleção; no claro dá ~#C5C5C5. */
+    @ColorInt fun borderSubtle(): Int = ColorUtils.setAlphaComponent(textTertiary(), 0x99)
+
+    /**
      * Cor de conteúdo (texto/ícone/knob) desenhado SOBRE o fill [primary]. No iOS o primary
      * é sempre escuro/saturado, então lá usa-se `.white` fixo; no Android algumas brands
      * deixam o primary BRANCO no dark/black (ex.: CorreiosCelular), e o branco fixo sumiria.

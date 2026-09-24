@@ -692,9 +692,14 @@
     <string name="compre_ganhe_full_statement">Ver extrato completo</string>
     <string name="compre_ganhe_empty">Nenhuma movimentação encontrada.</string>
     <string name="compre_ganhe_filter_all">Todos</string>
-    <string name="compre_ganhe_filter_accrued">Acumulados</string>
-    <string name="compre_ganhe_filter_redeemed">Resgatados</string>
-    <string name="compre_ganhe_filter_expired">Expirados</string>
+    <string name="compre_ganhe_filter_accrued">Cupons</string>
+    <string name="compre_ganhe_filter_redeemed">Bônus resgatados</string>
+    <string name="compre_ganhe_collect_points_caption">junte pontos para trocar</string>
+    <string name="compre_ganhe_no_expiring_caption">sem vencimento</string>
+    <string name="compre_ganhe_coupon_fiscal">Cupom fiscal</string>
+    <string name="compre_ganhe_statement_expiring_title">Pontos a vencer</string>
+    <string name="compre_ganhe_scanner_description">Escaneie o QR Code do seu cupom de compra e acumule pontos para trocar por bônus.</string>
+    <string name="compre_ganhe_filter_expired">Pontos expirados</string>
     <string name="compre_ganhe_expiration_message">%1$s pontos expiram em %2$d dias (%3$s).</string>
     <string name="compre_ganhe_unavailable">O programa Compre e Ganhe não está disponível para a sua conta no momento.</string>
     <string name="compre_ganhe_coupon_accrued">Cupom acumulado</string>

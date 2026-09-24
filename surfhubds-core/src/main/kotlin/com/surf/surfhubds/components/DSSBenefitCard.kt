@@ -56,10 +56,11 @@ class DSSBenefitCard @JvmOverloads constructor(
     }
 
     /**
-     * Quando true (padrão) o ícone é tingido com `textOnPrimary` — serve para ícones
-     * monocromáticos. Ilustrações coloridas (ex.: estrela do Compre e Ganhe) passam false.
+     * false (padrão): ícone monocromático 24dp tingido com `textOnPrimary` sobre o
+     * quadrado primary. true: ilustração pronta (ex.: tile da estrela do Compre e Ganhe)
+     * que já traz o próprio fundo — ocupa o container inteiro, sem tint.
      */
-    private var tintIcon: Boolean = true
+    private var illustratedIcon: Boolean = false
 
     private val chevronImageView = ImageView(context).apply {
         setImageResource(R.drawable.dss_ic_chevron_right)
@@ -112,13 +113,17 @@ class DSSBenefitCard @JvmOverloads constructor(
         title: String,
         description: String,
         icon: Drawable? = null,
-        tintIcon: Boolean = true,
+        illustratedIcon: Boolean = false,
         action: (() -> Unit)? = null
     ) {
         titleLabel.text = title
         descriptionLabel.text = description
         iconImageView.setImageDrawable(icon)
-        this.tintIcon = tintIcon
+        this.illustratedIcon = illustratedIcon
+        val glyph = if (illustratedIcon) LayoutParams.MATCH_PARENT else 24f.dpToPx(context)
+        iconImageView.layoutParams = FrameLayout.LayoutParams(glyph, glyph, Gravity.CENTER)
+        iconImageView.scaleType =
+            if (illustratedIcon) ImageView.ScaleType.FIT_CENTER else ImageView.ScaleType.CENTER_INSIDE
         onTap = action
         refresh()
     }
@@ -136,7 +141,7 @@ class DSSBenefitCard @JvmOverloads constructor(
         )
 
         // Background do Ícone (quadrado arredondado com primary sólido)
-        iconContainer.background = DrawableFactory.rounded(
+        iconContainer.background = if (illustratedIcon) null else DrawableFactory.rounded(
             context = ctx,
             backgroundColor = DSSColors.primary(),
             cornerRadiusDp = 8f
@@ -147,10 +152,10 @@ class DSSBenefitCard @JvmOverloads constructor(
         descriptionLabel.setTextColor(DSSColors.textPrimary())
 
         chevronImageView.setColorFilter(DSSColors.primary(), PorterDuff.Mode.SRC_IN)
-        if (tintIcon) {
-            iconImageView.setColorFilter(DSSColors.textOnPrimary(), PorterDuff.Mode.SRC_IN)
-        } else {
+        if (illustratedIcon) {
             iconImageView.clearColorFilter()
+        } else {
+            iconImageView.setColorFilter(DSSColors.textOnPrimary(), PorterDuff.Mode.SRC_IN)
         }
     }
 }

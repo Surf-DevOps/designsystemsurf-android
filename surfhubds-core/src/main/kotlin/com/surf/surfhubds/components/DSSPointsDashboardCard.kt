@@ -61,6 +61,15 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
             refresh()
         }
 
+    /** false esconde as barras de progresso (ex.: resumo do extrato no Figma). */
+    var showsProgress: Boolean = true
+        set(value) {
+            field = value
+            val visibility = if (value) View.VISIBLE else View.GONE
+            availableProgressBar.visibility = visibility
+            expiringProgressBar.visibility = visibility
+        }
+
     init {
         orientation = VERTICAL
         val pad = 20f.dpToPx(context)

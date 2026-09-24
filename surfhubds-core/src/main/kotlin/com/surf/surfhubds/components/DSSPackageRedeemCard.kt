@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatRadioButton
+import android.graphics.drawable.GradientDrawable
 import com.surf.surfhubds.R
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
@@ -31,37 +31,40 @@ class DSSPackageRedeemCard @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr), ThemeAware {
 
     private val internetTitleLabel = TextView(context).apply {
-        textSize = 14f
-        typeface = DSSFont.regular(context, 14f).typeface
+        textSize = 15f
+        typeface = DSSFont.regular(context, 15f).typeface
     }
     private val internetValueLabel = TextView(context).apply {
         textSize = 24f
         typeface = DSSFont.bold(context, 24f).typeface
     }
     private val validityLabel = TextView(context).apply {
-        textSize = 14f
-        typeface = DSSFont.regular(context, 14f).typeface
+        textSize = 15f
+        typeface = DSSFont.regular(context, 15f).typeface
     }
 
     private val costTitleLabel = TextView(context).apply {
-        textSize = 14f
-        typeface = DSSFont.regular(context, 14f).typeface
+        textSize = 15f
+        typeface = DSSFont.regular(context, 15f).typeface
     }
+    // Estrela colorida do Figma: não recebe tint.
     private val starIcon = ImageView(context).apply {
-        setImageResource(R.drawable.dss_ic_star_benefit)
+        setImageResource(R.drawable.dss_ic_star_benefit_color)
     }
     private val pointsValueLabel = TextView(context).apply {
         textSize = 24f
         typeface = DSSFont.bold(context, 24f).typeface
     }
     private val pointsCaptionLabel = TextView(context).apply {
-        textSize = 14f
-        typeface = DSSFont.regular(context, 14f).typeface
+        textSize = 15f
+        typeface = DSSFont.regular(context, 15f).typeface
     }
 
-    private val radioButton = AppCompatRadioButton(context).apply {
-        isClickable = false
-        isFocusable = false
+    /** Indicador de seleção (Figma): círculo primary com check branco ou só o contorno. */
+    private val selectionIndicator = ImageView(context).apply {
+        scaleType = ImageView.ScaleType.CENTER_INSIDE
+        val pad = 4f.dpToPx(context)
+        setPadding(pad, pad, pad, pad)
     }
 
     private var _selected = false
@@ -90,7 +93,7 @@ class DSSPackageRedeemCard @JvmOverloads constructor(
             val pointsRow = LinearLayout(context).apply {
                 orientation = HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                addView(starIcon, LayoutParams(16f.dpToPx(context), 16f.dpToPx(context)))
+                addView(starIcon, LayoutParams(18f.dpToPx(context), 18f.dpToPx(context)))
                 addView(pointsValueLabel, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                     marginStart = 6f.dpToPx(context)
                 })
@@ -100,8 +103,8 @@ class DSSPackageRedeemCard @JvmOverloads constructor(
         }
         addView(rightColumn, LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.45f))
 
-        // Radio Button
-        addView(radioButton, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
+        // Indicador de seleção
+        addView(selectionIndicator, LayoutParams(22f.dpToPx(context), 22f.dpToPx(context)))
 
         refresh()
         setupThemeObserver()
@@ -147,30 +150,34 @@ class DSSPackageRedeemCard @JvmOverloads constructor(
         
         costTitleLabel.setTextColor(DSSColors.textSecondary())
         pointsValueLabel.setTextColor(DSSColors.textPrimary())
-        pointsCaptionLabel.setTextColor(if (_eligible) DSSColors.textSecondary() else DSSColors.error())
-        
-        starIcon.setColorFilter(DSSColors.primary())
-        radioButton.isChecked = _selected
+        // Inelegível fica apagado pelo alpha do card; "insuficiente" segue cinza (Figma).
+        pointsCaptionLabel.setTextColor(DSSColors.textSecondary())
 
-        val bgColor = if (isDark) Color.rgb(28, 28, 30) else Color.WHITE
-        
-        background = if (_selected) {
-            DrawableFactory.rounded(
-                context = ctx,
-                backgroundColor = bgColor,
-                cornerRadiusDp = 12f,
-                strokeColor = DSSColors.primary(),
-                strokeWidthDp = 2f
-            )
-        } else {
-            DrawableFactory.rounded(
-                context = ctx,
-                backgroundColor = bgColor,
-                cornerRadiusDp = 12f,
-                strokeColor = DSSColors.divider(),
-                strokeWidthDp = 1f
-            )
+        selectionIndicator.background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            if (_selected) {
+                setColor(DSSColors.primary())
+            } else {
+                setColor(Color.TRANSPARENT)
+                setStroke(1.5f.dpToPx(ctx), DSSColors.divider())
+            }
         }
+        if (_selected) {
+            selectionIndicator.setImageResource(R.drawable.dss_ic_check)
+            selectionIndicator.setColorFilter(DSSColors.textOnPrimary())
+        } else {
+            selectionIndicator.setImageDrawable(null)
+        }
+
+        val bgColor = if (isDark) Color.rgb(28, 28, 30) else Color.rgb(248, 248, 248)
+
+        background = DrawableFactory.rounded(
+            context = ctx,
+            backgroundColor = bgColor,
+            cornerRadiusDp = 8f,
+            strokeColor = if (_selected) DSSColors.primary() else DSSColors.divider(),
+            strokeWidthDp = if (_selected) 2f else 1f
+        )
 
         alpha = if (_eligible) 1f else 0.5f
     }

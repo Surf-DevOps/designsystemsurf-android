@@ -49,6 +49,18 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
     private val expiringProgressBar = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal)
     private val expiringCaptionLabel = TextView(context)
 
+    /**
+     * true (padrão): card com fundo, borda e padding próprios. false: só o conteúdo,
+     * para ser embutido num container maior (ex.: card do dashboard com cupom e botão).
+     */
+    var showsBackground: Boolean = true
+        set(value) {
+            field = value
+            val pad = if (value) 20f.dpToPx(context) else 0
+            setPadding(pad, pad, pad, pad)
+            refresh()
+        }
+
     init {
         orientation = VERTICAL
         val pad = 20f.dpToPx(context)
@@ -75,7 +87,7 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
             val valueRow = LinearLayout(ctx).apply {
                 orientation = HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                addView(availableIcon, LayoutParams(20f.dpToPx(ctx), 20f.dpToPx(ctx)))
+                addView(availableIcon, LayoutParams(18f.dpToPx(ctx), 18f.dpToPx(ctx)))
                 addView(availableValueLabel, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                     marginStart = 8f.dpToPx(ctx)
                 })
@@ -103,7 +115,7 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
             val valueRow = LinearLayout(ctx).apply {
                 orientation = HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                addView(expiringIcon, LayoutParams(20f.dpToPx(ctx), 20f.dpToPx(ctx)))
+                addView(expiringIcon, LayoutParams(18f.dpToPx(ctx), 18f.dpToPx(ctx)))
                 addView(expiringValueLabel, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                     marginStart = 8f.dpToPx(ctx)
                 })
@@ -114,6 +126,7 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
             
             addView(expiringProgressBar, LayoutParams(LayoutParams.MATCH_PARENT, 8f.dpToPx(ctx)).apply {
                 topMargin = 12f.dpToPx(ctx)
+                marginEnd = 16f.dpToPx(ctx)
             })
             
             addView(expiringCaptionLabel, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
@@ -124,26 +137,21 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
 
         addView(headerRow)
         
-        // Estilização Básica
-        availableTitleLabel.textSize = 14f
-        availableTitleLabel.typeface = DSSFont.medium(ctx, 14f).typeface
-        
-        availableValueLabel.textSize = 26f
-        availableValueLabel.typeface = DSSFont.bold(ctx, 26f).typeface
-        
-        availableCaptionLabel.textSize = 14f
-        availableCaptionLabel.typeface = DSSFont.regular(ctx, 14f).typeface
-        
-        expiringTitleLabel.textSize = 14f
-        expiringTitleLabel.typeface = DSSFont.medium(ctx, 14f).typeface
-        
-        expiringValueLabel.textSize = 26f
-        expiringValueLabel.typeface = DSSFont.bold(ctx, 26f).typeface
-        
-        expiringCaptionLabel.textSize = 14f
-        expiringCaptionLabel.typeface = DSSFont.regular(ctx, 14f).typeface
+        // Estilização (Figma): título 15 regular, valor 24 bold, legenda 14 regular
+        listOf(availableTitleLabel, expiringTitleLabel).forEach {
+            it.textSize = 15f
+            it.typeface = DSSFont.regular(ctx, 15f).typeface
+        }
+        listOf(availableValueLabel, expiringValueLabel).forEach {
+            it.textSize = 24f
+            it.typeface = DSSFont.bold(ctx, 24f).typeface
+        }
+        listOf(availableCaptionLabel, expiringCaptionLabel).forEach {
+            it.textSize = 14f
+            it.typeface = DSSFont.regular(ctx, 14f).typeface
+        }
 
-        availableIcon.setImageResource(R.drawable.dss_ic_star_benefit)
+        availableIcon.setImageResource(R.drawable.dss_ic_star_benefit_color)
         expiringIcon.setImageResource(R.drawable.dss_ic_calendar_clock)
     }
 
@@ -181,13 +189,13 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
         val isDark = scheme == ColorScheme.DARK || scheme == ColorScheme.BLACK
         
         val bgColor = if (isDark) Color.rgb(28, 28, 30) else Color.WHITE
-        background = DrawableFactory.rounded(
+        background = if (showsBackground) DrawableFactory.rounded(
             context = ctx,
             backgroundColor = bgColor,
             cornerRadiusDp = 12f,
             strokeColor = DSSColors.divider(),
             strokeWidthDp = 1f
-        )
+        ) else null
 
         availableTitleLabel.setTextColor(DSSColors.textSecondary())
         availableValueLabel.setTextColor(DSSColors.textPrimary())
@@ -197,8 +205,9 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
         expiringValueLabel.setTextColor(DSSColors.textPrimary())
         expiringCaptionLabel.setTextColor(DSSColors.textSecondary())
         
-        availableIcon.setColorFilter(DSSColors.primary())
-        expiringIcon.setColorFilter(DSSColors.secondary())
+        // Estrela é ilustração colorida (sem tint); calendário segue o primary.
+        availableIcon.clearColorFilter()
+        expiringIcon.setColorFilter(DSSColors.primary())
 
         // Barras montadas em runtime: os tokens seguem o tema e a paleta da brand,
         // ao contrario de um drawable XML de cor fixa.

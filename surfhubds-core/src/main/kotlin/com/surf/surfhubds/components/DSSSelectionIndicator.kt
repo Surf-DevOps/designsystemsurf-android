@@ -13,8 +13,8 @@ import com.surf.surfhubds.theme.setupThemeObserver
 import com.surf.surfhubds.util.dpToPx
 
 /**
- * Indicador de seleção em círculo (Figma): marcado = círculo `primary` com check
- * `textOnPrimary`; desmarcado = só o contorno. Não trata clique — quem usa controla
+ * Indicador de seleção em círculo (Figma): marcado = círculo `primary` com check em
+ * contraste; desmarcado = só o contorno. Não trata clique — quem usa controla
  * [isChecked] (ex.: card de pacote, linha a creditar).
  */
 class DSSSelectionIndicator @JvmOverloads constructor(
@@ -48,7 +48,8 @@ class DSSSelectionIndicator @JvmOverloads constructor(
         }
         if (isChecked) {
             setImageResource(R.drawable.dss_ic_check)
-            setColorFilter(DSSColors.textOnPrimary())
+            // Contraste com o primary (branco em algumas brands/temas).
+            setColorFilter(DSSColors.contrastOnPrimary())
         } else {
             setImageDrawable(null)
         }

@@ -16,7 +16,7 @@ import com.surf.surfhubds.theme.setupThemeObserver
  * - [Style.SUCCESS]: círculo `success` cheio e ícone `textOnPrimary` (telas de sucesso);
  * - [Style.ERROR]: círculo `error` a 10% e ícone `error` (avisos de erro);
  * - [Style.PRIMARY_SOFT]: círculo `primary` a 8% e ícone `primary` (ícones de apoio);
- * - [Style.PRIMARY]: círculo `primaryButton` cheio e ícone `textOnPrimary` (atalhos).
+ * - [Style.PRIMARY]: círculo `primaryButton` cheio e ícone em contraste (atalhos).
  * Por padrão o ícone ocupa ~50% do círculo; com [autoPadding] = false vale o padding
  * definido por quem usa. O tamanho vem do layout.
  */
@@ -57,8 +57,14 @@ class DSSIconBadge @JvmOverloads constructor(
         val (fill, tint) = when (style) {
             Style.SUCCESS -> DSSColors.success() to DSSColors.textOnPrimary()
             Style.ERROR -> ColorUtils.setAlphaComponent(DSSColors.error(), SOFT_ALPHA) to DSSColors.error()
-            Style.PRIMARY -> DSSColors.primaryButton() to DSSColors.textOnPrimary()
-            Style.PRIMARY_SOFT -> ColorUtils.setAlphaComponent(DSSColors.primary(), PRIMARY_SOFT_ALPHA) to DSSColors.primary()
+            // Ícone por contraste: há brands com primary branco (Fluxo no claro, várias no
+            // escuro), onde um ícone branco fixo sumiria.
+            Style.PRIMARY -> DSSColors.primaryButton().let { it to DSSColors.contrastOn(it) }
+            Style.PRIMARY_SOFT -> {
+                val primary = DSSColors.primary()
+                val icon = if (ColorUtils.calculateLuminance(primary) > 0.6) DSSColors.textSecondary() else primary
+                ColorUtils.setAlphaComponent(icon, PRIMARY_SOFT_ALPHA) to icon
+            }
         }
         background = GradientDrawable().apply {
             shape = GradientDrawable.OVAL

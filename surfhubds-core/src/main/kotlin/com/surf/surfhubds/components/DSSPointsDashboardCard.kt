@@ -110,8 +110,11 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
                 marginEnd = 16f.dpToPx(ctx)
             })
             
+            // marginEnd: legenda longa ("junte pontos para trocar") quebra em vez de encostar
+            // na coluna ao lado.
             addView(availableCaptionLabel, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                 topMargin = 6f.dpToPx(ctx)
+                marginEnd = 16f.dpToPx(ctx)
             })
         }
         headerRow.addView(leftColumn, LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
@@ -140,6 +143,7 @@ class DSSPointsDashboardCard @JvmOverloads constructor(
             
             addView(expiringCaptionLabel, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                 topMargin = 6f.dpToPx(ctx)
+                marginEnd = 16f.dpToPx(ctx)
             })
         }
         headerRow.addView(rightColumn, LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))

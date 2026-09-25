@@ -52,8 +52,12 @@ class DSSResumeCard @JvmOverloads constructor(
         text = AppStrings.brand(context, "resume_card_offer", "Oferta")
         textSize = 14f; typeface = DSSFont.light(context, 14f).typeface
     }
+    // Nome do plano quebra linha: com maxLines = 1 na coluna de 100dp, "Plano 40 - Mensal Uber"
+    // já perdia o "Uber" em fontScale 1.0 (e metade do nome em 1.3), sem reticências.
     private val offerValue = TextView(context).apply {
-        textSize = 11f; typeface = DSSFont.medium(context, 11f).typeface; maxLines = 1
+        textSize = 11f; typeface = DSSFont.medium(context, 11f).typeface
+        maxLines = 3
+        ellipsize = android.text.TextUtils.TruncateAt.END
     }
     private val priceLabel = TextView(context).apply {
         text = AppStrings.brand(context, "resume_card_price", "Valor")

@@ -77,7 +77,7 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
     private var validationToken: Int = 0
 
     var confirmButtonTitle: String = "Confirmar"
-        set(value) { field = value; confirmButton.text = value }
+        set(value) { field = value; confirmButton.text = value; applyEditStackSizes() }
 
     var confirmButtonBackgroundColor: Int = DSSColors.primary()
         set(value) { field = value; refreshConfirmBg() }
@@ -225,20 +225,48 @@ class DSSMsisdnEditableField @JvmOverloads constructor(
             95f.dpToPx(context), 36f.dpToPx(context),
         ).apply {
             gravity = Gravity.CENTER_VERTICAL or Gravity.END
-            // Sobrepõe levemente o campo: leading = textfield.trailing-78 (do iOS).
-            // Com gravity END, o leftMargin garante a largura (stack vira 277dp:
-            // 230 + 95 - 78 + 30 de trailing) e o rightMargin reproduz o
-            // editStackContainer.trailing = confirmButton.trailing - 30.
-            leftMargin = (230 - 78).dpToPx(context)
             rightMargin = 30f.dpToPx(context)
         })
 
         confirmButton.text = confirmButtonTitle
+        applyEditStackSizes()
         refreshConfirmBg()
 
         editButton.setOnClickListener { toggleEditMode() }
         confirmButton.setOnClickListener { onConfirmTapped() }
         msisdnTextfield.addTextChangedListener(PhoneMaskWatcher(msisdnTextfield))
+    }
+
+    /**
+     * Medidas do editor inline. Em fontScale 1.0 reproduz o iOS: campo 230dp, botão 95dp
+     * sobrepondo o campo em 78dp (leading = textfield.trailing - 78) e 30dp de trailing.
+     * Com fonte maior, "Confirmar" não cabia nos 95dp e o fim do número sumia atrás do botão:
+     * o botão passa a crescer com o título e o campo reserva à direita a faixa coberta por
+     * ele, alargando o suficiente para o número mais longo caber inteiro.
+     */
+    private fun applyEditStackSizes() {
+        val dp = { v: Int -> v.dpToPx(context) }
+        val buttonW = maxOf(
+            dp(95),
+            confirmButton.paint.measureText(confirmButton.text.toString()).toInt() + dp(24),
+        )
+        // Parte do botão que fica fora do campo é fixa (95 - 78 = 17dp); o resto sobrepõe.
+        val overlap = buttonW - dp(17)
+        val padStart = dp(12)
+        val padEnd = overlap + dp(4)
+        val numberW = msisdnTextfield.paint.measureText("(00) 00000-0000").toInt()
+        val fieldW = maxOf(dp(230), padStart + numberW + padEnd + dp(4))
+
+        msisdnTextfield.setPadding(padStart, 0, padEnd, 0)
+        (msisdnTextfield.layoutParams as? LayoutParams)?.let {
+            it.width = fieldW
+            msisdnTextfield.layoutParams = it
+        }
+        (confirmButton.layoutParams as? LayoutParams)?.let {
+            it.width = buttonW
+            it.leftMargin = fieldW - overlap
+            confirmButton.layoutParams = it
+        }
     }
 
     private fun toggleEditMode() {

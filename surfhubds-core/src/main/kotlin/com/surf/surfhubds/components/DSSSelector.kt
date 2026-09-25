@@ -126,6 +126,42 @@ class DSSSelector @JvmOverloads constructor(
         }
     }
 
+    /**
+     * As telas fixam a largura do seletor em dp (ex.: 150dp para 2 opções) e a altura em 28dp,
+     * calibradas para fontScale 1.0. Com fonte maior o título encostava/vazava da pílula. Aqui
+     * o seletor nunca fica menor que o conteúdo (maior título + folga, em segmentos iguais);
+     * enquanto o tamanho pedido comporta o texto — o caso em 1.0 — nada muda.
+     */
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        var wSpec = widthMeasureSpec
+        var hSpec = heightMeasureSpec
+        if (buttons.isNotEmpty()) {
+            val minW = minContentWidth()
+            if (MeasureSpec.getMode(wSpec) != MeasureSpec.UNSPECIFIED && MeasureSpec.getSize(wSpec) < minW) {
+                wSpec = MeasureSpec.makeMeasureSpec(minW, MeasureSpec.EXACTLY)
+            }
+            val minH = minContentHeight()
+            if (MeasureSpec.getMode(hSpec) != MeasureSpec.UNSPECIFIED && MeasureSpec.getSize(hSpec) < minH) {
+                hSpec = MeasureSpec.makeMeasureSpec(minH, MeasureSpec.EXACTLY)
+            }
+        }
+        super.onMeasure(wSpec, hSpec)
+    }
+
+    private fun minContentWidth(): Int {
+        val pad = 2 * 8f.dpToPx(context)
+        val widest = buttons.maxOf { b ->
+            val icon = b.compoundDrawables.firstOrNull()?.let { it.intrinsicWidth + b.compoundDrawablePadding } ?: 0
+            b.paint.measureText(b.text.toString()).toInt() + icon + pad
+        }
+        return widest * buttons.size + (buttons.size - 1) * 5f.dpToPx(context)
+    }
+
+    private fun minContentHeight(): Int {
+        val fm = buttons.first().paint.fontMetricsInt
+        return (fm.descent - fm.ascent) + 2 * 3f.dpToPx(context)
+    }
+
     fun updateSelection(selectedIndex: Int) {
         this.selectedIndex = selectedIndex
         for ((index, button) in buttons.withIndex()) {

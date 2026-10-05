@@ -43,12 +43,17 @@ internal object DateHelpers {
     }
 
     /**
-     * Dias restantes até [until] a partir de agora, clampados em >= 0
-     * (espelha o `max(0, ...)` do `Date.daysRemaining(until:)` do iOS).
+     * Dias restantes até [until] a partir de [now], clampados em >= 0.
+     *
+     * Arredonda para cima: dia começado conta como dia restante. Truncando, um plano de
+     * 30 dias aparecia com 29 logo depois da recarga (sobravam "29 dias e algumas horas").
+     * Mesma regra do `Date.daysRemaining(until:)` do iOS.
      */
-    fun daysRemaining(until: Date): Int {
-        val diff = until.time - Date().time
-        return maxOf(0, TimeUnit.MILLISECONDS.toDays(diff).toInt())
+    fun daysRemaining(until: Date, now: Date = Date()): Int {
+        val diff = until.time - now.time
+        if (diff <= 0) return 0
+        val dayMillis = TimeUnit.DAYS.toMillis(1)
+        return ((diff + dayMillis - 1) / dayMillis).toInt()
     }
 
     fun formatDDMM(date: Date): String =

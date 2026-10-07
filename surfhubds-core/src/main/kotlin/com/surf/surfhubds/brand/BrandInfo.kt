@@ -172,7 +172,7 @@ data class BrandInfo(
                 carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
                 carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://carrefourchip.surf.com.br/termo-de-adesao-2/",
-                termsOfertaURL = "",
+                termsOfertaURL = "https://sites.google.com/view/politicacarrefour/in%C3%ADcio?pli=1&authuser=0",
                 termsPrivacidadeURL = "https://carrefourchip.surf.com.br/politica-de-privacidade/",
                 chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=carrefourwebchip",
                 whatsApp = "5511933003030",

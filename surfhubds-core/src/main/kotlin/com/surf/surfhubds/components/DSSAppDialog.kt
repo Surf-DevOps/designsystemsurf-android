@@ -1,5 +1,6 @@
 package com.surf.surfhubds.components
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -61,6 +62,23 @@ class DSSAppDialog : DialogFragment() {
     private var backdrop: View? = null
     private var editText: EditText? = null
     private var errorLabel: TextView? = null
+
+    /**
+     * Instância recriada pelo FragmentManager (rotação, troca de tema/fonte, processo
+     * morto). Título, mensagem, textos e callbacks não sobrevivem — só os campos em
+     * memória os guardavam —, então o dialog voltava como um card vazio com botão sem
+     * texto sobre o blur, sem saída para o usuário. Nesse caso ele só se fecha.
+     */
+    private var restored = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            restored = true
+            showsDialog = false
+            dismissAllowingStateLoss()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -183,8 +201,7 @@ class DSSAppDialog : DialogFragment() {
         val cancelButton = DSSPrincipalButton(ctx).apply {
             defaultWidthDp = 0f
             configure(title = cancelText, action = {
-                DSSBlur.removeBackdrop(backdrop)
-                backdrop = null
+                clearBackdrop()
                 dismissAllowingStateLoss()
                 onCancel?.invoke()
             })
@@ -208,9 +225,11 @@ class DSSAppDialog : DialogFragment() {
                 errorLabel?.apply { this.text = error; visibility = View.VISIBLE }
                 return
             }
+            clearBackdrop()
             dismissAllowingStateLoss()
             onConfirm?.invoke(text)
         } else {
+            clearBackdrop()
             dismissAllowingStateLoss()
             onConfirm?.invoke(null)
         }
@@ -244,12 +263,28 @@ class DSSAppDialog : DialogFragment() {
             // O scrim/blur fica no backdrop do DSS; zera o dim p/ não escurecer duas vezes.
             win.setDimAmount(0f)
         }
-        (activity as? FragmentActivity)?.let { backdrop = DSSBlur.addBlurBackdrop(it) }
+        // onStart roda de novo sempre que a Activity volta do segundo plano (troca de app,
+        // tela apagada). Sem este guard cada volta criava outro backdrop e sobrescrevia a
+        // referência; o anterior ficava órfão na decorView e, depois do OK, a tela seguia
+        // borrada e sem aceitar toque.
+        if (backdrop == null && !restored) {
+            (activity as? FragmentActivity)?.let { backdrop = DSSBlur.addBlurBackdrop(it) }
+        }
+    }
+
+    /** O botão voltar também fecha o dialog: tira o blur na hora, sem esperar o destroy. */
+    override fun onDismiss(dialog: DialogInterface) {
+        clearBackdrop()
+        super.onDismiss(dialog)
+    }
+
+    private fun clearBackdrop() {
+        DSSBlur.removeBackdrop(backdrop)
+        backdrop = null
     }
 
     override fun onDestroyView() {
-        DSSBlur.removeBackdrop(backdrop)
-        backdrop = null
+        clearBackdrop()
         editText = null
         errorLabel = null
         super.onDestroyView()

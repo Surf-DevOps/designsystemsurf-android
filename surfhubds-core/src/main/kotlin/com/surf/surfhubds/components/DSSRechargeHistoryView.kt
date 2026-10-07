@@ -70,6 +70,16 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
     var onMonthChange: ((month: String) -> Unit)? = null
 
     /**
+     * Quando `false`, a linha não mostra o valor da recarga — só que o plano foi renovado
+     * e a validade. Padrão `true` mantém o texto de sempre para as marcas que não optam.
+     */
+    var showsValue: Boolean = true
+        set(value) {
+            field = value
+            adapter.notifyDataSetChanged()
+        }
+
+    /**
      * Validade (em dias) de cada plano, indexada por `coPlano`.
      *
      * O `recarga/relatorio` não devolve validade nenhuma, só o `coPlano` da oferta
@@ -242,7 +252,7 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         override fun onBindViewHolder(holder: RowViewHolder, position: Int) {
             val topMargin = if (position == 0) 0 else 12f.dpToPx(holder.itemView.context)
             (holder.itemView.layoutParams as? RecyclerView.LayoutParams)?.topMargin = topMargin
-            holder.row.configure(items[position], validityDays(items[position]))
+            holder.row.configure(items[position], validityDays(items[position]), showsValue)
         }
 
         override fun getItemCount(): Int = items.size
@@ -444,10 +454,10 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
             setupThemeObserver()
         }
 
-        fun configure(item: Transacao, validityDays: Int) {
+        fun configure(item: Transacao, validityDays: Int, showsValue: Boolean) {
             titleLabel.text = RechargeHistoryItemPresenter.title(context, item)
             relativeTimeLabel.text = RechargeHistoryItemPresenter.relativeTime(item)
-            descriptionLabel.text = RechargeHistoryItemPresenter.description(context, item)
+            descriptionLabel.text = RechargeHistoryItemPresenter.description(context, item, showsValue)
             validityLabel.text = RechargeHistoryItemPresenter.validity(context, item, validityDays)
         }
 
@@ -513,7 +523,8 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
             else -> AppStrings.brand(context, "menu_recharge", "Recarga")
         }
 
-        fun description(context: Context, item: Transacao): String {
+        fun description(context: Context, item: Transacao, showsValue: Boolean): String {
+            if (!showsValue) return descriptionWithoutValue(context, item)
             // Com cupom, o que interessa ao cliente é o que ele pagou (`vlPago`), não o
             // crédito concedido (`vlCredito`). Sem cupom — ou na v1, que nem devolve o bloco —
             // `vlPago` é null e o valor segue sendo o de sempre. Cupom estornado volta com
@@ -528,6 +539,17 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
                 AppStrings.brand(context, "recharge_history_renewed_named_format", "Seu %1\$s no valor de %2\$s foi renovado!", planName, value)
             } else {
                 AppStrings.brand(context, "recharge_history_renewed_with_plan_format", "Seu plano %1\$s no valor de %2\$s foi renovado!", planName, value)
+            }
+        }
+
+        /** Variante de [description] sem o valor, para marcas com `showsValue = false`. */
+        private fun descriptionWithoutValue(context: Context, item: Transacao): String {
+            val planName = planName(item)
+                ?: return AppStrings.brand(context, "recharge_history_renewed_no_value", "Seu plano foi renovado!")
+            return if (startsWithPlanNoun(planName)) {
+                AppStrings.brand(context, "recharge_history_renewed_named_no_value_format", "Seu %1\$s foi renovado!", planName)
+            } else {
+                AppStrings.brand(context, "recharge_history_renewed_with_plan_no_value_format", "Seu plano %1\$s foi renovado!", planName)
             }
         }
 

@@ -70,10 +70,11 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
     var onMonthChange: ((month: String) -> Unit)? = null
 
     /**
-     * Quando `false`, a linha não mostra o valor da recarga — só que o plano foi renovado
-     * e a validade. Padrão `true` mantém o texto de sempre para as marcas que não optam.
+     * Decide, por transação, se a linha mostra o valor da recarga. Quando devolve `false`,
+     * a linha diz só que o plano foi renovado e a validade. O padrão mostra sempre, mantendo
+     * o texto de sempre para as marcas que não optam.
      */
-    var showsValue: Boolean = true
+    var showsValueFor: (Transacao) -> Boolean = { true }
         set(value) {
             field = value
             adapter.notifyDataSetChanged()
@@ -252,7 +253,7 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         override fun onBindViewHolder(holder: RowViewHolder, position: Int) {
             val topMargin = if (position == 0) 0 else 12f.dpToPx(holder.itemView.context)
             (holder.itemView.layoutParams as? RecyclerView.LayoutParams)?.topMargin = topMargin
-            holder.row.configure(items[position], validityDays(items[position]), showsValue)
+            holder.row.configure(items[position], validityDays(items[position]), showsValueFor(items[position]))
         }
 
         override fun getItemCount(): Int = items.size
@@ -542,7 +543,7 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
             }
         }
 
-        /** Variante de [description] sem o valor, para marcas com `showsValue = false`. */
+        /** Variante de [description] sem o valor, para transações em que `showsValueFor` devolve `false`. */
         private fun descriptionWithoutValue(context: Context, item: Transacao): String {
             val planName = planName(item)
                 ?: return AppStrings.brand(context, "recharge_history_renewed_no_value", "Seu plano foi renovado!")

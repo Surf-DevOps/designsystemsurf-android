@@ -209,6 +209,7 @@ object OfferUpsellRules {
     ): Offer? = when (BrandResolver.current(context)) {
         Brand.FLACHIP -> flachipUpgrade(context, current, plans)
         Brand.BANDSPORTS -> bandsportsUpgrade(context, current, plans)
+        Brand.CORREIOSCELULAR -> correiosUpgrade(context, current, plans)
         else -> null
     }
 
@@ -249,5 +250,51 @@ object OfferUpsellRules {
             upgrade = plans[currentIndex + 1],
             text = AppStrings.brand(context, "best_deals_offer_streaming", "Por apenas mais R$10,00 tenha a muito mais canais de conteúdo no streaming Newco Play."),
         )
+    }
+
+    /**
+     * Família de planos Alô: 20->25 (+R$5/+5GB), 25->30 (+R$5/+5GB), 30->45 (+R$15/+15GB),
+     * 45->55 (+R$10/+10GB) — o número do plano é a quantidade de GB, por isso o delta de
+     * dados do texto acompanha o delta do nome.
+     */
+    private fun correiosUpgrade(
+        context: Context,
+        current: DSSBestDealsBottomSheet.PlanOption,
+        plans: List<DSSBestDealsBottomSheet.PlanOption>,
+    ): Offer? {
+        val name = current.noPlano.uppercase()
+        if (name.contains("ALO 20")) {
+            plans.firstOrNull { it.noPlano.uppercase().contains("ALO 25") }?.let { target ->
+                return Offer(
+                    upgrade = target,
+                    text = AppStrings.brand(context, "best_deals_offer_correios_plus5gb", "Por apenas mais R$5,00 tenha até 5GB A MAIS para usar como quiser."),
+                )
+            }
+        }
+        if (name.contains("ALO 25")) {
+            plans.firstOrNull { it.noPlano.uppercase().contains("ALO 30") }?.let { target ->
+                return Offer(
+                    upgrade = target,
+                    text = AppStrings.brand(context, "best_deals_offer_correios_plus5gb", "Por apenas mais R$5,00 tenha até 5GB A MAIS para usar como quiser."),
+                )
+            }
+        }
+        if (name.contains("ALO 30")) {
+            plans.firstOrNull { it.noPlano.uppercase().contains("ALO 45") }?.let { target ->
+                return Offer(
+                    upgrade = target,
+                    text = AppStrings.brand(context, "best_deals_offer_correios_plus15gb", "Por apenas mais R$15,00 tenha até 15GB A MAIS para usar como quiser."),
+                )
+            }
+        }
+        if (name.contains("ALO 45")) {
+            plans.firstOrNull { it.noPlano.uppercase().contains("ALO 55") }?.let { target ->
+                return Offer(
+                    upgrade = target,
+                    text = AppStrings.brand(context, "best_deals_offer_correios_plus10gb", "Por apenas mais R$10,00 tenha até 10GB A MAIS para usar como quiser."),
+                )
+            }
+        }
+        return null
     }
 }

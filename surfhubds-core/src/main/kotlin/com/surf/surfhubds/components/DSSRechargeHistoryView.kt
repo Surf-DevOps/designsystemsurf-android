@@ -320,16 +320,17 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
 
         fun setTitle(text: String) { titleLabel.text = text }
 
-        // As setas só aparecem quando há navegação pertinente: no mês vigente (mais recente)
-        // some a seta da direita (avançar); no mês mais antigo some a da esquerda (voltar).
+        // iOS mantém a seta sempre visível e só reduz a opacidade quando a navegação não é
+        // possível (não some): no mês vigente (mais recente) a seta da direita fica esmaecida;
+        // no mês mais antigo, a da esquerda.
         fun setPreviousEnabled(enabled: Boolean) {
             previousButton.isEnabled = enabled
-            previousButton.visibility = if (enabled) View.VISIBLE else View.INVISIBLE
+            previousButton.alpha = if (enabled) 1f else 0.35f
         }
 
         fun setNextEnabled(enabled: Boolean) {
             nextButton.isEnabled = enabled
-            nextButton.visibility = if (enabled) View.VISIBLE else View.INVISIBLE
+            nextButton.alpha = if (enabled) 1f else 0.35f
         }
 
         override fun applyTheme(theme: Theme) { refresh() }

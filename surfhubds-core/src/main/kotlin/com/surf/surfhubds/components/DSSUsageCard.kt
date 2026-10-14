@@ -27,7 +27,7 @@ import java.util.Locale
 
 /**
  * Port do `DSSUsageCard.swift` (iOS) — card de consumo (Internet / Ligações / SMS) com
- * label de disponível/total, percentual usado, progressbar colorida e validade.
+ * total, consumido e disponível rotulados, progressbar colorida e validade.
  */
 class DSSUsageCard @JvmOverloads constructor(
     context: Context,
@@ -54,12 +54,10 @@ class DSSUsageCard @JvmOverloads constructor(
     private val iconView = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER }
     private val titleLabel = TextView(context).apply { textSize = 16f; typeface = DSSFont.light(context, 16f).typeface }
     private val divider = View(context)
-    // Adaptive: com a fonte ampliada a coluna da esquerda quebrava em duas linhas e o
-    // "% utilizados" ficava encostado nela. Não caindo na linha, os dois empilham.
     private val infoRow = DSSAdaptiveRow(context).apply { gravity = Gravity.CENTER_VERTICAL }
-    private val availableLabel = TextView(context).apply { textSize = 16f; typeface = DSSFont.light(context, 16f).typeface }
     private val totalLabel = TextView(context).apply { textSize = 14f; typeface = DSSFont.light(context, 14f).typeface }
-    private val usedLabel = TextView(context).apply { textSize = 14f; typeface = DSSFont.light(context, 14f).typeface; gravity = Gravity.END }
+    private val usedLabel = TextView(context).apply { textSize = 14f; typeface = DSSFont.light(context, 14f).typeface }
+    private val availableLabel = TextView(context).apply { textSize = 16f; typeface = DSSFont.medium(context, 16f).typeface }
     private val progressBar = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal).apply { max = 100 }
     private val validUntilLabel = TextView(context).apply { textSize = 13f; typeface = DSSFont.light(context, 13f).typeface }
 
@@ -83,19 +81,21 @@ class DSSUsageCard @JvmOverloads constructor(
             ).apply { topMargin = 12f.dpToPx(context) },
         )
 
-        // Available + total on left, used on right
-        val leftCol = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
-        leftCol.addView(availableLabel)
-        leftCol.addView(totalLabel)
-        infoRow.stackedGap = 4f.dpToPx(context)
-        infoRow.addView(leftCol, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        infoRow.addView(
+        // Total / Consumido / Disponível empilhados, cada um com um rótulo claro — antes essas
+        // informações ficavam espalhadas em "X disponíveis / de Y" + "Z% utilizados".
+        val infoCol = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+        infoCol.addView(totalLabel)
+        infoCol.addView(
             usedLabel,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-            ).apply { leftMargin = 8f.dpToPx(context) },
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                .apply { topMargin = 4f.dpToPx(context) },
         )
+        infoCol.addView(
+            availableLabel,
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                .apply { topMargin = 4f.dpToPx(context) },
+        )
+        infoRow.addView(infoCol, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         container.addView(
             infoRow,
             LinearLayout.LayoutParams(
@@ -129,45 +129,46 @@ class DSSUsageCard @JvmOverloads constructor(
             Type.INTERNET -> {
                 iconView.setImageDrawable(internetIcon ?: defaultIcon(com.surf.surfhubds.R.drawable.dss_ic_globe))
                 titleLabel.text = AppStrings.brand(context, "usage_card_internet_base", "Internet base do plano")
-                availableLabel.text = "${formatMBToGB(config.available)}GB disponíveis"
-                totalLabel.text = "de ${formatMBToGB(config.total)}GB"
-                validUntilLabel.text = "Válido até: ${config.validUntil} 00:01"
                 val used = (config.total - config.available).coerceAtLeast(0)
-                val pct = percent(used, config.total)
-                usedLabel.text = "$pct% utilizados"
-                applyProgress(pct)
+                totalLabel.text = "Total: ${formatMBToGB(config.total)}GB"
+                usedLabel.text = "Consumido: ${formatMBToGB(used)}GB"
+                availableLabel.text = "Disponível: ${formatMBToGB(config.available)}GB"
+                validUntilLabel.text = "Válido até: ${config.validUntil} 00:01"
+                applyProgress(percent(used, config.total))
             }
             Type.CALLS -> {
                 iconView.setImageDrawable(callsIcon ?: defaultIcon(com.surf.surfhubds.R.drawable.dss_ic_phone))
                 titleLabel.text = AppStrings.brand(context, "my_plan_feature_calls_title", "Ligações")
                 val usedMinutes = (config.total - config.available).coerceAtLeast(0)
-                val totalSecondsUsed = usedMinutes * 60
-                val h = totalSecondsUsed / 3600
-                val m = (totalSecondsUsed % 3600) / 60
-                val s = totalSecondsUsed % 60
-                usedLabel.text = String.format(Locale.US, "%02d:%02d:%02d utilizados", h, m, s)
-                val formattedTotal = if (config.total >= 1000) AppStrings.brand(context, "consumption_unlimited", "Ilimitado") else "${config.total} min"
-                val formattedAvailable = if (config.total >= 1000) AppStrings.brand(context, "consumption_unlimited", "Ilimitado") else "${config.available} min"
-                availableLabel.text = "$formattedAvailable disponíveis"
-                totalLabel.text = "de $formattedTotal"
                 validUntilLabel.text = "Válido até: ${config.validUntil} 00:01"
                 if (config.total >= 1000) {
+                    val unlimited = AppStrings.brand(context, "consumption_unlimited", "Ilimitado")
+                    val totalSecondsUsed = usedMinutes * 60
+                    val h = totalSecondsUsed / 3600
+                    val m = (totalSecondsUsed % 3600) / 60
+                    val s = totalSecondsUsed % 60
+                    totalLabel.text = "Total: $unlimited"
+                    usedLabel.text = "Consumido: " + String.format(Locale.US, "%02d:%02d:%02d", h, m, s)
+                    availableLabel.text = "Disponível: $unlimited"
                     progressBar.progress = 0
                 } else {
-                    val pct = percent(usedMinutes, config.total)
-                    applyProgress(pct)
+                    // Mesma unidade (min) nos 3 campos, em vez de misturar "min" com um tempo
+                    // HH:MM:SS no "consumido" — mais fácil de comparar os três valores.
+                    totalLabel.text = "Total: ${config.total} min"
+                    usedLabel.text = "Consumido: $usedMinutes min"
+                    availableLabel.text = "Disponível: ${config.available} min"
+                    applyProgress(percent(usedMinutes, config.total))
                 }
             }
             Type.SMS -> {
                 iconView.setImageDrawable(smsIcon ?: defaultIcon(com.surf.surfhubds.R.drawable.dss_ic_chat))
                 titleLabel.text = AppStrings.brand(context, "consumption_sms", "SMS")
                 val used = (config.total - config.available).coerceAtLeast(0)
-                val pct = percent(used, config.total)
-                availableLabel.text = "${config.available} disponíveis"
-                totalLabel.text = "de ${config.total}SMS"
-                usedLabel.text = "$pct% utilizados"
+                totalLabel.text = "Total: ${config.total}SMS"
+                usedLabel.text = "Consumido: ${used}SMS"
+                availableLabel.text = "Disponível: ${config.available}SMS"
                 validUntilLabel.text = "Válido até: ${config.validUntil} 00:01"
-                applyProgress(pct)
+                applyProgress(percent(used, config.total))
             }
         }
     }

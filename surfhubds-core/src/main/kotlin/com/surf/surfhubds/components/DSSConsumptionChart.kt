@@ -184,7 +184,17 @@ class DSSConsumptionChart @JvmOverloads constructor(
                 usedLabel.text = "Utilizado: ${total - used}SMS"
             }
             TypeChart.MIN -> {
-                totalLabel.text = if (total > 900) "Ilimitado" else "${used}min"
+                if (total > 900) {
+                    // "Ligações ilimitadas" não cabe numa linha só no tamanho padrão (26sp) dentro
+                    // do gauge de 200dp — reduz a fonte e quebra em 2 linhas só para esse caso.
+                    totalLabel.maxLines = 2
+                    totalLabel.textSize = 16f
+                    totalLabel.text = "Ligações\nilimitadas"
+                } else {
+                    totalLabel.maxLines = 1
+                    totalLabel.textSize = usedFontSizeSp
+                    totalLabel.text = "${used}min"
+                }
                 usedLabel.text = "Utilizado: ${total - used}min"
             }
         }

@@ -190,7 +190,7 @@ class DSSConsumptionCard @JvmOverloads constructor(
             }
             CardKind.CALLS -> {
                 if (config.totalValue >= 900) {
-                    usedValueView.text = "Ilimitado"
+                    usedValueView.text = AppStrings.brand(context, "consumption_unlimited_calls", "Ligações ilimitadas")
                     totalValueView.visibility = GONE
                 } else {
                     usedValueView.text = "${config.usedValue}Min"

@@ -146,14 +146,18 @@ class DSSUsageCard @JvmOverloads constructor(
                 val m = (totalSecondsUsed % 3600) / 60
                 val s = totalSecondsUsed % 60
                 usedLabel.text = String.format(Locale.US, "%02d:%02d:%02d utilizados", h, m, s)
-                val formattedTotal = if (config.total >= 1000) AppStrings.brand(context, "consumption_unlimited", "Ilimitado") else "${config.total} min"
-                val formattedAvailable = if (config.total >= 1000) AppStrings.brand(context, "consumption_unlimited", "Ilimitado") else "${config.available} min"
-                availableLabel.text = "$formattedAvailable disponíveis"
-                totalLabel.text = "de $formattedTotal"
                 validUntilLabel.text = "Válido até: ${config.validUntil} 00:01"
                 if (config.total >= 1000) {
+                    // "de Ligações ilimitadas" não faz sentido gramaticalmente (diferente de
+                    // "de 100 min") — mostra só a frase e esconde a linha "de X".
+                    availableLabel.text =
+                        AppStrings.brand(context, "consumption_unlimited_calls", "Ligações ilimitadas")
+                    totalLabel.visibility = View.GONE
                     progressBar.progress = 0
                 } else {
+                    availableLabel.text = "${config.available} min disponíveis"
+                    totalLabel.visibility = View.VISIBLE
+                    totalLabel.text = "de ${config.total} min"
                     val pct = percent(usedMinutes, config.total)
                     applyProgress(pct)
                 }

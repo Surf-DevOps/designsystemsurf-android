@@ -12,6 +12,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.surf.surfhubds.font.DSSFont
@@ -263,22 +265,32 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
 
     // MARK: - Cabeçalho de mês
 
-    private class MonthHeaderView(context: Context) : FrameLayout(context), ThemeAware {
+    private class MonthHeaderView(context: Context) : ConstraintLayout(context), ThemeAware {
 
         var onPrevious: (() -> Unit)? = null
         var onNext: (() -> Unit)? = null
 
+        // Padding interno nos botões: no iOS o glifo SF Symbol renderiza bem menor que a área de
+        // toque de 44pt (não é esticado para preenchê-la); sem esse padding o drawable de 24dp
+        // ficava ampliado para os 44dp inteiros do ImageView, parecendo bem mais grosso.
+        private val iconPadding = 14f.dpToPx(context)
+
         private val previousButton = ImageView(context).apply {
+            id = View.generateViewId()
             scaleType = ImageView.ScaleType.FIT_CENTER
             isClickable = true
             isFocusable = true
+            setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
         }
         private val nextButton = ImageView(context).apply {
+            id = View.generateViewId()
             scaleType = ImageView.ScaleType.FIT_CENTER
             isClickable = true
             isFocusable = true
+            setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
         }
         private val titleLabel = TextView(context).apply {
+            id = View.generateViewId()
             textSize = 16f
             typeface = DSSFont.medium(context, 16f).typeface
             gravity = Gravity.CENTER
@@ -290,26 +302,30 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
             previousButton.setImageDrawable(loadDrawable("ic_chevron_back", "ic_chevron_left"))
             nextButton.setImageDrawable(loadDrawable("ic_chevron_right"))
 
-            addView(
-                titleLabel,
-                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                    gravity = Gravity.CENTER
-                },
-            )
-            addView(
-                previousButton,
-                LayoutParams(44f.dpToPx(context), 44f.dpToPx(context)).apply {
-                    gravity = Gravity.CENTER_VERTICAL or Gravity.START
-                    marginStart = 16f.dpToPx(context)
-                },
-            )
-            addView(
-                nextButton,
-                LayoutParams(44f.dpToPx(context), 44f.dpToPx(context)).apply {
-                    gravity = Gravity.CENTER_VERTICAL or Gravity.END
-                    marginEnd = 16f.dpToPx(context)
-                },
-            )
+            addView(titleLabel, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
+            addView(previousButton, LayoutParams(44f.dpToPx(context), 44f.dpToPx(context)))
+            addView(nextButton, LayoutParams(44f.dpToPx(context), 44f.dpToPx(context)))
+
+            // Mesma relação do iOS: a seta fica a uma distância fixa (16pt) da borda do texto,
+            // não da borda do container — por isso usa ConstraintLayout em vez de gravity/margin
+            // num FrameLayout, que ancorava as setas nas bordas da tela.
+            val gap = 16f.dpToPx(context)
+            ConstraintSet().apply {
+                clone(this@MonthHeaderView)
+                connect(titleLabel.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+                connect(titleLabel.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                connect(titleLabel.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+                connect(titleLabel.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+
+                connect(previousButton.id, ConstraintSet.END, titleLabel.id, ConstraintSet.START, gap)
+                connect(previousButton.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+                connect(previousButton.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+
+                connect(nextButton.id, ConstraintSet.START, titleLabel.id, ConstraintSet.END, gap)
+                connect(nextButton.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+                connect(nextButton.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+                applyTo(this@MonthHeaderView)
+            }
 
             previousButton.setOnClickListener { onPrevious?.invoke() }
             nextButton.setOnClickListener { onNext?.invoke() }

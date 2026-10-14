@@ -180,10 +180,10 @@ class DSSUsageCard @JvmOverloads constructor(
 
     private fun applyProgress(percent: Int) {
         val clamped = percent.coerceIn(0, 100)
-        // iOS usa cores de sistema fixas (.systemGreen/.systemYellow/.systemRed),
+        // iOS usa cores de sistema fixas (.systemBlue/.systemYellow/.systemRed),
         // não tokens semânticos — espelhamos os hex exatos para fidelidade visual.
         val color: Int = when {
-            clamped < 50 -> Color.parseColor("#34C759") // .systemGreen
+            clamped < 50 -> Color.parseColor("#007AFF") // .systemBlue
             clamped < 70 -> Color.parseColor("#FFCC00") // .systemYellow
             else -> Color.parseColor("#FF3B30") // .systemRed
         }

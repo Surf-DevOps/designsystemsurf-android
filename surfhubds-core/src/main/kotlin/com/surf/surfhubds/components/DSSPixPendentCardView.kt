@@ -16,7 +16,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatButton
 import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DSSColors
@@ -172,7 +171,7 @@ class DSSPixPendentCardView @JvmOverloads constructor(
         )
 
         if (collapsible) {
-            expandButton.setImageDrawable(loadChevronDown())
+            expandButton.setImageResource(com.surf.surfhubds.R.drawable.dss_ic_chevron_down)
             // iOS: expandButton.tintColor = .systemGray (#8E8E93)
             expandButton.setColorFilter(SYSTEM_GRAY)
             headerRow.addView(
@@ -449,11 +448,6 @@ class DSSPixPendentCardView @JvmOverloads constructor(
             copyButton.text = originalText
             copyButton.isEnabled = true
         }, 2_000L)
-    }
-
-    private fun loadChevronDown(): Drawable? {
-        val resId = resources.getIdentifier("ic_chevron_down", "drawable", context.packageName)
-        return if (resId != 0) AppCompatResources.getDrawable(context, resId) else null
     }
 
     // MARK: Persistence

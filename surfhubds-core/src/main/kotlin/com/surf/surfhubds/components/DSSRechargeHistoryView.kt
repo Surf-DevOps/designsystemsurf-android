@@ -270,10 +270,11 @@ class DSSRechargeHistoryView @JvmOverloads constructor(
         var onPrevious: (() -> Unit)? = null
         var onNext: (() -> Unit)? = null
 
-        // Padding interno nos botões: no iOS o glifo SF Symbol renderiza bem menor que a área de
-        // toque de 44pt (não é esticado para preenchê-la); sem esse padding o drawable de 24dp
-        // ficava ampliado para os 44dp inteiros do ImageView, parecendo bem mais grosso.
-        private val iconPadding = 14f.dpToPx(context)
+        // Padding interno nos botões: sem ele, o drawable de 24dp era esticado para preencher
+        // os 44dp inteiros do ImageView, ficando bem mais grosso que o glifo do iOS. O glifo do
+        // ic_chevron_back/right só ocupa ~50% da altura do seu viewBox, então o padding precisa
+        // ser pequeno para a seta ficar só ligeiramente maior que o texto (16sp) ao lado.
+        private val iconPadding = 7f.dpToPx(context)
 
         private val previousButton = ImageView(context).apply {
             id = View.generateViewId()

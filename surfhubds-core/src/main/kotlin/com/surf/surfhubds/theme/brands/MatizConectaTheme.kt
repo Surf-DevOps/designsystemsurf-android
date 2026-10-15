@@ -8,9 +8,9 @@ import com.surf.surfhubds.tokens.ColorValue
 // Gerado pelo brand-builder — espelho do MatizConectaTheme.swift (iOS).
 class MatizConectaTheme : DefaultTheme() {
     override fun buildColors(): ColorTokens = ColorTokens(
-        primary = ColorValue.fromHex("#1D4ED8", "#3B82F6"),
+        primary = ColorValue.fromHex("#2A5867", "#4A8CA3"),
         secondary = ColorValue.fromHex("#1E3A5F", "#2C5282"),
-        primaryButton = ColorValue.fromHex("#1D4ED8", "#3B82F6"),
+        primaryButton = ColorValue.fromHex("#2A5867", "#4A8CA3"),
         buttonText = ColorValue.fromHex("#FFFFFF", "#000000"),
         surface = ColorValue.fromHex("#FFFFFF", "#1C1C1E"),
         background = ColorValue.fromHex("#FFFFFF", "#000000"),

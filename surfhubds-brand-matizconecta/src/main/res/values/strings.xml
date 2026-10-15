@@ -59,7 +59,8 @@
     <string name="validate_confirmation_title">Confirmação</string>
     <string name="validate_code_info_format">Informe o código enviado via SMS para o \nnúmero %s</string>
     <string name="reset_title">Crie sua nova senha</string>
-    <string name="reset_success_message">Sua senha foi atualizada com sucesso.</string>
+    <string name="reset_success_message">Senha cadastrada com sucesso!</string>
+    <string name="reset_success_redirecting">Direcionando para login...</string>
     <string name="reset_finish_button">Finalizar</string>
     <string name="reset_password_4_digits">A senha deve conter exatamente 4 dígitos numéricos.</string>
     <string name="reset_passwords_mismatch">As senhas informadas não coincidem. Verifique e tente novamente.</string>

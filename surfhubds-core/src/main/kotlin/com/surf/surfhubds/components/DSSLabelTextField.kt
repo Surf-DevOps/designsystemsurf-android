@@ -156,6 +156,7 @@ class DSSLabelTextField @JvmOverloads constructor(
         errorLabel.textSize = 12f
         errorLabel.setTextColor(Color.parseColor("#FF3B30"))
         errorLabel.maxLines = Int.MAX_VALUE
+        errorLabel.compoundDrawablePadding = 6f.dpToPx(context)
         errorLabel.visibility = View.GONE
         addView(errorLabel, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
             topMargin = 4f.dpToPx(context)
@@ -273,6 +274,14 @@ class DSSLabelTextField @JvmOverloads constructor(
         if (!showsErrorLabel) return
         errorLabel.text = message
         errorLabel.visibility = if (message == null) View.GONE else View.VISIBLE
+        errorLabel.gravity = Gravity.CENTER_VERTICAL
+        val icon = if (message == null) {
+            null
+        } else {
+            androidx.appcompat.content.res.AppCompatResources
+                .getDrawable(context, com.surf.surfhubds.R.drawable.dss_ic_error_circle)
+        }
+        errorLabel.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
         refreshTheme(error = message != null)
     }
 

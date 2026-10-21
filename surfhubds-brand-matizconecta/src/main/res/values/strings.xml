@@ -504,6 +504,7 @@
     <string name="loading_activating">Ativando…</string>
     <string name="loading_entering">Entrando…</string>
     <string name="loading_message">Carregando seus dados…</string>
+    <string name="loading_subtitle">Projeto Educacional</string>
     <string name="login_continue">Entrar</string>
     <string name="login_create_access">Criar acesso</string>
     <string name="login_document_label">CPF/CNPJ</string>

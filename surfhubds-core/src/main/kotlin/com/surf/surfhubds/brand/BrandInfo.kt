@@ -175,7 +175,7 @@ data class BrandInfo(
                 termsAdesaoURL = "https://carrefourchip.surf.com.br/termo-de-adesao-2/",
                 termsOfertaURL = "https://sites.google.com/view/politicacarrefour/in%C3%ADcio?pli=1&authuser=0",
                 termsPrivacidadeURL = "https://carrefourchip.surf.com.br/politica-de-privacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=carrefourwebchip",
+                chatBotURL = "https://omnichannel.l5.com.br/omnichannel_servicos/widget/webchat?tt=e2ce2835a221dd479ed5514565e3e24a&ct=2fbef25dd4d5199f2e49f17ab1a6bdc5&cc=false&ce=false&fs=1&uncache=202691515112617",
                 whatsApp = "5511933003030",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=br.com.surfmobile.carrefourchip",
                 coMvno = "69",

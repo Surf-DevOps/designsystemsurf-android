@@ -79,6 +79,12 @@ object DSSLoadingView {
 
         container.addView(content, contentLp)
         root.addView(container)
+        // `addView` sozinho nem sempre garante o topo da pilha visual — transições de
+        // Fragment (ex.: trocar pra esta tela de Loading) podem reordenar a hierarquia
+        // do decorView depois que o overlay já foi adicionado, deixando-o atrás do
+        // conteúdo da tela. `bringToFront()` + `invalidate()` força a reordenação real.
+        container.bringToFront()
+        root.invalidate()
         overlay = container
     }
 

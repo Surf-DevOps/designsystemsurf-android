@@ -56,7 +56,8 @@ import com.surf.surfhubds.util.dpToPx
  */
 class DSSRatingBottomSheet : BottomSheetDialogFragment() {
 
-    data class Category(val id: Int, val title: String)
+    /** [description] aparece sob as categorias quando o chip é marcado (subitens da categoria). */
+    data class Category(val id: Int, val title: String, val description: String? = null)
 
     data class Submission(val rating: Int, val categoryIds: List<Int>, val comment: String?)
 
@@ -78,7 +79,7 @@ class DSSRatingBottomSheet : BottomSheetDialogFragment() {
 
     var delegate: Delegate? = null
 
-    /** Categorias das notas 1 a 3. */
+    /** Categorias das notas 1 a 3. Para um catálogo único, passe a mesma lista nos dois grupos. */
     var negativeCategories: List<Category> = emptyList()
 
     /** Categorias das notas 4 e 5. */
@@ -87,6 +88,7 @@ class DSSRatingBottomSheet : BottomSheetDialogFragment() {
     private var stage = Stage.RATING
     private var rating = 0
     private val selectedCategoryIds = linkedSetOf<Int>()
+    private var describedCategoryId: Int? = null
     private var isSubmitting = false
     private var didFireDismiss = false
 
@@ -100,6 +102,7 @@ class DSSRatingBottomSheet : BottomSheetDialogFragment() {
     private lateinit var commentHintLabel: TextView
     private lateinit var commentCounterLabel: TextView
     private lateinit var categoriesFlow: FlowLayout
+    private lateinit var categoryDescriptionLabel: TextView
     private lateinit var errorLabel: TextView
     private lateinit var sendButton: DSSPrincipalButton
     private lateinit var notNowLink: TextView
@@ -209,6 +212,13 @@ class DSSRatingBottomSheet : BottomSheetDialogFragment() {
 
         categoriesFlow = FlowLayout(ctx, 8f.dpToPx(ctx), 8f.dpToPx(ctx))
         content.addView(categoriesFlow, matchWidth().apply { topMargin = 16f.dpToPx(ctx) })
+
+        categoryDescriptionLabel = label(ctx, 12f).apply { setTextColor(DSSColors.textSecondary()) }
+        content.addView(categoryDescriptionLabel, matchWidth().apply {
+            topMargin = 10f.dpToPx(ctx)
+            marginStart = 12f.dpToPx(ctx)
+            marginEnd = 12f.dpToPx(ctx)
+        })
 
         errorLabel = label(ctx, 12f).apply { setTextColor(DSSColors.error()) }
         content.addView(errorLabel, matchWidth().apply { topMargin = 12f.dpToPx(ctx) })
@@ -368,7 +378,10 @@ class DSSRatingBottomSheet : BottomSheetDialogFragment() {
         val previousGroupPositive = rating >= POSITIVE_FROM
         rating = value
         // As categorias mudam de grupo entre 3 e 4 estrelas: a seleção do outro grupo não vale.
-        if (previousGroupPositive != (value >= POSITIVE_FROM)) selectedCategoryIds.clear()
+        if (previousGroupPositive != (value >= POSITIVE_FROM) && negativeCategories != positiveCategories) {
+            selectedCategoryIds.clear()
+            describedCategoryId = null
+        }
         errorLabel.isVisible = false
         render()
     }
@@ -423,6 +436,7 @@ class DSSRatingBottomSheet : BottomSheetDialogFragment() {
         categoriesFlow.removeAllViews()
         if (rating == 0) {
             categoriesFlow.isVisible = false
+            categoryDescriptionLabel.isVisible = false
             return
         }
         val categories = if (rating >= POSITIVE_FROM) positiveCategories else negativeCategories
@@ -439,13 +453,24 @@ class DSSRatingBottomSheet : BottomSheetDialogFragment() {
                 setPadding(padH, padV, padH, padV)
                 setOnClickListener {
                     if (isSubmitting) return@setOnClickListener
-                    if (!selectedCategoryIds.remove(category.id)) selectedCategoryIds.add(category.id)
-                    styleChip(this, category.id in selectedCategoryIds)
+                    val selected = !selectedCategoryIds.remove(category.id)
+                    if (selected) selectedCategoryIds.add(category.id)
+                    styleChip(this, selected)
+                    // Mostra os subitens da categoria recém-marcada; desmarcá-la os esconde.
+                    describedCategoryId = if (selected) category.id else describedCategoryId.takeUnless { it == category.id }
+                    renderCategoryDescription(categories)
                 }
             }
             styleChip(chip, category.id in selectedCategoryIds)
             categoriesFlow.addView(chip)
         }
+        renderCategoryDescription(categories)
+    }
+
+    private fun renderCategoryDescription(categories: List<Category>) {
+        val description = categories.firstOrNull { it.id == describedCategoryId }?.description
+        categoryDescriptionLabel.text = description
+        categoryDescriptionLabel.isVisible = !description.isNullOrBlank()
     }
 
     private fun styleChip(chip: TextView, selected: Boolean) {
@@ -490,7 +515,7 @@ class DSSRatingBottomSheet : BottomSheetDialogFragment() {
         val positive = rating >= POSITIVE_FROM
         thanksBadge.configure(
             ContextCompat.getDrawable(ctx, R.drawable.dss_ic_chat),
-            if (positive) DSSIconBadge.Style.SUCCESS else DSSIconBadge.Style.ERROR,
+            if (positive) DSSIconBadge.Style.SUCCESS_SOFT else DSSIconBadge.Style.ERROR,
         )
         thanksStarsRow.isVisible = positive
         renderStars(thanksStarsRow, rating)

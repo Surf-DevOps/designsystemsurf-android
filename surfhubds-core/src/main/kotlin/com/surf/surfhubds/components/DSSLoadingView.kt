@@ -79,13 +79,21 @@ object DSSLoadingView {
 
         container.addView(content, contentLp)
         root.addView(container)
-        // `addView` sozinho nem sempre garante o topo da pilha visual — transições de
-        // Fragment (ex.: trocar pra esta tela de Loading) podem reordenar a hierarquia
-        // do decorView depois que o overlay já foi adicionado, deixando-o atrás do
-        // conteúdo da tela. `bringToFront()` + `invalidate()` força a reordenação real.
+        // `bringToFront()` só reordena a lista de desenho do pai — uma transição de
+        // Fragment em andamento (ex.: trocar PRA esta tela de Loading) pode terminar
+        // DEPOIS disso e mexer na hierarquia de novo, voltando a deixar o overlay atrás
+        // do conteúdo da tela. `elevation` resolve de forma mais robusta: é respeitada
+        // na composição independente da ordem dos filhos. `post {}` garante que isso
+        // rode depois que qualquer transação de Fragment pendente já tiver terminado.
+        container.elevation = 1000f
+        bringOverlayToFront(root, container)
+        root.post { bringOverlayToFront(root, container) }
+        overlay = container
+    }
+
+    private fun bringOverlayToFront(root: ViewGroup, container: View) {
         container.bringToFront()
         root.invalidate()
-        overlay = container
     }
 
     fun stopLoading() {

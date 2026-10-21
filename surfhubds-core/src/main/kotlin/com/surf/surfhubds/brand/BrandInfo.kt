@@ -78,7 +78,7 @@ data class BrandInfo(
                 termsAdesaoURL = "https://megasurfcelular.com.br/termo-de-adesao/",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "https://megasurfcelular.com.br/politica-de-privacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=megasurfapp",
+                chatBotURL = "https://omnichannel.l5.com.br/omnichannel_servicos/widget/webchat?tt=e2ce2835a221dd479ed5514565e3e24a&ct=3ea604bef997fd36b1ebf867f757e925&cc=false&ce=false&fs=1&uncache=2026915151223296",
                 whatsApp = "5511920933449",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=br.com.surfmobile.megasurf",
                 coMvno = "56",

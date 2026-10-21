@@ -159,7 +159,7 @@ data class BrandInfo(
                 termsAdesaoURL = "https://paguemenoscelular.com.br/termo-de-adesao/",
                 termsOfertaURL = "https://paguemenoscelular.com.br/regulamento-oferta/",
                 termsPrivacidadeURL = "https://paguemenoscelular.com.br/politica-de-privacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surfpaguemenosweb",
+                chatBotURL = "https://omnichannel.l5.com.br/omnichannel_servicos/widget/webchat?tt=e2ce2835a221dd479ed5514565e3e24a&ct=fcc058baf9df35c18dc4c5907cdbf800&cc=false&ce=false&fs=1&uncache=202691515723386",
                 whatsApp = "5585920002288",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=br.com.surfmobile.paguemenoscelular",
                 coMvno = "405",

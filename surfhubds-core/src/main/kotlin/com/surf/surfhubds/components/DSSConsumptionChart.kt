@@ -9,6 +9,7 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -187,8 +188,12 @@ class DSSConsumptionChart @JvmOverloads constructor(
                 if (total > 900) {
                     // "Ligações ilimitadas" não cabe numa linha só no tamanho padrão (26sp) dentro
                     // do gauge de 200dp — reduz a fonte e quebra em 2 linhas só para esse caso.
+                    // COMPLEX_UNIT_PX (não SP): o encaixe no gauge é fixo e não pode crescer com a
+                    // config. de tamanho de fonte do aparelho — o iOS usa um ponto fixo aqui
+                    // (.boldSystemFont(ofSize: 16), sem Dynamic Type), então SP deixava esse texto
+                    // maior que o do iOS em aparelhos com fonte do sistema aumentada.
                     totalLabel.maxLines = 2
-                    totalLabel.textSize = 16f
+                    totalLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX, 16f.dpToPx(context).toFloat())
                     totalLabel.text = "Ligações\nilimitadas"
                 } else {
                     totalLabel.maxLines = 1

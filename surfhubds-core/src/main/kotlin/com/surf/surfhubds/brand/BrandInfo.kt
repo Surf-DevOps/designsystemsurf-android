@@ -25,12 +25,13 @@ data class BrandInfo(
     companion object {
         fun current(brand: Brand): BrandInfo = when (brand) {
             Brand.FLACHIP -> BrandInfo(
-                carouselText1 = "Bônus todo mês pra premiar quem é sócio-torcedor e assinante do FlaTV+",
+                carouselText1 = "Bônus todo mês par primea quem é sócio-torcedor e assinante do FlaTV+",
                 carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado para postar aquela foto no Maraca.",
                 carouselText3 = "Faça a portabilidade e ganhe bônus de internet todo mês!",
+                termsAdesaoURL = "",
                 termsOfertaURL = "https://fla-chip.com.br/regulamento-de-oferta/",
                 termsPrivacidadeURL = "https://fla-chip.com.br/politica-de-privacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=flachipapp",
+                chatBotURL = "https://omnichannel.l5.com.br/omnichannel_servicos/widget/webchat?tt=e2ce2835a221dd479ed5514565e3e24a&ct=d79683265353b1a9457574621fd8bb73&cc=false&ce=false&fs=1&uncache=2026915151158114",
                 whatsApp = "5521920001981",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=br.com.surfmobile.flachip",
                 coMvno = "324",

@@ -35,4 +35,7 @@
     <color name="ds_warning">#E08B00</color>
     <color name="ds_border">#595959</color>
     <color name="ds_disabled">#BDBDBD</color>
+    <!-- Tom central do gradiente de background_splash.png, usado como
+         windowSplashScreenBackground (API 31+ só aceita cor sólida, não a imagem). -->
+    <color name="splash_screen_background">#821162</color>
 </resources>

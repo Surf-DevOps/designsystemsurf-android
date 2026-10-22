@@ -95,7 +95,7 @@ data class BrandInfo(
                 termsAdesaoURL = "",
                 termsOfertaURL = "https://fluxoon.com.br/regulamento-de-oferta/",
                 termsPrivacidadeURL = "https://fluxoon.com.br/politica-de-privacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surffluxoonweb",
+                chatBotURL = "https://omnichannel.l5.com.br/omnichannel_servicos/widget/webchat?tt=e2ce2835a221dd479ed5514565e3e24a&ct=8bdda44f43eaf234204b5357ae6d65a0&cc=false&ce=false&fs=1&uncache=2026921162949207",
                 whatsApp = "5511920140717",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=br.com.surfmobile.fluxoon",
                 coMvno = "1098",

@@ -111,7 +111,7 @@ data class BrandInfo(
                 termsAdesaoURL = "",
                 termsOfertaURL = "https://chipdoentregador.com.br/regulamento-de-ofertas/",
                 termsPrivacidadeURL = "https://ifoodchip.com.br/politica-de-privacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surfifoodweb",
+                chatBotURL = "https://omnichannel.l5.com.br/omnichannel_servicos/widget/webchat?tt=e2ce2835a221dd479ed5514565e3e24a&ct=716f8a09b26755db14c8247ab29d9917&cc=false&ce=false&fs=1&uncache=2026921162857376",
                 whatsApp = "5511920006010",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=br.com.surfmobile.ifoodchip",
                 coMvno = "1049",

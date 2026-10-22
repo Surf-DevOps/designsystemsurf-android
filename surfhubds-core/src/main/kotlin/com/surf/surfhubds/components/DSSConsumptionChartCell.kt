@@ -43,9 +43,10 @@ class DSSConsumptionChartCell(parent: Context) : RecyclerView.ViewHolder(FrameLa
     ) {
         container.removeAllViews()
         val chart = DSSConsumptionChart(container.context).apply {
-            this.used = used
-            this.total = total
-            this.type = type
+            // usedFontSizeSp/totalFontSizeSp setters escrevem direto em totalLabel/usedLabel.textSize —
+            // precisam rodar ANTES de used/total/type, senão sobrescrevem o ajuste de fonte que
+            // updateLabels() aplica para o caso "Ligações ilimitadas" (DSSConsumptionChart.kt),
+            // fazendo o texto voltar pro tamanho padrão (26/28sp) mesmo com a correção aplicada.
             this.isInverted = isInverted
             this.progressColor = progressColor
             this.trackColor = trackColor
@@ -54,6 +55,9 @@ class DSSConsumptionChartCell(parent: Context) : RecyclerView.ViewHolder(FrameLa
             this.usedTextColor = usedTextColor
             this.totalTextColor = totalTextColor
             this.chartAction = action
+            this.used = used
+            this.total = total
+            this.type = type
         }
         val size = 200f.dpToPx(container.context)
         val lp = FrameLayout.LayoutParams(size, size).apply { gravity = Gravity.CENTER }

@@ -25,7 +25,17 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 
-    <style name="Theme.App.Splash" parent="Theme.App">
+    <!--
+      A partir da API 31, o Android mostra uma splash screen DO SISTEMA antes de
+      qualquer windowBackground nosso aparecer — se o tema não extende Theme.SplashScreen,
+      o sistema cai no fundo/ícone padrão do app (ic_launcher_background, um azul chapado
+      sem relação com a marca) e a transição pra cá não é controlada pelo app, podendo
+      sobrepor errado com o conteúdo customizado. postSplashScreenTheme troca pro tema
+      real (Theme.App) assim que installSplashScreen() (MainActivity) libera a condição.
+    -->
+    <style name="Theme.App.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_screen_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.App</item>
         <item name="android:windowBackground">@drawable/launch_screen</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>

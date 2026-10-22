@@ -47,7 +47,7 @@ data class BrandInfo(
                 termsAdesaoURL = "https://bandsportscelular.com.br/termodeadesao/",
                 termsOfertaURL = "https://bandsportscelular.com.br/regulamento-de-oferta-2/",
                 termsPrivacidadeURL = "https://bandsportscelular.com.br/politicadeprivacidade/",
-                chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surfbandsportsweb",
+                chatBotURL = "https://omnichannel.l5.com.br/omnichannel_servicos/widget/webchat?tt=e2ce2835a221dd479ed5514565e3e24a&ct=8e22e87316d94d5884f9ceb50987711f&cc=false&ce=false&fs=1&uncache=202692116314418",
                 whatsApp = "5521920001981",
                 forceUpdateURL = "https://play.google.com/store/apps/details?id=br.com.surfmobile.bandsports",
                 coMvno = "1032",

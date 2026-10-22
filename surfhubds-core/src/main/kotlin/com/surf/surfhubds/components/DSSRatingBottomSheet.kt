@@ -53,6 +53,9 @@ import com.surf.surfhubds.util.dpToPx
  * Fechar sem responder (toque fora, swipe ou "Agora não" no estado de nota) dispara
  * [Delegate.ratingSheetDidDismissWithoutAnswer]; fechar depois do envio dispara
  * [Delegate.ratingSheetDidFinish].
+ *
+ * Sem o catálogo da API, use [DEFAULT_CATEGORIES]. "Avaliar na loja" abre a loja com
+ * [com.surf.surfhubds.util.DSSCommunicationHelper.openAppStore].
  */
 class DSSRatingBottomSheet : BottomSheetDialogFragment() {
 
@@ -694,6 +697,22 @@ class DSSRatingBottomSheet : BottomSheetDialogFragment() {
 
         /** A partir desta nota o grupo é o positivo (categorias e agradecimento com loja). */
         const val POSITIVE_FROM = 4
+
+        /**
+         * As 8 categorias macro da Jornada de Avaliação, iguais para todas as notas, com os
+         * mesmos ids e subitens do spec-mobile (`GET avaliacao/categorias`, 21/10/2026).
+         * Catálogo de reserva para quando a API não responde: com ela no ar, o dela prevalece.
+         */
+        val DEFAULT_CATEGORIES: List<Category> = listOf(
+            Category(1, "Recarga", "Falha, demora, recarga não creditada, mudança de plano com benefícios não aplicados."),
+            Category(2, "Sinal/Conectividade", "Sinal ou cobertura de rede, velocidade de internet/dados, chip/eSIM, ativação ou troca de chip."),
+            Category(3, "Fatura/Cobrança", "Valor divergente, cobrança indevida, formas de pagamento, PIX, cartão, boleto."),
+            Category(4, "Atendimento", "SAC/central de atendimento, chatbot/assistente virtual, tempo de resposta, problema não resolvido na primeira tentativa."),
+            Category(5, "Aplicativo", "Erros/travamentos, lentidão, dificuldade de navegação/usabilidade, falta de funcionalidade esperada."),
+            Category(6, "Portabilidade", "Entrada ou saída."),
+            Category(7, "Cadastro e Conta", "Atualização de dados cadastrais, titularidade, endereço, e-mail, biometria, login/acesso ao aplicativo, segurança da conta, senha, verificação."),
+            Category(8, "Outros", "Promoções/benefícios não recebidos ou não aplicados, dificuldade para cancelar linha/plano e motivos que não se encaixem nas opções anteriores."),
+        )
 
         const val COMMENT_MIN = 10
         const val COMMENT_MAX = 300

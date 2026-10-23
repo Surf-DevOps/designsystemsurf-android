@@ -26,7 +26,7 @@ class DSSIconBadge @JvmOverloads constructor(
     defStyleAttr: Int = 0,
 ) : AppCompatImageView(context, attrs, defStyleAttr), ThemeAware {
 
-    enum class Style { SUCCESS, ERROR, PRIMARY_SOFT, PRIMARY }
+    enum class Style { SUCCESS, SUCCESS_SOFT, ERROR, PRIMARY_SOFT, PRIMARY }
 
     var style: Style = Style.PRIMARY_SOFT
         set(value) { field = value; refresh() }
@@ -56,6 +56,7 @@ class DSSIconBadge @JvmOverloads constructor(
     private fun refresh() {
         val (fill, tint) = when (style) {
             Style.SUCCESS -> DSSColors.success() to DSSColors.textOnPrimary()
+            Style.SUCCESS_SOFT -> ColorUtils.setAlphaComponent(DSSColors.success(), SOFT_ALPHA) to DSSColors.success()
             Style.ERROR -> ColorUtils.setAlphaComponent(DSSColors.error(), SOFT_ALPHA) to DSSColors.error()
             // Ícone por contraste: há brands com primary branco (Fluxo no claro, várias no
             // escuro), onde um ícone branco fixo sumiria.

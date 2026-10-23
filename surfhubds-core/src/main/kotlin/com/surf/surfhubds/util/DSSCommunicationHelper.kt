@@ -6,7 +6,7 @@ import android.content.Intent
 import android.net.Uri
 
 /**
- * Port do `DSSCommunicationHelper.swift` — links, ligação telefônica e WhatsApp.
+ * Port do `DSSCommunicationHelper.swift` — links, ligação telefônica, WhatsApp e loja de apps.
  */
 object DSSCommunicationHelper {
 
@@ -46,4 +46,34 @@ object DSSCommunicationHelper {
             try { context.startActivity(webIntent) } catch (e: ActivityNotFoundException) { /* ignore */ }
         }
     }
+
+    /**
+     * Abre a página do app na loja ("Avaliar na loja" da Jornada de Avaliação).
+     *
+     * Tenta, nesta ordem: [storeUrl] (URL da MVNO, ex.: `urlLoja` do `/config`), a Play Store
+     * com o pacote fixo, qualquer app que trate `market://` e a página web da Play. Sem fixar
+     * o pacote da Play, aparelhos Samsung abrem um seletor com a Galaxy Store. Sem [storeUrl],
+     * usa o pacote do próprio app ([Context.getPackageName]).
+     */
+    fun openAppStore(context: Context, storeUrl: String? = null) {
+        val packageName = context.packageName
+        val market = Uri.parse("market://details?id=$packageName")
+        val candidates = listOfNotNull(
+            storeUrl?.takeIf { it.isNotBlank() }?.let { Intent(Intent.ACTION_VIEW, Uri.parse(it)) },
+            Intent(Intent.ACTION_VIEW, market).setPackage(PLAY_STORE_PACKAGE),
+            Intent(Intent.ACTION_VIEW, market),
+            Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName")),
+        )
+        for (intent in candidates) {
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            try {
+                context.startActivity(intent)
+                return
+            } catch (e: ActivityNotFoundException) {
+                // Tenta o próximo: sem a Play instalada, o pacote fixo não abre.
+            }
+        }
+    }
+
+    private const val PLAY_STORE_PACKAGE = "com.android.vending"
 }

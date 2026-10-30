@@ -43,6 +43,7 @@ object BrandResolver {
             "pernambucanaschip" in pkg -> Brand.PERNAMBUCANASCHIP
             "cruzvermelha" in pkg -> Brand.CRUZVERMELHA
             "uber" in pkg -> Brand.UBER
+            "agi" in pkg -> Brand.AGI
             else -> Brand.DEFAULT
         }
     }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gerado pelo brand-builder para "AGI Informática" (slug: agi). -->
+<resources>
+    <color name="primary">#FF5CF9</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="primaryContainer">#FFFFFF</color>
+    <color name="onPrimaryContainer">#FFFFFF</color>
+    <color name="secondary">#00FF4E</color>
+    <color name="onSecondary">#FFFFFF</color>
+    <color name="secondaryContainer">#FFFFFF</color>
+    <color name="onSecondaryContainer">#FFFFFF</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="onSurface">#FFFFFF</color>
+    <color name="surfaceVariant">#FFFFFF</color>
+    <color name="onSurfaceVariant">#757575</color>
+    <color name="background">#FFFFFF</color>
+    <color name="onBackground">#FFFFFF</color>
+    <color name="error">#DC3545</color>
+    <color name="onError">#FFFFFF</color>
+    <color name="outline">#595959</color>
+    <color name="scrim">#000000</color>
+
+    <!-- tokens DS -->
+    <color name="ds_primary">#FF5CF9</color>
+    <color name="ds_secondary">#00FF4E</color>
+    <color name="ds_background">#FFFFFF</color>
+    <color name="ds_background_secondary">#FFFFFF</color>
+    <color name="ds_text_primary">#FFFFFF</color>
+    <color name="ds_text_secondary">#757575</color>
+    <color name="ds_surface">#FFFFFF</color>
+    <color name="ds_button_text">#FFFFFF</color>
+    <color name="ds_primary_button">#FFFFFF</color>
+    <color name="ds_error">#DC3545</color>
+    <color name="ds_success">#28A745</color>
+    <color name="ds_warning">#E08B00</color>
+    <color name="ds_border">#595959</color>
+    <color name="ds_disabled">#BDBDBD</color>
+</resources>

@@ -248,6 +248,22 @@ data class BrandInfo(
                 scheduleEligible = false,
                 recurrenceEligible = false,
             )
+            Brand.AGI -> BrandInfo(
+                carouselText1 = "",
+                carouselText2 = "",
+                carouselText3 = "",
+                termsAdesaoURL = "documento",
+                termsOfertaURL = "documento",
+                termsPrivacidadeURL = "documento",
+                chatBotURL = "documento",
+                whatsApp = "5511933333333",
+                forceUpdateURL = "documento",
+                coMvno = "1289",
+                mvnoName = "Agi Informatica",
+                noMvno = "AGI Informatica",
+                scheduleEligible = true,
+                recurrenceEligible = true,
+            )
             Brand.DEFAULT -> BrandInfo(
                 carouselText1 = "Aproveite os melhores planos com internet e ligações ilimitadas",
                 carouselText2 = "Programe suas recargas e fique sempre conectado",

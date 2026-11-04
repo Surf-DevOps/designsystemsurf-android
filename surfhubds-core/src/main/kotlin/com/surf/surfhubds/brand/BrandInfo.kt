@@ -264,6 +264,22 @@ data class BrandInfo(
                 scheduleEligible = true,
                 recurrenceEligible = true,
             )
+            Brand.CHIPDASAUDE -> BrandInfo(
+                carouselText1 = "",
+                carouselText2 = "",
+                carouselText3 = "",
+                termsAdesaoURL = "",
+                termsOfertaURL = "",
+                termsPrivacidadeURL = "",
+                chatBotURL = "",
+                whatsApp = "",
+                forceUpdateURL = "",
+                coMvno = "1474",
+                mvnoName = "Chip da Saúde",
+                noMvno = "Chip da Saude",
+                scheduleEligible = false,
+                recurrenceEligible = false,
+            )
             Brand.DEFAULT -> BrandInfo(
                 carouselText1 = "Aproveite os melhores planos com internet e ligações ilimitadas",
                 carouselText2 = "Programe suas recargas e fique sempre conectado",

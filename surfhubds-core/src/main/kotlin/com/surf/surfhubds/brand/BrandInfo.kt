@@ -265,9 +265,9 @@ data class BrandInfo(
                 recurrenceEligible = true,
             )
             Brand.CHIPDASAUDE -> BrandInfo(
-                carouselText1 = "",
-                carouselText2 = "",
-                carouselText3 = "",
+                carouselText1 = "Aproveite os melhores planos com internet e ligações ilimitadas",
+                carouselText2 = "Programa suas recargas e fique sempre conectado",
+                carouselText3 = "Faça a portabilidade e ganhe bônus de internet",
                 termsAdesaoURL = "",
                 termsOfertaURL = "",
                 termsPrivacidadeURL = "",

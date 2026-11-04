@@ -29,6 +29,7 @@ jobs:
             surfhubds-brand-conecta surfhubds-brand-mega surfhubds-brand-fluxo
             surfhubds-brand-pafer surfhubds-brand-paguemenos surfhubds-brand-carrefourchip
             surfhubds-brand-correioscelular surfhubds-brand-pernambucanaschip
+            surfhubds-brand-cruzvermelha surfhubds-brand-agi surfhubds-brand-chipdasaude
         run: |
           set -u
           pom() { echo "$BASE/$1/$TAG/$1-$TAG.pom"; }

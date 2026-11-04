@@ -143,6 +143,8 @@ object DSSLoadingView {
         Brand.PERNAMBUCANASCHIP -> "gif_pernambucanaschip"
         Brand.CRUZVERMELHA -> "gif_cruzvermelha"
         Brand.UBER -> "gif_uber"
+        Brand.AGI -> "gif_agi"
+        Brand.CHIPDASAUDE -> "gif_chipdasaude"
     }
 
     /** GIF animado 80x80, `scaleAspectFit` → `FIT_CENTER`, carregado via Glide. */

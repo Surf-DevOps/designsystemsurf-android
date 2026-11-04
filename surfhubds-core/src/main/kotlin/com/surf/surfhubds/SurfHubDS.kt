@@ -9,7 +9,9 @@ import com.surf.surfhubds.font.DSSFont
 import com.surf.surfhubds.theme.DefaultTheme
 import com.surf.surfhubds.theme.Theme
 import com.surf.surfhubds.theme.ThemeManager
+import com.surf.surfhubds.theme.brands.AGITheme
 import com.surf.surfhubds.theme.brands.BandSportsTheme
+import com.surf.surfhubds.theme.brands.ChipDaSaudeTheme
 import com.surf.surfhubds.theme.brands.CRUZVERMELHATheme
 import com.surf.surfhubds.theme.brands.CarrefourChipTheme
 import com.surf.surfhubds.theme.brands.ConectaTheme
@@ -101,6 +103,8 @@ object SurfHubDS {
         Brand.CORREIOSCELULAR -> CorreiosCelularTheme()
         Brand.PERNAMBUCANASCHIP -> PernambucanasChipTheme()
         Brand.CRUZVERMELHA -> CRUZVERMELHATheme()
+        Brand.AGI -> AGITheme()
+        Brand.CHIPDASAUDE -> ChipDaSaudeTheme()
         Brand.DEFAULT -> DefaultTheme()
     }
 }

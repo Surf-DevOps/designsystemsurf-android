@@ -133,6 +133,9 @@
     <string name="payment_finalize_recharge">Finalizar recarga</string>
     <string name="payment_scheduled_recharge_title">Recarga programada</string>
     <string name="payment_scheduled_recharge_subtitle">Suas recargas serão feitas \nautomaticamente a cada 30 dias</string>
+    <string name="payment_installments_title">Parcelamento</string>
+    <string name="payment_installments_single">À vista</string>
+    <string name="payment_installments_format">%1$sx</string>
     <string name="payment_select_method_to_continue">Selecione um método de pagamento para continuar.</string>
     <string name="payment_no_card_data">Não foi possível obter os dados do cartão selecionado.</string>
     <string name="pix_payment_title">Nova recarga</string>

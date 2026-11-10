@@ -241,22 +241,22 @@ class DSSConsumptionChart @JvmOverloads constructor(
             val startDeg = 135f
             val sweepDeg = 270f
 
-            // iOS desenha o track com DSSColors.primary (trackColor fica armazenado mas nao e usado p/ o track).
-            trackPaint.color = DSSColors.primary()
+            trackPaint.color = trackColor
             canvas.drawArc(rect, startDeg, sweepDeg, false, trackPaint)
 
-            // iOS: remainingPercent (sem clamp) alimenta o angulo do pointer; strokeEnd e clampado a [0,1] pela CA.
-            val rawPercent = when (type) {
+            // O arco colorido simboliza o CONSUMIDO (nao o que resta) — remainingPercent e a
+            // fracao disponivel, entao invertemos pra decidir quanto do arco fica preenchido.
+            val remainingPercent = when (type) {
                 TypeChart.GB -> ((used - total).toFloat() / max(used, 1))
                 else -> ((total - used).toFloat() / max(used, 1))
             }
-            val arcPercent = rawPercent.coerceIn(0f, 1f)
+            val usedPercent = (1f - remainingPercent).coerceIn(0f, 1f)
 
             progressPaint.color = progressColor
-            canvas.drawArc(rect, startDeg, sweepDeg * arcPercent, false, progressPaint)
+            canvas.drawArc(rect, startDeg, sweepDeg * usedPercent, false, progressPaint)
 
-            // Pointer — angulo usa o percentual bruto (espelha iOS: startAngle + remainingPercent * totalAngle).
-            val rad = Math.toRadians((startDeg + sweepDeg * rawPercent).toDouble())
+            // Pointer — mesmo percentual (ja clampado) usado pro arco, pra nao desalinhar em casos extremos.
+            val rad = Math.toRadians((startDeg + sweepDeg * usedPercent).toDouble())
             val px = cx + radius * cos(rad).toFloat()
             val py = cy + radius * sin(rad).toFloat()
             pointerFill.color = Color.WHITE

@@ -244,19 +244,22 @@ class DSSConsumptionChart @JvmOverloads constructor(
             trackPaint.color = trackColor
             canvas.drawArc(rect, startDeg, sweepDeg, false, trackPaint)
 
-            // O arco colorido simboliza o CONSUMIDO (nao o que resta) — remainingPercent e a
-            // fracao disponivel, entao invertemos pra decidir quanto do arco fica preenchido.
+            // Apesar do nome, "remainingPercent" ja E a fracao CONSUMIDA: `used`/`total` aqui
+            // carregam o alocado e o disponivel (nao literalmente "usado"/"total"), entao a
+            // conta abaixo ja da 0 quando nada foi consumido (used == total) e cresce com o
+            // consumo real. Nao inverter — ja tentamos isso e o anel ficava cheio com 0% de
+            // uso real.
             val remainingPercent = when (type) {
                 TypeChart.GB -> ((used - total).toFloat() / max(used, 1))
                 else -> ((total - used).toFloat() / max(used, 1))
             }
-            val usedPercent = (1f - remainingPercent).coerceIn(0f, 1f)
+            val consumedPercent = remainingPercent.coerceIn(0f, 1f)
 
             progressPaint.color = progressColor
-            canvas.drawArc(rect, startDeg, sweepDeg * usedPercent, false, progressPaint)
+            canvas.drawArc(rect, startDeg, sweepDeg * consumedPercent, false, progressPaint)
 
             // Pointer — mesmo percentual (ja clampado) usado pro arco, pra nao desalinhar em casos extremos.
-            val rad = Math.toRadians((startDeg + sweepDeg * usedPercent).toDouble())
+            val rad = Math.toRadians((startDeg + sweepDeg * consumedPercent).toDouble())
             val px = cx + radius * cos(rad).toFloat()
             val py = cy + radius * sin(rad).toFloat()
             pointerFill.color = Color.WHITE

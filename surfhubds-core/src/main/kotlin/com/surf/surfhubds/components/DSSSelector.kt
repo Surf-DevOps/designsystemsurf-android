@@ -165,8 +165,7 @@ class DSSSelector @JvmOverloads constructor(
     fun updateSelection(selectedIndex: Int) {
         this.selectedIndex = selectedIndex
         for ((index, button) in buttons.withIndex()) {
-            val isMiddle = index in 1 until buttons.size - 1
-            val cornerRadiusDp = if (isMiddle) 0f else buttonCornerRadius
+            val cornerRadiusDp = buttonCornerRadius
             val isSelected = index == selectedIndex
             val tint = if (isSelected) selectedTintColor else unselectedTintColor
             val bg = if (isSelected) selectedBackgroundColor else unselectedBackgroundColor

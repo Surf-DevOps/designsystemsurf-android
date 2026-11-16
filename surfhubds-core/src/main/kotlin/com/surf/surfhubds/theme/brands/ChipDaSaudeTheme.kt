@@ -1,12 +1,40 @@
 package com.surf.surfhubds.theme.brands
 
+import android.content.Context
+import android.content.res.Configuration
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
+import com.surf.surfhubds.theme.DSSColors
 import com.surf.surfhubds.theme.DefaultTheme
+import com.surf.surfhubds.theme.HomeHeaderBackground
+import com.surf.surfhubds.theme.RadialGradientDrawable
 import com.surf.surfhubds.theme.colorValueWithAlpha
 import com.surf.surfhubds.tokens.ColorTokens
 import com.surf.surfhubds.tokens.ColorValue
 
 // Gerado pelo brand-builder — espelho do ChipDaSaudeTheme.swift (iOS).
-class ChipDaSaudeTheme : DefaultTheme() {
+// ATENÇÃO: homeHeaderBackground() foi adicionado manualmente (não vem do brand-builder) —
+// se esse arquivo for regenerado, reaplicar esse trecho.
+class ChipDaSaudeTheme : DefaultTheme(), HomeHeaderBackground {
+
+    /**
+     * Glow radial "Fundo de marca" do guia (pág. 05 · Gradientes): Elétrico concentrado perto
+     * do canto superior-esquerdo dissipando pro Navy, em vez do preenchimento sólido padrão —
+     * ver [RadialGradientDrawable]. No escuro mantém sólido (já cai em Navy).
+     */
+    override fun homeHeaderBackground(context: Context): Drawable {
+        val night = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+            Configuration.UI_MODE_NIGHT_YES
+        if (night) return ColorDrawable(DSSColors.background())
+        return RadialGradientDrawable(
+            centerColor = 0xFF1494F0.toInt(),
+            edgeColor = 0xFF002173.toInt(),
+            centerXFraction = 0.15f,
+            centerYFraction = 0.05f,
+            radiusFraction = 0.5f,
+        )
+    }
+
     override fun buildColors(): ColorTokens = ColorTokens(
         primary = ColorValue.fromHex("#0A6FD6", "#1494F0"),
         secondary = ColorValue.fromHex("#1494F0", "#0A6FD6"),

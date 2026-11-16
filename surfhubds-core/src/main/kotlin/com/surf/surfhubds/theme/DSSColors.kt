@@ -1,6 +1,10 @@
 package com.surf.surfhubds.theme
 
+import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 
@@ -57,4 +61,18 @@ object DSSColors {
     /** Branco ou quase-preto, o que contrasta com [background] (limiar de luminância). */
     @ColorInt fun contrastOn(@ColorInt background: Int): Int =
         if (ColorUtils.calculateLuminance(background) > 0.6) Color.BLACK else Color.WHITE
+
+    /**
+     * Fundo do header da Home. Delega pro [HomeHeaderBackground] do tema atual (ex.: o glow
+     * radial da Chip da Saúde) quando o tema implementa essa interface; senão cai no
+     * preenchimento sólido de sempre ([background] no escuro, [primary] no claro) —
+     * comportamento idêntico ao que já existia pra todas as brands antes desse hook.
+     */
+    fun homeHeaderBackground(context: Context): Drawable {
+        val theme = ThemeManager.theme
+        if (theme is HomeHeaderBackground) return theme.homeHeaderBackground(context)
+        val night = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+            Configuration.UI_MODE_NIGHT_YES
+        return ColorDrawable(if (night) background() else primary())
+    }
 }

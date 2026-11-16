@@ -75,4 +75,17 @@ object DSSColors {
             Configuration.UI_MODE_NIGHT_YES
         return ColorDrawable(if (night) background() else primary())
     }
+
+    /**
+     * Cor da status bar enquanto o header da Home (ver [homeHeaderBackground]) está visível.
+     * Delega pro [HomeHeaderBackground] do tema atual quando ele implementa essa interface;
+     * senão cai em [background] no escuro / [primary] no claro — idêntico a antes desse hook.
+     */
+    fun homeHeaderStatusBarColor(context: Context): Int {
+        val theme = ThemeManager.theme
+        if (theme is HomeHeaderBackground) return theme.homeHeaderStatusBarColor(context)
+        val night = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+            Configuration.UI_MODE_NIGHT_YES
+        return if (night) background() else primary()
+    }
 }

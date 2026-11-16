@@ -12,4 +12,11 @@ import android.graphics.drawable.Drawable
  */
 interface HomeHeaderBackground {
     fun homeHeaderBackground(context: Context): Drawable
+
+    /**
+     * Cor da status bar enquanto esse header está visível (precisa combinar com o topo do
+     * [homeHeaderBackground], que pode não ser mais [DSSColors.primary] — ex.: a Chip da
+     * Saúde usa o Elétrico do início do glow). Default: [DSSColors.primary], igual a sempre.
+     */
+    fun homeHeaderStatusBarColor(context: Context): Int = DSSColors.primary()
 }

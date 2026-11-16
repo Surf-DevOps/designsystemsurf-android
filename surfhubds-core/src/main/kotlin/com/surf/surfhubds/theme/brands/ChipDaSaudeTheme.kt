@@ -35,6 +35,13 @@ class ChipDaSaudeTheme : DefaultTheme(), HomeHeaderBackground {
         )
     }
 
+    /** Elétrico — cor do início do glow em [homeHeaderBackground], não o Azul Chip de sempre. */
+    override fun homeHeaderStatusBarColor(context: Context): Int {
+        val night = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+            Configuration.UI_MODE_NIGHT_YES
+        return if (night) DSSColors.background() else 0xFF1494F0.toInt()
+    }
+
     override fun buildColors(): ColorTokens = ColorTokens(
         primary = ColorValue.fromHex("#0A6FD6", "#1494F0"),
         secondary = ColorValue.fromHex("#1494F0", "#0A6FD6"),

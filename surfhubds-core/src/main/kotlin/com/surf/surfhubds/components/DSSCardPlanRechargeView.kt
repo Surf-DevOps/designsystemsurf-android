@@ -232,14 +232,13 @@ class DSSCardPlanRechargeView @JvmOverloads constructor(
     }
 
     private fun configureDataUsage(data: CardData) {
-        dataView.gigasLabel.text = "${data.available}GB"
-        dataView.availableLabel.text = "disponível ${data.totalValue}GB"
-        if (data.totalValue > 0) {
-            val used = (data.totalValue - data.availableValue).toFloat()
-            val usedRatio = (used / data.totalValue.toFloat()).coerceIn(0f, 1f)
-            dataView.progressDataView.progress = (usedRatio * 100).toInt()
-            applyProgressTint(dataView.progressDataView, progressColorForUsage(usedRatio))
-        }
+        val usage = data.internetUsage
+        dataView.internetLabel.text = "Utilizado"
+        dataView.gigasLabel.text = "${usage.usedGBText}GB"
+        dataView.availableLabel.text = "disponível ${usage.availableGBText}GB"
+        val usedRatio = usage.usedFraction.coerceIn(0f, 1f)
+        dataView.progressDataView.progress = (usedRatio * 100).toInt()
+        applyProgressTint(dataView.progressDataView, progressColorForUsage(usedRatio))
     }
 
     /**

@@ -291,8 +291,18 @@ class ExpandablePlanCardView @JvmOverloads constructor(
             mvnoName = mvnoName,
             scheduleEligible = scheduleEligible,
         )
-        // iOS: slider usa o valor da recarga rápida quando houver.
-        consolidated.valorRecargaRapidaCents?.let { configureRecharge(priceCents = it) }
+        // iOS: slider usa o valor da recarga rápida quando houver; sem valor (port do
+        // iOS `hidesRechargeSection`), a seção fica oculta. `configure()` acima sempre
+        // deixa `rechargeSectionStack` VISIBLE com o preço do plano — é preciso ocultar
+        // explicitamente aqui quando não há valor de recarga rápida, senão o slider
+        // aparece com o preço errado em vez de sumir (bug: Plano Estudantil mostrando
+        // "Repetir recarga" com o preço do plano).
+        val recargaRapidaCents = consolidated.valorRecargaRapidaCents
+        if (recargaRapidaCents != null) {
+            configureRecharge(priceCents = recargaRapidaCents)
+        } else {
+            rechargeSectionStack.visibility = View.GONE
+        }
     }
 
     /**

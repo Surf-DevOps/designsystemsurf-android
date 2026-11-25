@@ -495,6 +495,12 @@ class ExpandablePlanCardView @JvmOverloads constructor(
         val iv = ImageView(context).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
             setImageDrawable(item.icon)
+            // Ícones locais do DS (ex.: dss_ic_phone) vêm brancos no vetor para serem tingidos
+            // pelo chamador; logos remotas de marca (item.imageUrl) já têm cor própria e não
+            // podem ser tingidas.
+            if (item.imageUrl == null) {
+                setColorFilter(DSSColors.primary(), android.graphics.PorterDuff.Mode.SRC_IN)
+            }
         }
         row.addView(iv, LinearLayout.LayoutParams(size.toFloat().dpToPx(context), size.toFloat().dpToPx(context)))
         DSSPlanCollectionView.loadImageInto(iv, item.imageUrl, item.icon)

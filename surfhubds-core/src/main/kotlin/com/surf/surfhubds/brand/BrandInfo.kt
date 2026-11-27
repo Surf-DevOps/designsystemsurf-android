@@ -189,7 +189,7 @@ data class BrandInfo(
                 carouselText2 = "Aqui você pode programar suas recargas e ficar sempre conectado.",
                 carouselText3 = "Além de acompanhar seu consumo e escolher entre os melhores planos pré do mercado!",
                 termsAdesaoURL = "https://www.correioscelular.com.br/termos-de-adesao1/",
-                termsOfertaURL = "",
+                termsOfertaURL = "https://www.correioscelular.com.br/regulamento-de-planos/",
                 termsPrivacidadeURL = "https://www.correioscelular.com.br/politica-de-privacidade/",
                 chatBotURL = "https://bot-prd.bluelab.com.br/chat/public/chatbot?company=surftelecom&alias=surftelecomappv2&params=null",
                 whatsApp = "5511980002020",
